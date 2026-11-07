@@ -27,9 +27,9 @@ body{font-family:'Gowun Batang','Noto Serif KR',serif;font-weight:400}
 
 
 .start-description{letter-spacing:.1em;font-size:14px}
-.rune-ornament{display:flex;align-items:center;justify-content:center;gap:22px;width:min(490px,85%);margin:24px auto 0;color:#ead1a6;opacity:.94;flex-shrink:0;pointer-events:none}
-.rune-ornament svg{display:block;width:300px;max-width:76%;height:auto;flex-shrink:0}
+.rune-ornament{display:flex;align-items:center;justify-content:center;gap:14px;width:min(270px,72%);margin:0 auto 18px;color:#ead1a6;opacity:.94;flex-shrink:0;pointer-events:none}
+.rune-ornament svg{display:block;width:170px;max-width:76%;height:auto;flex-shrink:0}
 .rune-rule{height:1px;flex:1;min-width:20px;background:linear-gradient(90deg,transparent,#d4c39d99);position:relative}
 .rune-rule:after{content:'';position:absolute;right:-5px;top:-2px;width:5px;height:5px;border:1px solid #d4c39d;transform:rotate(45deg);background:#213b42}
 .rune-rule:last-child{transform:rotate(180deg)}
-@media(max-width:700px){.start-description{font-size:12px;letter-spacing:.06em}.rune-ornament{width:90%;gap:16px;margin-top:24px}.rune-ornament svg{width:235px}.rune-rule{min-width:12px}}
+@media(max-width:700px){.start-description{font-size:12px;letter-spacing:.06em}.rune-ornament{width:220px;max-width:75%;gap:12px;margin:0 auto 18px}.rune-ornament svg{width:145px}.rune-rule{min-width:12px}}
