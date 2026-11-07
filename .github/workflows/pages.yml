@@ -26,6 +26,8 @@ jobs:
           node --check dist/app.js
           node --check dist/engine.mjs
           node verify-player.cjs
+      - name: Generate versioned asset URLs
+        run: node scripts/prepare-release.cjs
       - uses: actions/configure-pages@v5
         with:
           enablement: true
@@ -35,3 +37,7 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify published release
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: node scripts/verify-deployment.cjs
