@@ -116,3 +116,6 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .player .field input,.player .field textarea,.player .data-code,dialog textarea{background:#07182162;border-color:#b7d5c727;border-radius:5px}
 .player .primary,dialog .primary{background:#21454bd1;color:#e8f2e9;border:1px solid #9dc3b847;border-radius:5px;box-shadow:inset 0 1px 0 #ebffec0b}.player .primary:hover,dialog .primary:hover{background:#2a565bd9;color:#f2fff4;border-color:#aed9c369}
 @media(max-width:430px){.navigation-dialog{padding:26px 17px}.navigation-dialog h2{font-size:28px}.navigation-dialog .drawer-top{margin-bottom:20px}.navigation-dialog .suitcase-subtitle{margin-bottom:22px;padding-bottom:21px}.drawer-nav>button{gap:12px;padding:16px 10px;min-height:105px}.drawer-nav .nav-title{font-size:16px;margin-bottom:7px}.drawer-nav .nav-quotation{font-size:12px}.drawer-nav .nav-description{font-size:10px}.nav-icon-slot{flex-basis:32px;width:32px;height:40px}.player-panel{border-radius:8px}}
+
+/* Fine antique serif for the menu's philosophical descriptions. */
+.drawer-nav .nav-quotation{font-family:'Hahmlet','Gowun Batang',serif;font-weight:300;letter-spacing:.035em;-webkit-font-smoothing:antialiased}
