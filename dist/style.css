@@ -119,3 +119,14 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 
 /* Fine antique serif for the menu's philosophical descriptions. */
 .drawer-nav .nav-quotation{font-family:'Hahmlet','Gowun Batang',serif;font-weight:300;letter-spacing:.035em;-webkit-font-smoothing:antialiased}
+
+/* A quick, soft entrance from the left edge. */
+.navigation-dialog[open]{animation:suitcase-slide-in .32s cubic-bezier(.18,.82,.22,1) both;will-change:transform}
+.navigation-dialog[open]::backdrop{animation:suitcase-backdrop-in .28s ease-out both}
+.navigation-dialog.drawer-closing[open]{animation:suitcase-slide-out .22s cubic-bezier(.4,0,.8,.2) both;pointer-events:none}
+.navigation-dialog.drawer-closing[open]::backdrop{animation:suitcase-backdrop-out .22s ease-in both}
+@keyframes suitcase-slide-in{from{transform:translateX(-100%);opacity:.75}to{transform:translateX(0);opacity:1}}
+@keyframes suitcase-slide-out{from{transform:translateX(0);opacity:1}to{transform:translateX(-100%);opacity:.75}}
+@keyframes suitcase-backdrop-in{from{opacity:0}to{opacity:1}}
+@keyframes suitcase-backdrop-out{from{opacity:1}to{opacity:0}}
+@media(prefers-reduced-motion:reduce){.navigation-dialog[open],.navigation-dialog[open]::backdrop{animation:none!important;will-change:auto}}
