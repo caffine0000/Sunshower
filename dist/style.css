@@ -66,10 +66,6 @@ dialog::backdrop{background:#061c273b;backdrop-filter:blur(2px);-webkit-backdrop
 .touch-ring-two{--ring-size:72px;border-color:#5bdacb91;border-width:.5px;animation-delay:.2s;animation-duration:.76s}
 .touch-ring-three{--ring-size:54px;border-color:#b1fff09c;border-width:.45px;animation-delay:.28s;animation-duration:.68s}
 .touch-micro{--ring-size:19px;border-width:.45px;border-color:#a0f7e8a6;box-shadow:0 0 2px #5ce7d43b;animation-duration:.62s}
-.micro-one{left:-18px;top:-9px;animation-delay:.23s}
-.micro-two{--ring-size:14px;left:15px;top:-13px;animation-delay:.31s}
-.micro-three{--ring-size:22px;left:-10px;top:16px;animation-delay:.36s}
-.micro-four{--ring-size:12px;left:20px;top:10px;animation-delay:.44s}
 .touch-splash{left:0;top:0;width:3px;height:3px;border-radius:50%;background:#acfff0;opacity:0;transform:translate(-50%,-50%);box-shadow:0 0 7px 1px #53daca40;animation:touch-splash .26s .12s ease-out forwards}
 @keyframes touch-drop-fall{0%{opacity:0;transform:translateY(-12px) scaleY(1.2)}25%{opacity:.7}85%{opacity:.6}100%{opacity:0;transform:translateY(60px) scaleY(.15)}}
 @keyframes touch-ring-spread{0%{opacity:0;width:2px;height:2px}12%{opacity:.64}55%{opacity:.32}100%{opacity:0;width:var(--ring-size);height:var(--ring-size)}}
