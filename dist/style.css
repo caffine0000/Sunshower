@@ -185,3 +185,17 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 @media(max-width:600px){.signal-stream:nth-child(n+33){display:none}.cutscene-buttons .primary{flex:1 1 100%;order:-1;min-width:0;min-height:61px;padding:17px 22px;font-size:14px;margin-bottom:3px}.cutscene-buttons .quiet{padding:9px 2px}}
 @media(max-width:600px){.build-cutscene.has-art .cutscene-body{padding-top:28px}.build-cutscene.has-art .cutscene-prose{font-size:13px;line-height:2.1}}
 @media(prefers-reduced-motion:reduce){.white-line-transition{display:none}.is-signal-break #app{animation:none!important;filter:none!important;transform:none!important}}
+
+/* Rain-blue light deforms, ripples and drains through the white signal wipe. */
+.signal-whiteout{background:linear-gradient(90deg,#d5e8f5,#f6fcff 37%,#e3f4ff 70%,#eaf5ff)}
+.signal-stream{background:linear-gradient(180deg,transparent,#97c5ed66 12%,#effbffeb 38%,#ffffff 68%,#72b5e5a6 88%,transparent);box-shadow:0 0 6px #c7eaff80}
+.rain-glitch-filter{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+.rain-refraction{position:absolute;inset:0;overflow:hidden;pointer-events:none;isolation:isolate;animation:rain-refraction-envelope .98s ease-out both}
+.rain-glitch-curtain{position:absolute;inset:-15% -10%;background:radial-gradient(ellipse at 18% 36%,#2c91e48c,transparent 26%),radial-gradient(ellipse at 72% 58%,#64c4ef91,transparent 29%),radial-gradient(ellipse at 48% 87%,#4263ca80,transparent 28%),repeating-linear-gradient(93deg,transparent 0 4.5%,#448fc02b 4.7% 5%,transparent 5.2% 11%);animation:rain-glass-wave .98s ease-in-out both;mix-blend-mode:multiply}
+.rain-glitch-drop{position:absolute;left:var(--rain-x);top:-145vh;width:max(1px,var(--rain-width));height:var(--rain-height);border-radius:55% 32% 65% 38%;background:linear-gradient(180deg,transparent,#244b9947 16%,#62bcf0ab 45%,#a6eaffeb 78%,#3c9be3c7 94%,transparent);box-shadow:1px 0 5px #77ccf56b,-1px 0 2px #3b63b147;animation:rain-glitch-drain .82s var(--rain-delay) cubic-bezier(.22,.55,.45,.94) both}
+.signal-tears{background:repeating-linear-gradient(90deg,transparent 0 6px,#d4f1ff80 6px 7px,transparent 7px 13px,#78b7e66b 13px 15px)}
+@keyframes rain-refraction-envelope{0%{opacity:0}17%{opacity:.68}39%,58%{opacity:.95}77%{opacity:.58}100%{opacity:0}}
+@keyframes rain-glass-wave{0%{transform:translate(-2%,-12%) skewX(-3deg);opacity:.15}28%{transform:translate(2%,-4%) skewX(4deg);opacity:.7}51%{transform:translate(-1%,5%) skewX(-2deg);opacity:.85}74%{transform:translate(1%,14%) skewX(2deg);opacity:.45}100%{transform:translate(0,25%);opacity:0}}
+@keyframes rain-glitch-drain{0%{transform:translate(0,-20vh) scaleY(.6)}23%{transform:translate(var(--rain-sway),90vh) scaleY(1.4)}44%{transform:translate(calc(var(--rain-sway)*-.65),145vh) scaleY(1.7)}68%{transform:translate(calc(var(--rain-sway)*.5),215vh) scaleY(1.35)}100%{transform:translate(0,335vh) scaleY(1)}}
+@media(max-width:600px){.rain-glitch-drop:nth-child(n+20){display:none}}
+@media(prefers-reduced-motion:reduce){.rain-refraction,.rain-glitch-filter{display:none}}
