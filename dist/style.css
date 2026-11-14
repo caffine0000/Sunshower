@@ -136,3 +136,8 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .drawer-nav>button.active .nav-icon-slot{border:0;background:transparent}
 .nav-icon-slot img{display:block;width:100%;height:100%;object-fit:contain;opacity:.87;filter:drop-shadow(0 1px 3px #020c1440);transition:opacity .2s,filter .2s}
 .drawer-nav>button.active .nav-icon-slot img,.drawer-nav>button:hover .nav-icon-slot img{opacity:1;filter:drop-shadow(0 0 4px #bcdfd52b)}
+
+/* Larger supplied artwork, with the same text hierarchy. */
+.nav-icon-slot{flex:0 0 64px;width:64px;height:68px}
+.drawer-nav>button{gap:18px;min-height:116px}
+@media(max-width:430px){.nav-icon-slot{flex-basis:52px;width:52px;height:58px}.drawer-nav>button{gap:13px;min-height:112px}}
