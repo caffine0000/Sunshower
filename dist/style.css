@@ -202,7 +202,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .observer-veil,.observer-presence,.observer-glass{position:absolute;inset:0;pointer-events:none}
 .observer-veil{background:radial-gradient(ellipse at 50% 42%,#2320351a,#080f1d66 76%);animation:observer-veil 2.1s ease-out both}
 .observer-presence{overflow:hidden}
-.observer-silhouette{position:absolute;left:50%;top:50%;height:138vh;height:138svh;width:auto;max-width:none;object-fit:contain;transform:translate(-50%,-32%);filter:brightness(.78) saturate(.6) blur(.6px) drop-shadow(0 0 8px #9885b024);animation:observer-appears 2.1s ease-out both;pointer-events:none}
+.observer-silhouette{position:absolute;left:50%;top:50%;height:138vh;height:138svh;width:auto;max-width:none;object-fit:contain;transform:translate(-50%,-32%);filter:brightness(.72) saturate(.4) blur(3.4px) drop-shadow(0 0 10px #9885b014);animation:observer-appears 2.1s ease-out both;pointer-events:none}
 .observer-glass{background:linear-gradient(112deg,transparent 31%,#bec1d207 39%,#f0dfff08 40%,transparent 43% 72%,#b8cce706 73%,transparent 75%);animation:observer-veil 2.1s ease-out both}
 .character-intervention .prism-shards{animation:observer-fracture-presence 2.1s linear both}
 .character-intervention .prism-shard{animation:observer-shatter-and-return 2.1s steps(1,end) both}
@@ -215,7 +215,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .is-prism-break #app{animation:observer-screen-fracture 2.1s steps(1,end) both}
 @keyframes observer-envelope{0%{opacity:0}5%,86%{opacity:1}100%{opacity:0}}
 @keyframes observer-veil{0%{opacity:0}15%,45%{opacity:.85}67%{opacity:.5}100%{opacity:0}}
-@keyframes observer-appears{0%{opacity:0;transform:translate(-50%,-32%) scale(.985);filter:brightness(.72) saturate(.5) blur(2px)}10%{opacity:.15}24%,39%{opacity:.4;transform:translate(-50%,-32%) scale(1);filter:brightness(.78) saturate(.6) blur(.55px) drop-shadow(0 0 8px #9885b024)}48%{opacity:.28}59%,100%{opacity:0;transform:translate(-50%,-32%) scale(1.015)}}
+@keyframes observer-appears{0%{opacity:0;transform:translate(-50%,-32%) scale(.985);filter:brightness(.68) saturate(.35) blur(6px)}10%{opacity:.07}24%,39%{opacity:.22;transform:translate(-50%,-32%) scale(1);filter:brightness(.72) saturate(.4) blur(3.4px) drop-shadow(0 0 10px #9885b014)}48%{opacity:.13}59%,100%{opacity:0;transform:translate(-50%,-32%) scale(1.015);filter:brightness(.68) saturate(.35) blur(5px)}}
 @keyframes observer-seal-unfold{0%,12%{opacity:0;transform:translate(-50%,-50%) scale(.18) rotate(-35deg)}27%{opacity:.45;transform:translate(-50%,-50%) scale(.65) rotate(-17deg)}43%{opacity:.85;transform:translate(-50%,-50%) scale(1) rotate(0)}56%{opacity:.9;transform:translate(-50%,-50%) scale(1.08) rotate(9deg)}77%{opacity:.25;transform:translate(-50%,-50%) scale(1.17) rotate(17deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.23) rotate(22deg)}}
 @keyframes observer-fracture-presence{0%,41%{opacity:0}48%,67%{opacity:1}84%,100%{opacity:0}}
 @keyframes observer-shatter-and-return{0%,42%{transform:none;opacity:0}47%{transform:translate(var(--shift-x),var(--shift-y)) skewX(var(--skew));opacity:1}55%{transform:translate(calc(var(--shift-x)*-.65),calc(var(--shift-y)*.55)) skewX(calc(var(--skew)*-.6));opacity:1}66%{transform:translate(calc(var(--shift-x)*.35),calc(var(--shift-y)*.25)) skewX(calc(var(--skew)*.3));opacity:.8}78%{transform:translate(calc(var(--shift-x)*.08),calc(var(--shift-y)*.06));opacity:.2}86%,100%{transform:none;opacity:0}}
@@ -225,3 +225,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 @keyframes observer-screen-fracture{0%,40%,100%{transform:none;filter:none}45%{transform:translateX(-4px) skewX(-.7deg);filter:drop-shadow(4px 0 #ae82e160)}53%{transform:translateX(8px) skewX(1deg);filter:drop-shadow(-7px 0 #9870d470) drop-shadow(5px 0 #dec9ff70)}65%{transform:translate(-2px,1px);filter:drop-shadow(2px 0 #c59aef44)}79%{transform:none;filter:none}}
 @media(max-width:600px){.observer-silhouette{height:132vh;height:132svh}.character-intervention .prism-sigil{width:108vw;height:108vw}}
 @media(prefers-reduced-motion:reduce){.observer-presence,.observer-veil{display:none}}
+
+/* Faceted crystal blossom at the heart of the intervention seal. */
+.character-intervention .crystal-flower{filter:drop-shadow(0 0 3px #b483ec) drop-shadow(0 0 14px #9562cf66)}
+.crystal-flower .crystal-heart{filter:drop-shadow(0 0 4px #d9adff80)}
