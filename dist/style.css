@@ -141,3 +141,23 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .nav-icon-slot{flex:0 0 64px;width:64px;height:68px}
 .drawer-nav>button{gap:18px;min-height:116px}
 @media(max-width:430px){.nav-icon-slot{flex-basis:52px;width:52px;height:58px}.drawer-nav>button{gap:13px;min-height:112px}}
+/* Character building unfolds one scene at a time. */
+.player-panel.cutscene-panel{padding:0;overflow:hidden;background:linear-gradient(125deg,#06151fd4,#17313c66);border-color:#bfd4cc2b}
+.build-cutscene{position:relative;min-height:560px;display:flex;flex-direction:column;overflow:hidden;animation:building-scene-arrive .4s ease-out}
+.cutscene-top{position:relative;z-index:1;display:flex;justify-content:space-between;gap:14px;align-items:center;padding:22px 32px;border-bottom:1px solid #bdd5ca17;color:#a2bdb5;font:400 8px/1.6 'Noto Sans KR',sans-serif;letter-spacing:.19em;background:#06151c29}
+.cutscene-save{font-size:8px;letter-spacing:.02em;color:#91b1a9}
+.cutscene-visual{position:absolute;right:8%;top:19%;width:190px;opacity:.12;pointer-events:none}
+.cutscene-visual img{display:block;width:100%;height:auto;filter:drop-shadow(0 0 24px #8dbfb52b)}
+.cutscene-vertical{position:absolute;right:-22px;top:6px;writing-mode:vertical-rl;font:9px 'Noto Sans KR',sans-serif;letter-spacing:.35em;color:#d6eadb}
+.cutscene-body{position:relative;z-index:1;flex:1;padding:62px 42px 36px;max-width:700px}
+.cutscene-speaker{font:400 10px/1.8 'Noto Sans KR',sans-serif;letter-spacing:.12em;color:#bdc6ad;margin:0 0 23px}
+.cutscene-body h1{font:300 29px/1.65 'Hahmlet',serif;letter-spacing:.025em;color:#edf2e7;margin:0 0 23px;word-break:keep-all}
+.cutscene-prose{font:400 15px/2.15 'Gowun Batang',serif;letter-spacing:.03em;color:#c8d7cd;white-space:pre-wrap;margin:0 0 25px}
+.cutscene-field{max-width:360px;margin:22px 0 12px}.cutscene-field input{font-size:17px;font-family:'Gowun Batang',serif;padding:15px 12px;border-width:0 0 1px;border-radius:0!important;background:#06172129!important;letter-spacing:.06em}
+.cutscene-review{max-width:610px}.cutscene-review .player-summary{margin-top:22px}.cutscene-review .stat-grid{grid-template-columns:repeat(auto-fit,minmax(95px,1fr))}
+.cutscene-bottom{position:relative;z-index:1;padding:0 32px 21px;background:linear-gradient(0deg,#04141c3d,transparent)}
+.cutscene-progress{height:1px;width:100%;background:#b5cfc221;margin:5px 0 23px;overflow:hidden}.cutscene-progress span{display:block;height:100%;background:#85bcb0;box-shadow:0 0 8px #8ad9bd50;transition:width .3s}
+.cutscene-buttons{display:flex;justify-content:space-between;align-items:center;gap:15px}.cutscene-buttons button{font-size:11px;padding:12px 17px;line-height:1.8}.cutscene-buttons .primary{display:flex;gap:30px;align-items:center;justify-content:space-between;min-width:190px}.cutscene-buttons .quiet{font-family:'Noto Sans KR',sans-serif;font-size:10px;color:#b6ccc0}.cutscene-buttons button:disabled{opacity:.2}
+.cutscene-draft{font:400 8px/1.8 'Noto Sans KR',sans-serif;letter-spacing:.02em;color:#92a99c;margin:20px 0 0;text-align:center}.profile-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:28px;padding-top:24px;border-top:1px solid #bdd5c21a}
+@keyframes building-scene-arrive{from{opacity:.3;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.build-cutscene{min-height:510px}.cutscene-top{padding:18px 21px;font-size:7px;letter-spacing:.12em}.cutscene-body{padding:44px 24px 28px}.cutscene-body h1{font-size:23px;line-height:1.7}.cutscene-prose{font-size:14px}.cutscene-visual{width:135px;right:11%;top:21%;opacity:.1}.cutscene-bottom{padding:0 20px 19px}.cutscene-buttons{gap:8px;flex-wrap:wrap}.cutscene-buttons button{padding:11px 10px}.cutscene-buttons .primary{min-width:165px;gap:20px;font-size:10px}.cutscene-draft{font-size:7px}.profile-actions button{font-size:11px}.cutscene-field input{font-size:16px}}

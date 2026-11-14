@@ -27,6 +27,7 @@ jobs:
           node --check dist/engine.mjs
           node verify-player.cjs
           node verify-ripples.cjs
+          node verify-building.mjs
       - name: Generate versioned asset URLs
         run: node scripts/prepare-release.cjs
       - uses: actions/configure-pages@v5
