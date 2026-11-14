@@ -1,7 +1,7 @@
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
 const nodes=new Map(),storage=new Map();
 function node(s){if(!nodes.has(s))nodes.set(s,{innerHTML:'',textContent:'',value:'',classList:{add(){},remove(){}},addEventListener(){},setAttribute(){},focus(){},showModal(){},close(){}});return nodes.get(s)}
-const ctx={console,assert,process,window:{},document:{querySelector:node,addEventListener(){},querySelectorAll(){return []}},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},crypto:require('node:crypto').webcrypto,TextEncoder,TextDecoder,btoa,atob,setTimeout(fn){fn()},clearTimeout(){},confirm:()=>true};
+const ctx={console,assert,process,window:{matchMedia:()=>({matches:true})},document:{querySelector:node,addEventListener(){},querySelectorAll(){return []}},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},crypto:require('node:crypto').webcrypto,TextEncoder,TextDecoder,btoa,atob,setTimeout(fn){fn()},clearTimeout(){},confirm:()=>true};
 const code=fs.readFileSync('dist/engine.mjs','utf8').replace(/export /g,'')+'\n'+fs.readFileSync('dist/app.js','utf8').replace(/^import .*?;\n/,'');
 vm.runInNewContext(code+`
  project.stats=[{id:'stat-will',name:'의지',min:0,max:10,initial:2}];

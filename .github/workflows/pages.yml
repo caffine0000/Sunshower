@@ -28,6 +28,7 @@ jobs:
           node verify-player.cjs
           node verify-ripples.cjs
           node verify-building.mjs
+          node verify-prism.cjs
       - name: Generate versioned asset URLs
         run: node scripts/prepare-release.cjs
       - uses: actions/configure-pages@v5

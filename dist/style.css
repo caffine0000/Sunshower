@@ -161,3 +161,28 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .cutscene-draft{font:400 8px/1.8 'Noto Sans KR',sans-serif;letter-spacing:.02em;color:#92a99c;margin:20px 0 0;text-align:center}.profile-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:28px;padding-top:24px;border-top:1px solid #bdd5c21a}
 @keyframes building-scene-arrive{from{opacity:.3;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:600px){.build-cutscene{min-height:510px}.cutscene-top{padding:18px 21px;font-size:7px;letter-spacing:.12em}.cutscene-body{padding:44px 24px 28px}.cutscene-body h1{font-size:23px;line-height:1.7}.cutscene-prose{font-size:14px}.cutscene-visual{width:135px;right:11%;top:21%;opacity:.1}.cutscene-bottom{padding:0 20px 19px}.cutscene-buttons{gap:8px;flex-wrap:wrap}.cutscene-buttons button{padding:11px 10px}.cutscene-buttons .primary{min-width:165px;gap:20px;font-size:10px}.cutscene-draft{font-size:7px}.profile-actions button{font-size:11px}.cutscene-field input{font-size:16px}}
+/* The subway opening artwork and its refracted exit. */
+.cutscene-art{position:relative;margin:0;width:100%;aspect-ratio:16/9;overflow:hidden;background:#09131f;border-bottom:1px solid #acccdc29}
+.cutscene-art img{display:block;width:100%;height:100%;object-fit:cover}
+.build-cutscene.has-art .cutscene-body{padding-top:32px;max-width:760px}
+.build-cutscene.has-art .cutscene-speaker{margin-bottom:16px}.build-cutscene.has-art .cutscene-body h1{margin-bottom:17px}.build-cutscene.has-art .cutscene-prose{margin-bottom:10px}.build-cutscene.has-art .cutscene-bottom{padding-bottom:25px}
+.prism-transition{position:fixed;inset:0;z-index:2147483500;overflow:hidden;isolation:isolate;pointer-events:auto;touch-action:none;background:#061321;animation:prism-exposure .98s ease-out both}
+.prism-shards,.prism-shard,.prism-refraction,.prism-fracture,.prism-scanlines{position:absolute;inset:0;pointer-events:none}
+.prism-shard{animation:prism-shatter .98s steps(1,end) both;filter:hue-rotate(var(--hue,0deg)) saturate(2);will-change:transform}
+.prism-shard img{width:100%;height:100%;display:block;object-fit:cover;filter:contrast(1.15)}
+.shard-0{clip-path:polygon(0 0,44% 0,33% 43%,0 62%);--shift-x:-8vw;--shift-y:-3vh;--skew:-8deg;--hue:35deg}
+.shard-1{clip-path:polygon(44% 0,77% 0,65% 49%,33% 43%);--shift-x:6vw;--shift-y:-6vh;--skew:12deg;--hue:-45deg}
+.shard-2{clip-path:polygon(77% 0,100% 0,100% 50%,65% 49%);--shift-x:10vw;--shift-y:2vh;--skew:-10deg;--hue:85deg}
+.shard-3{clip-path:polygon(0 62%,33% 43%,49% 100%,0 100%);--shift-x:-11vw;--shift-y:6vh;--skew:8deg;--hue:-65deg}
+.shard-4{clip-path:polygon(33% 43%,65% 49%,79% 100%,49% 100%);--shift-x:4vw;--shift-y:8vh;--skew:-14deg;--hue:125deg}
+.shard-5{clip-path:polygon(65% 49%,100% 50%,100% 100%,79% 100%);--shift-x:9vw;--shift-y:5vh;--skew:10deg;--hue:-15deg}
+.prism-refraction{inset:-25%;background:conic-gradient(from 23deg at 47% 48%,#08ddd99c,#672cc0b3 16%,#df8ddca6 26%,#204aa3c9 36%,#9cf1dfa6 49%,#643fc5b8 62%,#e47aa891 73%,#387cb2b8 85%,#08ddd99c),repeating-linear-gradient(126deg,#dafff238 0 1px,transparent 2px 61px);mix-blend-mode:screen;animation:prism-texture .98s ease-out both;filter:saturate(1.5)}
+.prism-fracture{background:linear-gradient(124deg,transparent 35.1%,#b9fff5a8 35.2% 35.35%,#8466e073 35.5%,transparent 35.7%),linear-gradient(67deg,transparent 60%,#b2c9ff9c 60.15% 60.3%,transparent 60.5%),linear-gradient(7deg,transparent 47%,#d1a9ff8c 47.1% 47.25%,transparent 47.5%);mix-blend-mode:screen;opacity:.8}
+.prism-scanlines{background:repeating-linear-gradient(0deg,#020d224a 0 2px,transparent 2px 5px);opacity:.55}
+.is-prism-break #app{animation:prism-screen-break .98s steps(1,end) both;pointer-events:none;user-select:none}
+@keyframes prism-exposure{0%{opacity:0}12%{opacity:.96}68%{opacity:.96}100%{opacity:0}}
+@keyframes prism-shatter{0%{transform:translate(0,0);opacity:.5}12%{transform:translate(var(--shift-x),var(--shift-y)) skewX(var(--skew));opacity:1}30%{transform:translate(calc(var(--shift-x)*-.55),calc(var(--shift-y)*.5)) skewX(calc(var(--skew)*-.6))}49%{transform:translate(calc(var(--shift-x)*.7),calc(var(--shift-y)*-.4)) skewX(var(--skew))}68%{transform:translate(calc(var(--shift-x)*.25),calc(var(--shift-y)*.2));opacity:.6}100%{transform:translate(0,0);opacity:0}}
+@keyframes prism-texture{0%{opacity:0;transform:scale(1.2) rotate(-7deg)}20%{opacity:.9}55%{opacity:.85;transform:scale(1) rotate(12deg)}100%{opacity:0;transform:scale(1.05) rotate(16deg)}}
+@keyframes prism-screen-break{0%,100%{transform:none;filter:none}12%{transform:translateX(-7px) skewX(-1.2deg);filter:drop-shadow(7px 0 #5bf3df80) drop-shadow(-6px 0 #af64de80)}28%{transform:translateX(9px) skewX(1deg);filter:drop-shadow(-9px 0 #5bf3df80) drop-shadow(6px 0 #af64de80)}52%{transform:translate(-4px,2px);filter:drop-shadow(4px 0 #75d9ed66)}70%{transform:translateX(1px);filter:none}}
+@media(max-width:600px){.build-cutscene.has-art .cutscene-body{padding-top:28px}.build-cutscene.has-art .cutscene-prose{font-size:13px;line-height:2.1}}
+@media(prefers-reduced-motion:reduce){.prism-transition{display:none}.is-prism-break #app{animation:none!important;filter:none!important;transform:none!important}}
