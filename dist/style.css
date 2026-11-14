@@ -198,21 +198,21 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 @media(prefers-reduced-motion:reduce){.prism-transition{display:none}.is-prism-break #app{animation:none!important;filter:none!important;transform:none!important}}
 
 /* An observer beyond the glass, followed by a violet seal and fracture. */
-.character-intervention{background:transparent;animation:observer-envelope 1.9s linear both}
+.character-intervention{background:transparent;animation:observer-envelope 3.2s linear both}
 .observer-veil,.observer-presence,.observer-glass{position:absolute;inset:0;pointer-events:none}
-.observer-veil{background:radial-gradient(ellipse at 50% 42%,#2320351a,#080f1d66 76%);animation:observer-veil 1.9s ease-out both}
+.observer-veil{background:radial-gradient(ellipse at 50% 42%,#2320351a,#080f1d66 76%);animation:observer-veil 3.2s ease-out both}
 .observer-presence{overflow:hidden}
-.observer-silhouette{position:absolute;left:50%;top:50%;height:138vh;height:138svh;width:auto;max-width:none;object-fit:contain;transform:translate(-50%,-32%);filter:brightness(.72) saturate(.4) blur(3.4px) drop-shadow(0 0 10px #9885b014);animation:observer-appears 1.9s ease-out both;pointer-events:none}
-.observer-glass{background:linear-gradient(112deg,transparent 31%,#bec1d207 39%,#f0dfff08 40%,transparent 43% 72%,#b8cce706 73%,transparent 75%);animation:observer-veil 1.9s ease-out both}
-.character-intervention .prism-shards{animation:observer-fracture-presence 1.9s linear both}
-.character-intervention .prism-shard{animation:observer-shatter-and-return 1.9s steps(1,end) both}
-.character-intervention .prism-refraction{background:radial-gradient(circle at 50% 50%,#d5b4ff60,#7e47ba52 24%,#40216b33 46%,transparent 72%);animation:observer-magic-light 1.9s ease-out both}
-.character-intervention .prism-fracture{animation:observer-cracks 1.9s ease-out both;filter:drop-shadow(0 0 7px #b18be4)}
-.character-intervention .prism-scanlines{animation:observer-cracks 1.9s ease-out both;opacity:0}
-.character-intervention .prism-sigil{width:min(84vw,710px);height:min(84vw,710px);color:#e1ceff;filter:drop-shadow(0 0 6px #a16ae8) drop-shadow(0 0 18px #9562cf73);animation:seal-drawing-envelope 1.9s ease-out both}
-.character-intervention .prism-magic{animation:observer-cracks 1.9s ease-out both}
-.character-intervention .prism-mote{animation:observer-mote 1.9s ease-out both}
-.is-prism-break #app{animation:observer-screen-fracture 1.9s steps(1,end) both}
+.observer-silhouette{position:absolute;left:50%;top:50%;height:138vh;height:138svh;width:auto;max-width:none;object-fit:contain;transform:translate(-50%,-32%);filter:brightness(.72) saturate(.4) blur(3.4px) drop-shadow(0 0 10px #9885b014);animation:observer-appears 3.2s ease-out both;pointer-events:none}
+.observer-glass{background:linear-gradient(112deg,transparent 31%,#bec1d207 39%,#f0dfff08 40%,transparent 43% 72%,#b8cce706 73%,transparent 75%);animation:observer-veil 3.2s ease-out both}
+.character-intervention .prism-shards{animation:observer-fracture-presence 3.2s linear both}
+.character-intervention .prism-shard{animation:observer-shatter-and-return 3.2s steps(1,end) both}
+.character-intervention .prism-refraction{background:radial-gradient(circle at 50% 50%,#d5b4ff60,#7e47ba52 24%,#40216b33 46%,transparent 72%);animation:observer-magic-light 3.2s ease-out both}
+.character-intervention .prism-fracture{animation:observer-cracks 3.2s ease-out both;filter:drop-shadow(0 0 7px #b18be4)}
+.character-intervention .prism-scanlines{animation:observer-cracks 3.2s ease-out both;opacity:0}
+.character-intervention .prism-sigil{width:min(84vw,710px);height:min(84vw,710px);color:#e1ceff;filter:drop-shadow(0 0 6px #a16ae8) drop-shadow(0 0 18px #9562cf73);animation:seal-drawing-envelope 3.2s ease-out both}
+.character-intervention .prism-magic{animation:observer-cracks 3.2s ease-out both}
+.character-intervention .prism-mote{animation:observer-mote 3.2s ease-out both}
+.is-prism-break #app{animation:observer-screen-fracture 3.2s steps(1,end) both}
 @keyframes observer-envelope{0%{opacity:0}5%,86%{opacity:1}100%{opacity:0}}
 @keyframes observer-veil{0%{opacity:0}15%,45%{opacity:.85}67%{opacity:.5}100%{opacity:0}}
 @keyframes observer-appears{0%{opacity:0;transform:translate(-50%,-32%) scale(.985);filter:brightness(.68) saturate(.35) blur(6px)}10%{opacity:.07}24%,39%{opacity:.22;transform:translate(-50%,-32%) scale(1);filter:brightness(.72) saturate(.4) blur(3.4px) drop-shadow(0 0 10px #9885b014)}48%{opacity:.13}59%,100%{opacity:0;transform:translate(-50%,-32%) scale(1.015);filter:brightness(.68) saturate(.35) blur(5px)}}
@@ -230,37 +230,36 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .character-intervention .crystal-flower{filter:drop-shadow(0 0 3px #b483ec) drop-shadow(0 0 14px #9562cf66)}
 .crystal-flower .crystal-heart{filter:drop-shadow(0 0 4px #d9adff80)}
 
-/* Freeze viewport geometry while the current screen fractures and returns. */
+/* Freeze viewport geometry while the screen fractures and rebuilds the incoming scene. */
 .fast-intervention{inset:auto;max-width:none;max-height:none;contain:layout paint;perspective:900px}
 .fast-intervention .observer-silhouette{height:var(--observer-height)}
 .fast-intervention .prism-sigil{width:var(--seal-size);height:var(--seal-size)}
-.fast-intervention .screen-piece{inset:auto;isolation:isolate;overflow:hidden;background:#10212c;transform-origin:center;animation:glass-fragments-return 1.9s cubic-bezier(.22,.7,.3,1) both;will-change:transform,opacity;backface-visibility:hidden}
+.fast-intervention .screen-piece{inset:auto;isolation:isolate;overflow:hidden;background:#10212c;transform-origin:center;animation:glass-fragments-return 3.2s cubic-bezier(.22,.7,.3,1) both;will-change:transform,opacity;backface-visibility:hidden}
 .shard-surface{position:absolute;overflow:hidden;pointer-events:none}
 .shatter-copy{position:absolute;isolation:isolate;pointer-events:none;user-select:none}
 .shatter-copy *{animation:none!important;transition:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;caret-color:transparent!important}
 .shatter-copy .weather-world{position:absolute!important}
-.fracture-mesh{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;filter:drop-shadow(0 0 3px #ad80da);animation:glass-crack-lines 1.9s linear both}
-.is-prism-break #app{animation:glass-scene-underlay 1.9s linear both;transform:none!important;filter:none!important}
+.fracture-mesh{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;filter:drop-shadow(0 0 3px #ad80da);animation:glass-crack-lines 3.2s linear both}
+.is-prism-break #app{animation:glass-scene-underlay 3.2s linear both;transform:none!important;filter:none!important}
 .is-prism-break #app .build-cutscene,.is-prism-break #app .player-panel{animation:none!important;transform:none!important}
 @keyframes glass-fragments-return{0%,40%{transform:translate(0,0) rotate(0) scale(1);opacity:0}43%{transform:translate(0,0) rotate(0) scale(1);opacity:1}56%{transform:translate(var(--shift-x),var(--shift-y)) rotate(var(--piece-turn)) scale(.76);opacity:.97}64%{transform:translate(calc(var(--shift-x)*.78),calc(var(--shift-y)*.78)) rotate(calc(var(--piece-turn)*.7)) scale(.82);opacity:.95}81%{transform:translate(0,0) rotate(0) scale(1);opacity:1}92%,100%{transform:translate(0,0) rotate(0) scale(1);opacity:0}}
 @keyframes glass-crack-lines{0%,34%{opacity:0}43%{opacity:.9}58%,100%{opacity:0}}
 @keyframes glass-scene-underlay{0%,38%{opacity:1}44%,64%{opacity:0}82%,100%{opacity:1}}
 @media(prefers-reduced-motion:reduce){.fast-intervention{display:none}.is-prism-break #app{animation:none!important;opacity:1!important}}
 
-/* Silhouette, drawn seal, sudden fracture, patient reconstruction, then the next scene. */
-.fast-intervention .prism-sigil{animation:seal-drawing-envelope 1.9s linear both;transform:translate(-50%,-50%)}
-.fast-intervention .crystal-flower path,.fast-intervention .crystal-flower circle{stroke-dasharray:1;stroke-dashoffset:1;animation:crystal-outline-draw 1.9s linear both}
+/* Draw the seal slowly; swap scenes at the fracture and rebuild the incoming screen. */
+.fast-intervention .prism-sigil{animation:seal-drawing-envelope 3.2s linear both;transform:translate(-50%,-50%)}
+.fast-intervention .crystal-flower path,.fast-intervention .crystal-flower circle{stroke-dasharray:1;stroke-dashoffset:1;animation:crystal-outline-draw 3.2s linear both}
 .fast-intervention .crystal-flower circle{animation-name:crystal-ring-draw}
 .fast-intervention .crystal-flower .crystal-petal path{animation-name:crystal-petal-draw}
 .fast-intervention .crystal-flower .crystal-heart path{animation-name:crystal-heart-draw}
-.fast-intervention .prism-shards{animation:asymmetric-shard-presence 1.9s linear both}
-.fast-intervention .screen-piece{animation:asymmetric-glass-return 1.9s linear both}
-.fast-intervention .fracture-mesh{animation:sudden-glass-cracks 1.9s linear both}
-.fast-intervention .observer-silhouette{animation:observer-before-seal 1.9s ease-out both}
-.fast-intervention .prism-magic{animation:break-light-presence 1.9s ease-out both}
-.fast-intervention .prism-mote{animation:break-light-mote 1.9s ease-out both}
-.restored-scene-veil{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,#281b3a,#0b1724 80%);animation:restored-scene-handoff 1.9s linear both}
-.is-prism-break #app{animation:asymmetric-scene-underlay 1.9s linear both}
+.fast-intervention .prism-shards{animation:asymmetric-shard-presence 3.2s linear both}
+.fast-intervention .screen-piece{animation:asymmetric-glass-return 3.2s linear both}
+.fast-intervention .fracture-mesh{animation:sudden-glass-cracks 3.2s linear both}
+.fast-intervention .observer-silhouette{animation:observer-before-seal 3.2s ease-out both}
+.fast-intervention .prism-magic{animation:break-light-presence 3.2s ease-out both}
+.fast-intervention .prism-mote{animation:break-light-mote 3.2s ease-out both}
+.is-prism-break #app{animation:asymmetric-scene-underlay 3.2s linear both}
 @keyframes observer-before-seal{0%{opacity:0;transform:translate(-50%,-32%) scale(.985);filter:brightness(.68) saturate(.35) blur(6px)}7%{opacity:.08}14%,23%{opacity:.22;transform:translate(-50%,-32%) scale(1);filter:brightness(.72) saturate(.4) blur(3.4px)}31%{opacity:.13}40%,100%{opacity:0;transform:translate(-50%,-32%) scale(1);filter:brightness(.68) saturate(.35) blur(5px)}}
 @keyframes seal-drawing-envelope{0%,16%{opacity:0;transform:translate(-50%,-50%)}24%{opacity:.85}47%,56%{opacity:.92}82%{opacity:.18}91%,100%{opacity:0;transform:translate(-50%,-50%)}}
 @keyframes crystal-ring-draw{0%,18%{stroke-dashoffset:1}37%,100%{stroke-dashoffset:0}}
@@ -270,7 +269,6 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 @keyframes asymmetric-shard-presence{0%,45%{opacity:0}46%,88%{opacity:1}90%,100%{opacity:0}}
 @keyframes asymmetric-glass-return{0%,46%{transform:translate(0,0) rotate(0) scale(1);opacity:0}47%{transform:translate(0,0) rotate(0) scale(1);opacity:1;animation-timing-function:cubic-bezier(.7,0,1,.3)}51%{transform:translate(var(--shift-x),var(--shift-y)) rotate(var(--piece-turn)) scale(.76);opacity:1;animation-timing-function:cubic-bezier(.18,.55,.28,1)}88%,100%{transform:translate(0,0) rotate(0) scale(1);opacity:1}}
 @keyframes sudden-glass-cracks{0%,44%{opacity:0}47%{opacity:.9}54%{opacity:.6}61%,100%{opacity:0}}
-@keyframes asymmetric-scene-underlay{0%,46%{opacity:1}49%,83%{opacity:0}88%{opacity:1}91%,94%{opacity:0}100%{opacity:1}}
-@keyframes restored-scene-handoff{0%,88%{opacity:0}92%,94%{opacity:.96}100%{opacity:0}}
+@keyframes asymmetric-scene-underlay{0%,46%{opacity:1}49%,79%{opacity:0}88%,100%{opacity:1}}
 @keyframes break-light-presence{0%,44%{opacity:0}50%{opacity:.8}80%,100%{opacity:0}}
 @keyframes break-light-mote{0%,44%{opacity:0;transform:translate(0,0) rotate(45deg) scale(.2)}51%{opacity:.8}90%,100%{opacity:0;transform:translate(var(--mote-dx),var(--mote-dy)) rotate(105deg) scale(.4)}}
