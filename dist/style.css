@@ -130,3 +130,9 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 @keyframes suitcase-backdrop-in{from{opacity:0}to{opacity:1}}
 @keyframes suitcase-backdrop-out{from{opacity:1}to{opacity:0}}
 @media(prefers-reduced-motion:reduce){.navigation-dialog[open],.navigation-dialog[open]::backdrop{animation:none!important;will-change:auto}}
+
+/* Supplied artwork, kept in the specified menu order. */
+.nav-icon-slot{border:0;background:transparent;border-radius:0;box-shadow:none}
+.drawer-nav>button.active .nav-icon-slot{border:0;background:transparent}
+.nav-icon-slot img{display:block;width:100%;height:100%;object-fit:contain;opacity:.87;filter:drop-shadow(0 1px 3px #020c1440);transition:opacity .2s,filter .2s}
+.drawer-nav>button.active .nav-icon-slot img,.drawer-nav>button:hover .nav-icon-slot img{opacity:1;filter:drop-shadow(0 0 4px #bcdfd52b)}
