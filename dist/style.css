@@ -310,3 +310,9 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .gender-choice-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
 .gender-options .gender-choice-description{display:block;font:400 12.5px/2 'Gowun Batang',serif;color:#cbd8ce;letter-spacing:.02em;margin:0;white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
 @media(max-width:600px){.gender-choice-copy{padding:17px 13px;gap:9px}.gender-options .gender-choice-description{font-size:11px;line-height:1.95}.gender-options .gender-choice{min-height:180px}.gender-choice-art{max-height:270px}}
+/* Responses in the fifth cutscene lead to separate sixth-scene paths. */
+.narrative-options{display:flex;flex-direction:column;gap:12px;max-width:620px;margin:30px 0 8px}
+.narrative-options .narrative-choice{margin:0;min-height:64px;padding:18px 21px;justify-content:space-between;border-color:#bad6cd36;background:#142b3438;border-radius:5px;gap:18px}
+.narrative-options .narrative-choice strong{font:400 15px/1.9 'Gowun Batang',serif;letter-spacing:.03em;word-break:keep-all}
+.cutscene-prose .narrative-emphasis{font-weight:700;color:#eef4e9}
+@media(max-width:600px){.narrative-options .narrative-choice{padding:17px 16px;min-height:61px}.narrative-options .narrative-choice strong{font-size:14px}}
