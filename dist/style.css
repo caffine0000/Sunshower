@@ -276,3 +276,11 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 /* Alternating tangential drift lets fragments decelerate along curved paths. */
 .fast-intervention .screen-piece{--arc-sign:1}
 .fast-intervention .screen-piece:nth-child(even){--arc-sign:-1}
+
+/* The third scene advances through name entry, without a forward button. */
+.name-entry-form{margin:25px 0 6px;max-width:440px}
+.name-entry-form .cutscene-field{max-width:none;margin-bottom:10px}
+.name-entry-form .cutscene-field input{font-size:19px;line-height:1.7;padding:16px 12px;color:#ecf2e9;border-bottom-color:#a8c9bd66;letter-spacing:.045em}
+.name-entry-form .cutscene-field input:focus{outline:1px solid #b9cabe70;outline-offset:3px}
+.name-entry-hint{font:400 10px/1.9 'Noto Sans KR',sans-serif;color:#c6d4cc;letter-spacing:.01em;margin:12px 0 0}
+@media(max-width:600px){.name-entry-form .cutscene-field input{font-size:17px}.name-entry-hint{font-size:9px}}
