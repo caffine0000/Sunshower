@@ -31,7 +31,7 @@ export function buildingStages(project){return [
  // Keep the old second-stage ID so unfinished saves see this encounter after updating.
  {id:'identity',type:'narrative',image:'assets/cutscene-girl-ec30245801.jpg',imageAlt:'비 내리는 지하철 안에서 빛을 머금은 눈으로 바라보는 여자아이',title:'의문의 여자아이',body:"\"들려? 좀 괜찮지?\"\n\"지나가던 중이였는데... 머리를 잡고 있길래 불러봤어.\"\n\n외양도 복장도 어린아이처럼 생겼지만\n빛을 쪼개는 그 눈을 빛내며 나를 응시한다.",nextLabel:'꼬마에게 이름을 묻는다'},
  {id:'profile-name',type:'identity',image:'assets/cutscene-name-8b0527f716.jpg',imageAlt:'비 내리는 지하철 안에서 눈을 감고 미소 짓는 여자아이',title:'내 이름은 알려줄 수 없어.',body:'우선... 자기 이름부터 떠올려볼래?'},
- {id:'profile-gender',type:'gender',image:'assets/cutscene-gender-3b355062a9.jpg',imageAlt:'비 내리는 지하철 안에서 고개를 기울이며 바라보는 여자아이',title:'나는 [플레이어 이름]',body:"\"좋네. 이제부턴 [플레이어 이름]...\"\n\"혹시... '오빠'야...? '언니'야...?\"",choices:[{value:'male',label:'남성',image:'assets/choice-male-1ad21d19f5.webp',description:'소년은 나뭇가지에서 날아오르는 새를 보았다.'},{value:'female',label:'여성',description:'소녀는 나뭇가지에 달린 열매를 보았다.'}]},
+ {id:'profile-gender',type:'gender',image:'assets/cutscene-gender-3b355062a9.jpg',imageAlt:'비 내리는 지하철 안에서 고개를 기울이며 바라보는 여자아이',title:'나는 [플레이어 이름]',body:"\"좋네. 이제부턴 [플레이어 이름]...\"\n\"혹시... '오빠'야...? '언니'야...?\"",choices:[{value:'male',label:'남성',image:'assets/choice-male-1ad21d19f5.webp',description:'소년은 나뭇가지에서 날아오르는 새를 보았다.'},{value:'female',label:'여성',image:'assets/choice-female-6a67aec181.webp',description:'소녀는 나뭇가지에 달린 열매를 보았다.'}]},
  ...(project.stats||[]).map(stat=>({id:'stat:'+stat.id,type:'stat',title:stat.name,body:stat.prompt||'수사관의 '+stat.name+' 정보를 설정합니다.',stat})),
  {id:'review',type:'review',title:'이 기록이 당신입니까?',body:'작성한 인적 정보를 확인해 주세요.\n확정하면 프로필 요약 화면으로 전환됩니다.'}
 ]}
