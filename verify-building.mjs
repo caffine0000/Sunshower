@@ -4,7 +4,9 @@ const project={id:'cutscene-test',start:'story-start',scenes:[{id:'story-start',
 let build=normalizePlayer().build;
 assert.equal(buildingPosition(project,build).stage.id,'opening');
 assert.throws(()=>completeBuilding(project,build));
-build=moveBuilding(project,build,1);assert.equal(build.cutscene.scene,'identity');
+build=moveBuilding(project,build,1);assert.equal(build.cutscene.scene,'identity');assert.equal(buildingPosition(project,build).stage.type,'narrative');assert.equal(buildingPosition(project,build).stage.title,'의문의 여자아이');
+const encounter=decodePlayer(project,encodePlayer(project,normalizePlayer({build})));assert.equal(buildingPosition(project,encounter.build).stage.nextLabel,'꼬마에게 이름을 묻는다');
+build=moveBuilding(project,build,1);assert.equal(build.cutscene.scene,'profile-name');
 assert.throws(()=>moveBuilding(project,build,1));
 build.name='  수사관 🗝️  ';build=moveBuilding(project,build,1);assert.equal(build.name,'수사관 🗝️');assert.equal(build.cutscene.scene,'stat:resolve');
 build.stats.resolve=11;assert.throws(()=>moveBuilding(project,build,1));assert.equal(build.cutscene.scene,'stat:resolve');
@@ -16,5 +18,5 @@ build=completeBuilding(project,restored.build);assert.equal(build.completed,true
 const legacy=normalizePlayer({build:{name:'기존 수사관',stats:{resolve:5},completed:true}});assert.equal(legacy.build.completed,true);assert.equal(legacy.build.name,'기존 수사관');
 const updated={...project,stats:[]};assert.equal(buildingPosition(updated,{...build,completed:false,cutscene:{scene:'stat:resolve'}}).stage.id,'opening');
 assert.throws(()=>normalizePlayer({build:{name:'x',stats:{},completed:false,cutscene:{scene:1}}}));
-assert.deepEqual(buildingStages(updated).map(s=>s.id),['opening','identity','review']);
+assert.deepEqual(buildingStages(updated).map(s=>s.id),['opening','identity','profile-name','review']);
 console.log('PASS: cutscene navigation, validation, reversible stat edits, full-save stage restoration, legacy profiles and removed-stage fallback');
