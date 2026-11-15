@@ -27,7 +27,7 @@ export function decodePlayer(p,code){if(code.startsWith('GAL1.'))return normaliz
 export function buildingStages(project){return [
  {id:'opening',type:'opening',image:'assets/cutscene-subway-7ec23ce9f4.jpg',imageAlt:'지하철 창문 너머로 비와 빛의 소용돌이가 펼쳐지는 풍경',title:'나는 누구인가?',body:'눈을 뜬 순간, 나는 알 수 없는 지하철에 올라탔다.\n행선지도 목적도... 그리고 나도 기억나질 않는다.'},
  // Keep the old second-stage ID so unfinished saves see this encounter after updating.
- {id:'identity',type:'narrative',image:'assets/cutscene-girl-ec30245801.jpg',imageAlt:'비 내리는 지하철 안에서 빛을 머금은 눈으로 바라보는 여자아이',title:'의문의 여자아이',body:"\"들려? 좀 괜찮지?\"\n\"지나가던 중이였는데... 머리를 잡고 있길래 불어봤어.\"\n\n외양도 복장도 어린아이처럼 생겼지만\n빛을 쪼개는 그 눈을 빛내며 나를 응시한다.",nextLabel:'꼬마에게 이름을 묻는다'},
+ {id:'identity',type:'narrative',image:'assets/cutscene-girl-ec30245801.jpg',imageAlt:'비 내리는 지하철 안에서 빛을 머금은 눈으로 바라보는 여자아이',title:'의문의 여자아이',body:"\"들려? 좀 괜찮지?\"\n\"지나가던 중이였는데... 머리를 잡고 있길래 불러봤어.\"\n\n외양도 복장도 어린아이처럼 생겼지만\n빛을 쪼개는 그 눈을 빛내며 나를 응시한다.",nextLabel:'꼬마에게 이름을 묻는다'},
  {id:'profile-name',type:'identity',title:'어떤 이름으로 기록할까요?',body:'수사관의 이름을 남겨 주세요.'},
  ...(project.stats||[]).map(stat=>({id:'stat:'+stat.id,type:'stat',title:stat.name,body:stat.prompt||'수사관의 '+stat.name+' 정보를 설정합니다.',stat})),
  {id:'review',type:'review',title:'이 기록이 당신입니까?',body:'작성한 인적 정보를 확인해 주세요.\n확정하면 프로필 요약 화면으로 전환됩니다.'}
