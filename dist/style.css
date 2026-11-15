@@ -316,3 +316,10 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .narrative-options .narrative-choice strong{font:400 15px/1.9 'Gowun Batang',serif;letter-spacing:.03em;word-break:keep-all}
 .cutscene-prose .narrative-emphasis{font-weight:700;color:#eef4e9}
 @media(max-width:600px){.narrative-options .narrative-choice{padding:17px 16px;min-height:61px}.narrative-options .narrative-choice strong{font-size:14px}}
+
+/* A single white knuckle impact on entering the teasing branch. */
+.scene-white-impact{position:fixed;inset:0;z-index:150;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 32%,#fff 0%,rgba(255,255,255,.88) 23%,rgba(238,245,255,.38) 56%,transparent 85%);animation:knuckle-flash .62s ease-out both}
+.scene-white-impact i{position:absolute;left:50%;top:32%;width:min(44vw,240px);aspect-ratio:1;background:repeating-conic-gradient(from 4deg,transparent 0deg 25deg,rgba(255,255,255,.85) 26deg 28deg,transparent 29deg 45deg);mask-image:radial-gradient(circle,transparent 12%,#000 25%,transparent 70%);transform:translate(-50%,-50%) scale(.7);animation:knuckle-rays .48s ease-out both}
+@keyframes knuckle-flash{0%{opacity:0}9%{opacity:.86}25%{opacity:.48}100%{opacity:0}}
+@keyframes knuckle-rays{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}14%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(1.4)}}
+@media(prefers-reduced-motion:reduce){.scene-white-impact{animation:knuckle-soft .4s ease-out both}.scene-white-impact i{display:none}@keyframes knuckle-soft{0%{opacity:.18}100%{opacity:0}}}
