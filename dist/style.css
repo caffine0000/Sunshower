@@ -343,3 +343,8 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .theme-card-status{position:absolute;right:12px;bottom:12px;padding:4px 7px;border:1px solid #c0dbce30;background:#0a24316b;border-radius:3px;font:9px/1.4 'Noto Sans KR',sans-serif;color:#dde9df}.theme-card-status>span{margin-right:2px}
 .theme-namecard:disabled{opacity:.45;filter:grayscale(.75)}.theme-namecard,.theme-namecard *,.theme-namecard::before,.theme-namecard::after,.theme-namecard *::before,.theme-namecard *::after{animation:none!important;transition:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 @media(max-width:380px){.theme-namecard{padding:20px 60px 23px 16px;min-height:132px}.theme-card-copy strong{font-size:17px}.theme-card-copy .theme-card-kicker{font-size:6px;letter-spacing:1.2px}.theme-card-frame{right:13%}}
+
+.theme-card-copy .theme-card-condition{display:block;font:10px/1.6 'Noto Sans KR',sans-serif;color:#e0d5b7;margin-top:3px;margin-bottom:8px}
+.theme-card-copy .theme-card-kicker{font-size:9px;letter-spacing:.8px;line-height:1.6;overflow-wrap:anywhere}
+.theme-card-copy .theme-card-note{max-width:300px;line-height:1.8;word-break:keep-all}
+@media(max-width:380px){.theme-card-copy .theme-card-kicker{font-size:8px;letter-spacing:.4px}}
