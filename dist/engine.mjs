@@ -35,7 +35,7 @@ export function buildingStages(project){const reclaimBody="나의 형체가 다�
  {id:'profile-name',type:'identity',image:'assets/cutscene-name-8b0527f716.jpg',imageAlt:'비 내리는 지하철 안에서 눈을 감고 미소 짓는 여자아이',title:"\"내 이름은 알려줄 수 없어.\"",body:"\"우선 스스로의 이름부터 떠올려 볼래?\""},
  {id:'profile-gender',type:'gender',image:'assets/cutscene-gender-3b355062a9.jpg',imageAlt:'비 내리는 지하철 안에서 고개를 기울이며 바라보는 여자아이',title:'나는 [플레이어 이름]',body:"\"좋네. 이제부턴 [플레이어 이름]...\"\n\"혹시... '오빠'야...? '언니'야...?\"",choices:[{value:'male',label:'남성',image:'assets/choice-male-1ad21d19f5.webp',description:'소년은 나뭇가지에서 날아오르는 새를 보았다.'},{value:'female',label:'여성',image:'assets/choice-female-6a67aec181.webp',description:'소녀는 나뭇가지에 달린 열매를 보았다.'}]},
  {id:'existence-reclaim',type:'branch',image:'assets/cutscene-name-8b0527f716.jpg',imageAlt:'지하철 안에서 눈을 감고 미소 짓는 여자아이',title:'존재 탈환',body:reclaimBody,emphasis:{start:reclaimBody.indexOf("일단은 '미래'")+"일단은 '".length,length:2},choices:[{id:'ordinary',label:'평범하게 반응한다',target:'scene-6-1'},{id:'question-name',label:"어떻게 이름이 '미래'",target:'scene-6-2'}]},
- {id:'scene-6-1',type:'narrative',branchOf:'existence-reclaim',title:'6-1',body:''},
+ {id:'scene-6-1',type:'narrative',branchOf:'existence-reclaim',image:'assets/cutscene-name-8b0527f716.jpg',imageAlt:'비 내리는 지하철 안에서 눈을 감고 미소 짓는 여자아이',title:'구체화 개시',body:"\"이제 [플레이어 이름] [오빠/언니]를 더 알아보자!\"\n\n말이 끝나기 무섭게 소녀가 옆에\n앉아 나의 모자를 벗기고 있다는 걸 알았다.\n\n당황하며 뿌리쳤지만 모자에 감춰진 내가 유리창 너머로 비춰진다.",nextLabel:'나는...'},
  {id:'scene-6-2',type:'narrative',branchOf:'existence-reclaim',title:'6-2',body:''},
  ...(project.stats||[]).map(stat=>({id:'stat:'+stat.id,type:'stat',title:stat.name,body:stat.prompt||'수사관의 '+stat.name+' 정보를 설정합니다.',stat})),
  {id:'review',type:'review',title:'이 기록이 당신입니까?',body:'작성한 인적 정보를 확인해 주세요.\n확정하면 프로필 요약 화면으로 전환됩니다.'}
