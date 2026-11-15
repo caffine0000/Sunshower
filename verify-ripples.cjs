@@ -3,7 +3,7 @@ const app=fs.readFileSync('dist/app.js','utf8'),logic=app.slice(app.indexOf('fun
 let clock=0,nextId=0,reduced=false;const timers=new Map(),hits=[];
 function advance(ms){const until=clock+ms;while(true){const due=[...timers].filter(([,t])=>t.at<=until).sort((a,b)=>a[1].at-b[1].at)[0];if(!due)break;clock=due[1].at;timers.delete(due[0]);due[1].fn()}clock=until}
 const context=vm.createContext({assert,hits,window:{matchMedia:()=>({matches:reduced})},setTimeout:(fn,ms)=>{const id=++nextId;timers.set(id,{fn,at:clock+ms});return id},clearTimeout:id=>timers.delete(id)});
-vm.runInContext(logic+`\nrainImpact=e=>hits.push({x:e.clientX,y:e.clientY});`,context);
+vm.runInContext(logic+`\nrainImpact=e=>hits.push({x:e.clientX,y:e.clientY});const themeTouchImpact=e=>rainImpact(e);`,context);
 for(const value of [0,.999999]){const html=vm.runInContext(`microRipples(()=>${value})`,context),count=[...html.matchAll(/class="touch-ring touch-micro"/g)].length;assert.equal(count,value===0?2:6);for(const m of html.matchAll(/--ring-size:([0-9.]+)px/g))assert.ok(+m[1]>=10&&+m[1]<=24)}
 for(let i=0;i<100;i++){const html=vm.runInContext('microRipples()',context),count=[...html.matchAll(/touch-micro/g)].length;assert.ok(count>=2&&count<=6);for(const m of html.matchAll(/--ring-size:([0-9.]+)px/g))assert.ok(+m[1]>=10&&+m[1]<=24)}
 vm.runInContext(`beginRippleHold({button:0,pointerId:1,target:{},clientX:12,clientY:20})`,context);assert.equal(hits.length,1);advance(299);assert.equal(hits.length,1);advance(1);assert.equal(hits.length,2);
