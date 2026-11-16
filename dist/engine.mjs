@@ -8,6 +8,12 @@ export function replay(p,save){let scene=p.scenes.find(s=>s.id===p.start),score=
 export function encode(p,s){return 'GAL1.'+btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify({v:1,project:p.id,history:s.history.map(h=>({choice:h.choice}))}))));}
 export function decode(p,code){if(!code.startsWith('GAL1.')||code.length>2000000)throw Error('올바른 세이브 코드가 아니에요.');let s;try{s=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(code.slice(5)),c=>c.charCodeAt(0))))}catch{throw Error('세이브 코드를 읽을 수 없어요.')}if(s.project!==p.id)throw Error('다른 작품의 세이브 코드예요.');if(s.v!==1)throw Error('지원하지 않는 세이브 버전이에요.');replay(p,s);return s;}
 
+// Appearance defaults also migrate saves created before the shape editor existed.
+export const hairLengthLabels=['매우 짧음','짧음','약간 짧음','약간 김','김','매우 김'];
+export const bustSizeLabels=['매우 작음','작음','약간 작음','약간 큼','큼','매우 큼'];
+export function heightLabel(cm){return ['초단신','단신','평균 이하','평균 이상','장신','초장신'][cm<140?0:cm<155?1:cm<170?2:cm<185?3:cm<200?4:5]}
+export function normalizeAppearance(raw={}){if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('외형 데이터 형식을 확인해 주세요.');const defaults={hairColor:'#26243b',hairLength:2,hairGlow:false,specialHair:false,bridge:false,bridgeColor:'#b6a1e3',gradient:false,gradientColor:'#7fcfc9',eyeColor:'#8872c4',specialPupil:false,oddEye:false,oddEyeColor:'#d5aa65',pieEye:false,pieEyeColor:'#75d2c3',eyeGlow:false,height:170,bust:2},next={};for(const [key,fallback] of Object.entries(defaults)){const value=raw[key]??fallback;if(typeof fallback==='boolean'){if(typeof value!=='boolean')throw Error('외형 옵션 형식을 확인해 주세요.');next[key]=value}else if(typeof fallback==='string'){if(typeof value!=='string'||!/^#[0-9a-f]{6}$/i.test(value))throw Error('외형 색상 형식을 확인해 주세요.');next[key]=value.toLowerCase()}else{const min=key==='height'?120:0,max=key==='height'?220:5;if(!Number.isInteger(value)||value<min||value>max)throw Error('외형 설정 범위를 확인해 주세요.');next[key]=value}}return next}
+
 // Player data is independent of the five-tab interface and scene text.
 export function normalizePlayer(raw={}) {
  if(!raw||typeof raw!=='object')throw Error('플레이 데이터 형식을 확인해 주세요.');
@@ -22,7 +28,7 @@ export function normalizePlayer(raw={}) {
  const cutChoices=cut.choices??{};
  if(!cutChoices||typeof cutChoices!=='object'||Array.isArray(cutChoices)||Object.keys(cutChoices).length>300||Object.entries(cutChoices).some(([key,value])=>key.length>300||typeof value!=='string'||value.length>300))throw Error('컷씬 선택 기록 형식을 확인해 주세요.');
  const list=key=>{const a=raw[key]??[];if(!Array.isArray(a)||a.length>10000||a.some(x=>typeof x!=='string'||x.length>300))throw Error('해금 데이터 형식을 확인해 주세요.');return [...new Set(a)]};
- return {v:2,history:history.map(h=>({choice:h.choice})),build:{name:b.name,gender,stats:{...b.stats},completed:b.completed,cutscene:{scene:cut.scene,choices:{...cutChoices}}},bonds:list('bonds'),lore:list('lore'),events:list('events'),perks:list('perks')};
+ return {v:2,history:history.map(h=>({choice:h.choice})),build:{name:b.name,gender,appearance:normalizeAppearance(b.appearance),stats:{...b.stats},completed:b.completed,cutscene:{scene:cut.scene,choices:{...cutChoices}}},bonds:list('bonds'),lore:list('lore'),events:list('events'),perks:list('perks')};
 }
 export function encodePlayer(p,raw){const s=normalizePlayer(raw),bytes=new TextEncoder().encode(JSON.stringify({...s,project:p.id}));let binary='';for(const b of bytes)binary+=String.fromCharCode(b);return 'GAL2.'+btoa(binary)}
 export function decodePlayer(p,code){if(code.startsWith('GAL1.'))return normalizePlayer(decode(p,code));if(!code.startsWith('GAL2.')||code.length>2000000)throw Error('올바른 플레이 데이터 코드가 아니에요.');let raw;try{raw=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(code.slice(5)),c=>c.charCodeAt(0))))}catch{throw Error('코드를 읽을 수 없어요.')}if(raw.v!==2||raw.project!==p.id)throw Error('버전 또는 작품 ID가 일치하지 않아요.');const s=normalizePlayer(raw);replay(p,s);return s}

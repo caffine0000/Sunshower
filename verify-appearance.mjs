@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {normalizeAppearance,normalizePlayer,encodePlayer,decodePlayer,heightLabel,hairLengthLabels,bustSizeLabels} from './dist/engine.mjs';
+const project={id:'appearance-test',start:'start',scenes:[{id:'start',title:'start',choices:[]}]};
+const defaults=normalizeAppearance();assert.equal(defaults.height,170);assert.equal(hairLengthLabels.length,6);assert.equal(bustSizeLabels.length,6);
+assert.deepEqual([120,140,155,170,185,200,220].map(heightLabel),['초단신','단신','평균 이하','평균 이상','장신','초장신','초장신']);
+const appearance=normalizeAppearance({...defaults,hairColor:'#ABCDEF',hairLength:5,bridge:true,bridgeColor:'#123456',gradient:true,gradientColor:'#654321',specialHair:true,hairGlow:true,eyeColor:'#789abc',oddEye:true,oddEyeColor:'#987654',pieEye:true,pieEyeColor:'#fedcba',specialPupil:true,eyeGlow:true,height:220,bust:5});assert.equal(appearance.hairColor,'#abcdef');
+const player=normalizePlayer({build:{name:'수사관',gender:'female',completed:false,stats:{},appearance,cutscene:{scene:'customization',choices:{'existence-reclaim':'ordinary'}}}});const restored=decodePlayer(project,encodePlayer(project,player));assert.deepEqual(restored.build.appearance,appearance);
+const legacy=normalizePlayer({build:{name:'기존 세이브',gender:'male',completed:true,stats:{}}});assert.deepEqual(legacy.build.appearance,defaults);assert.equal(legacy.build.completed,true);
+for(const bad of [null,[],{height:119},{height:221},{height:170.5},{hairLength:6},{bust:-1},{bust:6},{hairColor:'red'},{eyeColor:'#xyzxyz'},{bridge:'true'},{oddEye:1}])assert.throws(()=>normalizeAppearance(bad));
+assert.equal(normalizeAppearance({height:120}).height,120);assert.equal(normalizeAppearance({bust:0,hairLength:0}).bust,0);
+console.log('PASS: appearance palette/range validation, six-level descriptors, legacy migration and complete save-code roundtrip');
