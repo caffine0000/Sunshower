@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {normalizeProfile,normalizePlayer,encodePlayer,decodePlayer} from './dist/engine.mjs';
+import {normalizeProfile,normalizePlayer,encodePlayer,decodePlayer,normalizeRace,raceDisplay,raceTypes} from './dist/engine.mjs';
 const project={id:'profile-test',start:'start',scenes:[{id:'start',title:'start',choices:[]}]};
 const portrait='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/nS8AAAAASUVORK5CYII=';
 const defaults=normalizeProfile();assert.equal(defaults.height,170);assert.equal(defaults.portrait,'');assert.equal(defaults.cardTheme,'glass');
@@ -10,3 +10,9 @@ assert.equal(normalizePlayer({build:{name:'x',stats:{},completed:false,profile}}
 for(const bad of [null,[],{height:119},{height:221},{height:170.5},{weight:19},{weight:251},{weight:NaN},{race:'x'.repeat(61)},{intro:'x'.repeat(401)},{themeColor:'red'},{cardTheme:'invalid'},{portrait:'https://example.com/a.png'},{portrait:'data:image/svg+xml;base64,PHN2Zz4='},{portrait:'data:image/png;base64,%%%='},{portrait:'data:image/png;base64,'+'A'.repeat(400000)}])assert.throws(()=>normalizeProfile(bad));
 assert.equal(normalizePlayer().build.profile.weight,60);assert.throws(()=>normalizePlayer({...player,collectibles:[1]}));
 console.log('PASS: business-card profile validation, portrait/height migration, collectible ownership and complete save-code roundtrip');
+
+assert.equal(raceTypes.length,8);assert.deepEqual(normalizeRace(),{primary:'',secondary:'',mixed:false,immortal:false,divisions:{}});
+const ancestry=normalizeRace({primary:'elf',secondary:'human',mixed:true,immortal:true,divisions:{elf:'high'}});assert.equal(raceDisplay(ancestry),'엘프 · 휴먼 / 영생종 · 혼혈');assert.equal(normalizeRace({...ancestry,mixed:false}).secondary,'');assert.equal(normalizeRace({...ancestry,secondary:'elf'}).secondary,'');assert.equal(normalizeRace({...ancestry,primary:'',secondary:'human'}).secondary,'');
+const full=normalizePlayer({...player,build:{...player.build,race:ancestry,thoughtLimit:72}});const roundtrip=decodePlayer(project,encodePlayer(project,full));assert.equal(roundtrip.build.thoughtLimit,72);assert.deepEqual(roundtrip.build.race,ancestry);assert.equal(roundtrip.build.profile.race,'엘프 · 휴먼 / 영생종 · 혼혈');assert.equal(normalizePlayer({build:{name:'old',stats:{},completed:true,profile:{race:'드워프'}}}).build.race.primary,'dwarf');assert.equal(normalizePlayer().build.thoughtLimit,0);
+for(const bad of [{primary:'dragon'},{secondary:'bad'},{mixed:'true'},{immortal:1},{divisions:[]},{primary:'elf',divisions:{elf:7}}])assert.throws(()=>normalizeRace(bad));for(const thoughtLimit of [-1,1.5,NaN,'4',1000001])assert.throws(()=>normalizePlayer({...player,build:{...player.build,thoughtLimit}}));
+console.log('PASS: race cardinality, hybrids, divisions, immortal classification, migration and thought limit roundtrip');
