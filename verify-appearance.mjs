@@ -24,3 +24,7 @@ assert.equal(IMMORTAL_THOUGHT_COST,251);let trial=normalizePlayer({build:{name:'
 console.log('PASS: immortal trial contribution, reversal, old-save migration and repeated normalization without accumulation');
 
 assert.throws(()=>normalizePlayer({...player,build:{...player.build,thoughtLimitBase:1000001}}));
+
+for(const first of raceTypes)for(const second of raceTypes){if(first.id===second.id)continue;let pair=selectRace({mixed:true},first.id);pair=selectRace(pair,second.id);if([first.id,second.id].includes('automaton')){assert.equal(pair.primary,'automaton');assert.equal(pair.secondary,first.id==='automaton'?second.id:first.id);assert.equal(normalizeRace({...pair,mixed:false}).primary,'automaton')}}
+const importedAuto=normalizeRace({primary:'elf',secondary:'automaton',mixed:true,divisions:{elf:'high',automaton:'frame'}});assert.equal(importedAuto.primary,'automaton');assert.equal(importedAuto.secondary,'elf');assert.equal(importedAuto.divisions.elf,'high');assert.equal(importedAuto.divisions.automaton,'frame');const autoSave=normalizePlayer({...player,build:{...player.build,race:importedAuto}});assert.equal(decodePlayer(project,encodePlayer(project,autoSave)).build.race.primary,'automaton');
+console.log('PASS: automaton is primary for every selection order and imported hybrid saves');

@@ -400,3 +400,5 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 @keyframes thought-label-twist{0%,70%,82%,100%{transform:none}71%{transform:skewX(-11deg) translateX(-1px)}74%{transform:skewX(8deg) translateX(1px)}77%{transform:translateY(1px)}}@keyframes thought-label-red{0%,25%,41%,79%,100%{transform:translateX(-1px);opacity:.45}26%{transform:translate(4px,1px);opacity:.85}29%{transform:translate(-3px,-1px)}35%{transform:translateX(2px)}80%{transform:translateX(-4px);opacity:.9}84%{transform:translateX(2px)}}@keyframes thought-label-ash{0%,44%,60%,100%{transform:translateX(1px);opacity:.25}45%{transform:translate(-4px,1px);opacity:.7}49%{transform:translateX(3px)}53%{transform:translateX(-2px)}}
 
 @media(prefers-reduced-motion:reduce){.thought-collapse *,.thought-label-corrupted,.thought-label-ghost{animation:none!important;transform:none!important}.thought-label-ghost{display:none}.collapse-haze{opacity:.55}.collapse-undertow,.collapse-mist{opacity:.35}}
+
+.race-replica-trait{margin-top:12px;border-color:#a8b8d15c;background:linear-gradient(140deg,#7687ae1a,#101f2d99)}.race-replica-trait>small{color:#b5c7df}
