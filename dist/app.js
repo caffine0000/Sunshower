@@ -21,7 +21,7 @@ function put(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catc
 function loadSave(){try{save=JSON.parse(localStorage.getItem('gallim.save.'+project.id))||fresh();const r=replay(project,save);save={...normalizePlayer(save),history:r.history};if(r.warning)toast(r.warning)}catch{save=normalizePlayer()}}loadSave();save=normalizePlayer(save);
 const settingsKey='sunshower.preferences.v1';
 // Theme IDs are stable save keys; unlock predicates read player progress, not preferences.
-const themeChoices=[{id:'rain',name:'수사관 사무실의 유리창',englishName:"Curtain Wall of Investigator's Room",unlockLabel:'기본 해금',note:'수사관은 내려다본다. 그 눈은 비정한 여우비와 달리 따뜻하다.',preview:'office-window',unlock:()=>true,presentation:{background:rainWeather,touch:rainImpact,transition:prismTransition}}];
+const themeChoices=[{id:'rain',name:'수사관 사무실의 유리창',englishName:"Curtain Wall of Investigator's Room",unlockLabel:'기본 해금',note:'수사관은 내려다본다. 그 눈은 비정한 여우비와 달리 따뜻하다.',preview:'office-window',unlock:()=>true,presentation:{symbolTone:'white',background:rainWeather,touch:rainImpact,transition:prismTransition}}];
 function themeUnlocked(theme){return !!theme&&theme.unlock(save,project)===true}
 function activeTheme(){return themeChoices.find(theme=>theme.id===preferences.theme&&themeUnlocked(theme))||themeChoices[0]}
 function themeTouchImpact(event){return activeTheme().presentation.touch(event)}
@@ -29,7 +29,7 @@ function themeTransition(commit){return activeTheme().presentation.transition(co
 function normalizePreferences(value){return {theme:themeChoices.some(t=>t.id===value?.theme)?value.theme:'rain',volume:typeof value?.volume==='number'&&Number.isFinite(value.volume)?Math.max(0,Math.min(100,Math.round(value.volume))):60,muted:value?.muted===true}}
 function readPreferences(){try{return normalizePreferences(JSON.parse(localStorage.getItem(settingsKey)))}catch{return normalizePreferences()}}
 let preferences=readPreferences();
-function applyPreferences(){preferences.theme=activeTheme().id;document.documentElement?.setAttribute?.('data-theme',preferences.theme);document.querySelectorAll('audio[data-bgm]').forEach(audio=>{audio.volume=preferences.volume/100;audio.muted=preferences.muted})}
+function applyPreferences(){preferences.theme=activeTheme().id;document.documentElement?.setAttribute?.('data-theme',preferences.theme);document.documentElement?.setAttribute?.('data-symbol-tone',activeTheme().presentation.symbolTone==='black'?'black':'white');document.querySelectorAll('audio[data-bgm]').forEach(audio=>{audio.volume=preferences.volume/100;audio.muted=preferences.muted})}
 function savePreferences(){put(settingsKey,preferences);applyPreferences()}
 function setBgmVolume(value){if(String(value).trim()===''||!Number.isFinite(Number(value)))return;preferences.volume=Math.max(0,Math.min(100,Math.round(Number(value))));savePreferences();const output=$('#bgmVolumeValue');if(output)output.textContent=preferences.volume+'%'}
 function settingsButton(extra=''){return `<button class="settings-toggle ${extra}" data-action="settings" aria-label="설정 열기" aria-haspopup="dialog"><span aria-hidden="true">⚙</span><span>설정</span></button>`}
