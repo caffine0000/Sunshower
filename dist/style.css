@@ -439,7 +439,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .race-choice.race-left-title{isolation:isolate;overflow:hidden;align-items:flex-start;justify-content:flex-end;flex-direction:column;text-align:left}
 .race-choice.race-left-title>strong{position:relative;z-index:1;align-self:flex-start;text-align:left}
 .race-choice.race-left-title:not(.has-art){padding:14px 13px 12px}
-.race-name-echo{position:absolute;inset:auto 8px 10px 10px;height:45px;color:#d0e4ed;opacity:.14;pointer-events:none;z-index:0}
+.race-name-echo{position:absolute;inset:auto 12px 13px 12px;height:23px;max-width:112px;color:#d0e4ed;opacity:.14;pointer-events:none;z-index:0}
 .race-name-echo svg{display:block;width:100%;height:100%;overflow:hidden}
 .race-choice.race-left-title.has-art .race-name-echo{opacity:.2}
 @media(max-width:600px){.race-choice.race-left-title{flex-direction:column;align-items:flex-start;justify-content:flex-end}.race-choice.race-left-title:not(.has-art){padding:14px 12px 11px}}
