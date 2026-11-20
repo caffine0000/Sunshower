@@ -77,3 +77,5 @@ raceArtwork는 elf / beastkin / demon / automaton의 선택 버튼 배경을 지
 천족 선택 버튼 원본: assets/race-celestial-76805f0db2.png
 
 정령 선택 버튼 원본: assets/race-spirit-8a26695569.png
+
+휴먼·드워프·천족·정령은 한글 제목과 뒤의 영문 장식을 오른쪽에 정렬한다. 나머지 네 종족은 왼쪽 정렬을 유지한다.

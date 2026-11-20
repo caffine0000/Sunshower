@@ -443,3 +443,8 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .race-name-echo svg{display:block;width:100%;height:100%;overflow:hidden}
 .race-choice.race-left-title.has-art .race-name-echo{opacity:.2}
 @media(max-width:600px){.race-choice.race-left-title{flex-direction:column;align-items:flex-start;justify-content:flex-end}.race-choice.race-left-title:not(.has-art){padding:14px 12px 11px}}
+
+/* These four race labels and their English inscriptions align to the right. */
+.race-choice.race-right-title{align-items:flex-end;text-align:right}
+.race-choice.race-right-title>strong{align-self:flex-end;text-align:right}
+.race-choice.race-right-title .race-name-echo{left:auto;right:12px;width:calc(100% - 24px)}
