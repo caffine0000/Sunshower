@@ -232,6 +232,24 @@ const defaultRaceDetails={
         "description": "한 때, 도시개발 열풍이 돌던 시절에 심어진 모든 식생을 갈아엎은 적이 있었다. 열풍이 끝나고도 5년동안 엘프들의 정신질환자 비율과 자살률이 상승했다."
       }
     ]
+  },
+  "dwarf": {
+    "description": "작디 작고 어려보이기만 하지만, 아르카디아의 표면에 적층된 기술들은 이들의 손에서 태어났다.\n작은 거인들은 오늘도 말한다.\n\n'가장 낮은 곳에서 바라본 나의 넓은 하늘을 향하여.'",
+    "emphasisLine": 3,
+    "traits": [
+      {
+        "name": "뾰족한 귀",
+        "description": "드워프의 특징 중 하나인 이 귀의 형태는 엘프와 그렇게까지 혼동되지 않는다. 엘프에 비해 길지도, 뾰족하지도 않은데다 그 이상으로 큰 차이를 보유하기 때문이다."
+      },
+      {
+        "name": "유형성숙",
+        "description": "어릴 때의 외관을 일부 간직하는 특성 자체는 인류 공통이나 드워프들은 성장을 일생에 걸쳐 하는 탓에 대개 어려보이는 외모를 가졌다. 어려보이는 것을 넘어 머리와 몸의 대비도 타 종족의 아이들보다 미숙해보인다."
+      },
+      {
+        "name": "금속 친화",
+        "description": "드워프들은 체내에 축적되는 금속의 영향을 덜 받으며, 금속의 자성이나 진동을 감지하는 것으로 추정되는 특유의 감각으로 묻힌 금속제 물품도 감지할 수 있다.\n몇몇은 기계를 만져 회로를 감으로 읽어내는 경우도 있다."
+      }
+    ]
   }
 };
 function raceDefinition(id){const details={...defaultRaceDetails[id],...project.raceDetails?.[id]};return {description:typeof details.description==='string'?details.description:'',traits:Array.isArray(details.traits)?details.traits.slice(0,id==='automaton'?4:3):[],divisions:Array.isArray(details.divisions)?details.divisions.filter(item=>item&&typeof item.id==='string'&&item.id.length>0&&item.id.length<=100&&typeof item.name==='string').slice(0,100):[]}}
