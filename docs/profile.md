@@ -79,3 +79,5 @@ raceArtwork는 elf / beastkin / demon / automaton의 선택 버튼 배경을 지
 정령 선택 버튼 원본: assets/race-spirit-8a26695569.png
 
 휴먼·드워프·천족·정령은 한글 제목과 뒤의 영문 장식을 오른쪽에 정렬한다. 나머지 네 종족은 왼쪽 정렬을 유지한다.
+
+영생종·혼혈 버튼에는 작은 기하학적 Immortal·Hybrid 장식을 표시한다. 오토마타의 레플리카 상태에서는 Replica로 변경한다. raceModifierArtwork에 원본 경로를 등록하면 버튼 왼쪽에 심볼이 표시되며 --menu-symbol-invert를 공유하여 테마에 따라 흑백 반전한다. 현재 두 심볼은 채팅 인라인으로만 전달되어 원본 파일 첨부를 기다리고 있다.
