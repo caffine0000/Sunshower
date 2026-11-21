@@ -250,6 +250,21 @@ const defaultRaceDetails={
         "description": "드워프들은 체내에 축적되는 금속의 영향을 덜 받으며, 금속의 자성이나 진동을 감지하는 것으로 추정되는 특유의 감각으로 묻힌 금속제 물품도 감지할 수 있다.\n몇몇은 기계를 만져 회로를 감으로 읽어내는 경우도 있다."
       }
     ]
+  },
+  "beastkin": {
+    "description": "수인은 동물적인 본능을 주체하지 못해 박해당하고 멸시받았었다. 이성은 과연 본능과 분리된 것일까? 합리라는 것도 어쩌면 '맞다는 느낌'이라는 걸지도 모른다.\n\n'무엇이 인간을 짐승보다 고귀하게 하는가?'",
+    "emphasisLine": 2,
+    "traitCount": 2,
+    "traits": [
+      {
+        "name": "동물적 특징",
+        "description": "고귀함이 사냥감을 잡아주진 않는다.\n수인은 인류의 지능과 짐승들의 신체적 특성을 함께\n지녔다. 그 종류는 크기만 보면 '수인'과 '비수인'으로 분류해도 괜찮을 정도다."
+      },
+      {
+        "name": "이성 둔화",
+        "description": "그 어떤 발걸음에 힘이 들지 않을까?\n모든 진화도 대가를 치른다. 짐승들의 힘을 얻고\n인류의 이성을 어느정도 반납하였다. 이 점이 옛날 수인들을 노예 신세로 몰아넣었다 주장하는 과격한 역사학자들도 있다."
+      }
+    ]
   }
 };
 function raceDefinition(id){const details={...defaultRaceDetails[id],...project.raceDetails?.[id]};return {description:typeof details.description==='string'?details.description:'',traits:Array.isArray(details.traits)?details.traits.slice(0,id==='automaton'?4:3):[],divisions:Array.isArray(details.divisions)?details.divisions.filter(item=>item&&typeof item.id==='string'&&item.id.length>0&&item.id.length<=100&&typeof item.name==='string').slice(0,100):[]}}
@@ -260,7 +275,7 @@ function raceDescriptionMarkup(id,description){
   ?`<strong>${esc(line)}</strong>`
   :esc(line)).join('\n');
 }
-function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions}=raceDefinition(id);return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?`<div class="race-trait-cards">${[0,1,2].map(index=>{const trait=traits[index];return `<article class="race-trait-card" style="--trait-order:${index}"><small>고유 특성 ${index+1}</small><h4>${esc(trait?.name||'미등록')}</h4><p>${esc(trait?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`}).join('')}</div>`:''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>숨겨진 고유 특성 4</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${save.build.race.divisions[id]===item.id}"><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}</small></button>`).join('')}</div>`:'<p>세부 분류가 아직 등록되지 않았습니다.</p>'}</section></section>`}
+function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions}=raceDefinition(id);return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?`<div class="race-trait-cards">${Array.from({length:defaultRaceDetails[id]?.traitCount??3},(_,index)=>{const trait=traits[index];return `<article class="race-trait-card" style="--trait-order:${index}"><small>고유 특성 ${index+1}</small><h4>${esc(trait?.name||'미등록')}</h4><p>${esc(trait?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`}).join('')}</div>`:''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>숨겨진 고유 특성 4</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${save.build.race.divisions[id]===item.id}"><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}</small></button>`).join('')}</div>`:'<p>세부 분류가 아직 등록되지 않았습니다.</p>'}</section></section>`}
 // Original white modifier symbols share the theme's monochrome polarity.
 const raceModifierArtwork={immortal:'assets/race-modifier-immortal.png',mixed:'assets/race-modifier-hybrid.png'};
 function raceModifierButton(id,name,english,selected){const art=raceModifierArtwork[id];return `<button type="button" data-action="race-option" data-id="${id}" aria-pressed="${selected}"><span class="race-modifier-icon" aria-hidden="true">${art?`<img src="${esc(art)}" alt="" width="64" height="64" decoding="async">`:''}</span><span class="race-modifier-label"><span class="race-modifier-echo" aria-hidden="true">${geometricGlyphs(english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><strong>${name}</strong></span></button>`}
