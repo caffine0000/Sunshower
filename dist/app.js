@@ -301,6 +301,21 @@ const defaultRaceDetails={
         "description": "이해한다는 것은 저주이기도 하다. 한 가설에 따르면 마족들은 '심공명'을 사용하지 않아도 주변 사람들의 마음에 휩쓸려 정신이 불안정해진다고 한다. 마족으로 살아가는 것은 어쩌면 그것을 버티는 것이다."
       }
     ]
+  },
+  "spirit": {
+    "description": "자연을 거대한 지성체로 여기던 관점도 존재했다.\n정령은 그런 자연에 대한 관점을 업고 신적 존재로 여겨지던 시절도, 멀리 해야할 위험한 존재로 여기던 때도 있었으나, 무지에서 해방된 지금은 인류의 일부가 되었다.\n\n'당신은 어디까지 당신의 동족으로 반기는가?'",
+    "emphasisLine": 3,
+    "traitCount": 2,
+    "traits": [
+      {
+        "name": "방출성 형질",
+        "description": "신비력에 가까운 여러 형태의 기운을 피부나 신체 끝부분에서 미세하게 방출한다. 그런 에너지가 아예 타오르는 머리나 물빛의 고리 등으로 구현되기도 한다. 그 탓에 주변 전자기기를 망가뜨리기도 하고, 추운 날에 얼어붙기도 한다."
+      },
+      {
+        "name": "신비력 친화",
+        "description": "자체적으로 신비력을 내뿜는 이들이기에, 신비술사로 각성하는 비율이 많은 종족이다. 과연 이것은 축복일까? 아니면 저주일까?"
+      }
+    ]
   }
 };
 function raceDefinition(id){const details={...defaultRaceDetails[id],...project.raceDetails?.[id]};return {description:typeof details.description==='string'?details.description:'',traits:Array.isArray(details.traits)?details.traits.slice(0,id==='automaton'?4:3):[],divisions:Array.isArray(details.divisions)?details.divisions.filter(item=>item&&typeof item.id==='string'&&item.id.length>0&&item.id.length<=100&&typeof item.name==='string').slice(0,100):[]}}
