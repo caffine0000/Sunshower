@@ -462,8 +462,8 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 
 /* The race name sits behind the introduction as a faint geometric watermark. */
 .race-introduction{position:relative;isolation:isolate;display:grid;align-items:center;min-height:80px;margin:0 0 22px}
-.race-introduction-echo{position:absolute;inset:0;display:grid;place-items:center;color:#b5cbbf;opacity:.12;pointer-events:none;z-index:-1}
-.race-introduction-echo svg{width:100%;height:100%;max-height:110px;overflow:visible}
+.race-introduction-echo{position:absolute;top:0;left:0;width:90%;height:90%;color:#b5cbbf;opacity:.12;pointer-events:none;z-index:-1}
+.race-introduction-echo svg{display:block;width:100%;height:100%;max-height:96px;overflow:visible}
 .race-description{font:13px/2 'Gowun Batang',serif;color:#b5cbbf;white-space:pre-line;margin:0;overflow-wrap:anywhere}
 .race-trait-card h4{font-size:clamp(22px,3vw,26px);line-height:1.3;overflow-wrap:anywhere}
 .race-trait-card p{white-space:pre-line}
