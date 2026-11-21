@@ -283,6 +283,24 @@ const defaultRaceDetails={
         "description": "천족의 몸은 타 종족에 비해 자가 항상성 유지와\n면역력에서 부족함을 보인다. 이 진실이 '신에게 선택받은' 이들이 적었던 이유다."
       }
     ]
+  },
+  "demon": {
+    "description": "마족들은 침묵으로도 모든 말을 할 수 있었다.\n하지만 그 침묵은 다른 이들에겐 닿지 못했고, 마족들은 이해하고 이해받을 수 있던 이들끼리 모였었다. 현재도 마족들을 타 종족의 시선으로 이해하는 건 힘겹다.\n\n'이해한다는 것은 정녕 행복으로 이어지는가?'",
+    "emphasisLine": 3,
+    "traits": [
+      {
+        "name": "뿔과 꼬리",
+        "description": "마족 특유의 뿔과 꼬리는 과거에는 신비로움의 상징으로 여겨졌었다. 기하학적인데 가끔 빛나기도 하니 그 감성은 현대에도 느낄 수 있다."
+      },
+      {
+        "name": "심공명",
+        "description": "마족들은 자신의 뿔을 매개로 다른 마족의 심리를 파악할 수 있고 전달할 수 있다. 도시 괴담으로는 다른 종족들의 심리도 파악하는 이들이 있다고 하나 확인된 바는 없다."
+      },
+      {
+        "name": "정신 취성",
+        "description": "이해한다는 것은 저주이기도 하다. 한 가설에 따르면 마족들은 '심공명'을 사용하지 않아도 주변 사람들의 마음에 휩쓸려 정신이 불안정해진다고 한다. 마족으로 살아가는 것은 어쩌면 그것을 버티는 것이다."
+      }
+    ]
   }
 };
 function raceDefinition(id){const details={...defaultRaceDetails[id],...project.raceDetails?.[id]};return {description:typeof details.description==='string'?details.description:'',traits:Array.isArray(details.traits)?details.traits.slice(0,id==='automaton'?4:3):[],divisions:Array.isArray(details.divisions)?details.divisions.filter(item=>item&&typeof item.id==='string'&&item.id.length>0&&item.id.length<=100&&typeof item.name==='string').slice(0,100):[]}}
