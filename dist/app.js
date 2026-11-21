@@ -316,6 +316,24 @@ const defaultRaceDetails={
         "description": "자체적으로 신비력을 내뿜는 이들이기에, 신비술사로 각성하는 비율이 많은 종족이다. 과연 이것은 축복일까? 아니면 저주일까?"
       }
     ]
+  },
+  "automaton": {
+    "description": "죽은 자는 절대 원래의 모습으로는 아르카디아를 밟을 수는 없다. 오토마타는 그런 의미에서 육신도 기억도 남지 않은 모습으로 눈을 뜬다. 누가 인형을 만드는 지도 모르는 이 세상에서\n\n'누가 이 잔혹한 세계를 사랑하기에 그들을 이끄나.'",
+    "emphasisLine": 2,
+    "traits": [
+      {
+        "name": "인형",
+        "description": "몸의 재질부터 생체 조직을 모방한 인형에 가깝다.\n인형의 구체 관절과 심장을 모방한 '코어'라는 조직으로 구성되어 있다. 인간으로서의 생활에는 문제가 없다."
+      },
+      {
+        "name": "탄생",
+        "description": "오토마타는 낳아져 태어나는 것 외에도 아무도 모르는 경로에서 눈을 뜨고 태어나는 경우가 있다. 어렴풋한 예전의 기억을 가지는 경우가 꽤 있어 이런 경우 '환생'으로 여겨진다."
+      },
+      {
+        "name": "비재생성",
+        "description": "생물을 불완전하게 모방하였기에 알아서 조직이 재생하지 않고, 단지 부서진 채로 타 종족보단 오래 버틸 수 있을 뿐이다. 의사가 아닌 오토마타 조형사를 찾아야 한다는 것도 골칫거리."
+      }
+    ]
   }
 };
 function raceDefinition(id){const details={...defaultRaceDetails[id],...project.raceDetails?.[id]};return {description:typeof details.description==='string'?details.description:'',traits:Array.isArray(details.traits)?details.traits.slice(0,id==='automaton'?4:3):[],divisions:Array.isArray(details.divisions)?details.divisions.filter(item=>item&&typeof item.id==='string'&&item.id.length>0&&item.id.length<=100&&typeof item.name==='string').slice(0,100):[]}}
