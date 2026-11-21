@@ -265,6 +265,24 @@ const defaultRaceDetails={
         "description": "그 어떤 발걸음에 힘이 들지 않을까?\n모든 진화도 대가를 치른다. 짐승들의 힘을 얻고\n인류의 이성을 어느정도 반납하였다. 이 점이 옛날 수인들을 노예 신세로 몰아넣었다 주장하는 과격한 역사학자들도 있다."
       }
     ]
+  },
+  "celestial": {
+    "description": "천족의 광륜과 날개는 한때, 신에게 선택받았다는 증거라고 여겨졌었고 수마저 적었던 그들은 특별한 존재로 여겨졌었다. 현대에 이르러 그것이 그저 흔한 '인류'의 특징임이 알려지자 천족은 땅으로 내려왔다.\n\n'그럼에도 찬란하게 빛나는 것은 숭고일 것이다.'",
+    "emphasisLine": 2,
+    "traits": [
+      {
+        "name": "광륜과 날개",
+        "description": "천족마다 고유한 광륜을 지녔고, 각기 다른 날개를 보유했다. 현대의 광륜은 천족의 의식 상태를 확인하는 중요한 의료 지표로 여겨지며, 각기 다른 날개의 형태와 더불어 개성으로도 작용한다."
+      },
+      {
+        "name": "하늘의 눈",
+        "description": "과거부터 천족들의 시력이 좋다는 이야기가 많이 돌았고 이는 과학적으로 증명되었다. 중첩된 구조의 특이한 안구는 더 넓은 파장의 빛을, 일부는 '신비력'의 흐름도 관찰할 수 있다고 알려졌다."
+      },
+      {
+        "name": "순수한 육신",
+        "description": "천족의 몸은 타 종족에 비해 자가 항상성 유지와\n면역력에서 부족함을 보인다. 이 진실이 '신에게 선택받은' 이들이 적었던 이유다."
+      }
+    ]
   }
 };
 function raceDefinition(id){const details={...defaultRaceDetails[id],...project.raceDetails?.[id]};return {description:typeof details.description==='string'?details.description:'',traits:Array.isArray(details.traits)?details.traits.slice(0,id==='automaton'?4:3):[],divisions:Array.isArray(details.divisions)?details.divisions.filter(item=>item&&typeof item.id==='string'&&item.id.length>0&&item.id.length<=100&&typeof item.name==='string').slice(0,100):[]}}
