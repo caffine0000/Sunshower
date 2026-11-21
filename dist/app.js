@@ -196,9 +196,53 @@ const raceArtwork={elf:'assets/race-elf-e4fd68934e.png',beastkin:'assets/race-be
 const raceEnglishNames={human:'Human',elf:'Elf',dwarf:'Dwarf',beastkin:'Anima',celestial:'Celestial',demon:'Demon',spirit:'Spirit',automaton:'Automata'};
 function raceChoice(race){const r=save.build.race,order=r.primary===race.id?1:r.secondary===race.id?2:0,selected=order>0,art=raceArtwork[race.id],english=raceEnglishNames[race.id],rightAligned=['human','dwarf','celestial','spirit'].includes(race.id);return `<button type="button" class="race-choice ${selected?'selected':''} ${art?'has-art':''} ${english?'race-left-title':''} ${rightAligned?'race-right-title':''}" data-action="race-primary" data-id="${race.id}" aria-pressed="${selected}">${art?`<span class="race-choice-art" aria-hidden="true"><img src="${esc(art)}" alt="" width="1024" height="1024" loading="lazy" decoding="async"></span>`:'<span class="race-icon-slot" aria-hidden="true"></span>'}${english?`<span class="race-name-echo" aria-hidden="true">${geometricGlyphs(english).replace('<svg ',`<svg preserveAspectRatio="${rightAligned?'xMaxYMid':'xMinYMid'}" `)}</span>`:''}<strong>${race.name}</strong><span class="race-choice-status" aria-hidden="true">${selected?(r.mixed?order:'✓'):''}</span></button>`}
 // Built-in lore remains available to players with previously saved projects.
-const defaultRaceDetails={"human":{"description":"이 연약한 종족은 어찌하여 주축이 되었는가는 수많은 학자들의 수수께끼였고, 현대의 후배들은 선배들에게 떨린 목소리로 말했다.\n'이어지길 원하면서도, 뛰어나길 바란다.'","traits":[{"name":"무형질","description":"휴먼은 인류가 공통으로 가진 모든 특성을 보유하기만 했을 뿐, 다른 종족과 차별화되는 형질이 없다.\n그러므로, 휴먼은 진정으로 본질에 앞선 존재이다."},{"name":"지능","description":"후대의 통계학자들에 의해 휴먼의 지능이 다른 종족에 비해 약간 높음이 확인되었다. 이것이 정말 형질에 의한 것인지, 아니면 휴먼 사회의 특성이 반영된 것인지는 추가 연구가 필요하다."},{"name":"구심점","description":"그 어떤 종족과도 공통점이 없는 것이 아닌 차별점이 없는 것이기에, 휴먼은 언제나 모든 종족의 가교였다.\n다른 것들과 이어지길 바라는 것이 휴먼의 형질이다."}]}};
+const defaultRaceDetails={
+  "human": {
+    "description": "이 연약한 종족은 어찌하여 주축이 되었는가는 수많은 학자들의 수수께끼였고, 현대의 후배들은 선배들에게 떨린 목소리로 말했다.\n'이어지길 원하면서도, 뛰어나길 바란다.'",
+    "traits": [
+      {
+        "name": "무형질",
+        "description": "휴먼은 인류가 공통으로 가진 모든 특성을 보유하기만 했을 뿐, 다른 종족과 차별화되는 형질이 없다.\n그러므로, 휴먼은 진정으로 본질에 앞선 존재이다."
+      },
+      {
+        "name": "지능",
+        "description": "후대의 통계학자들에 의해 휴먼의 지능이 다른 종족에 비해 약간 높음이 확인되었다. 이것이 정말 형질에 의한 것인지, 아니면 휴먼 사회의 특성이 반영된 것인지는 추가 연구가 필요하다."
+      },
+      {
+        "name": "구심점",
+        "description": "그 어떤 종족과도 공통점이 없는 것이 아닌 차별점이 없는 것이기에, 휴먼은 언제나 모든 종족의 가교였다.\n다른 것들과 이어지길 바라는 것이 휴먼의 형질이다."
+      }
+    ],
+    "emphasisLine": 0
+  },
+  "elf": {
+    "description": "아르카디아의 몸에 연결된 이 종족은 자신들이 선택받았다 믿고, 한때 다른 종족들을 배척했으나 아르카디아는 말했다.\n'모든 것이 아르카디아다.'",
+    "emphasisLine": 1,
+    "traits": [
+      {
+        "name": "뾰족한 귀",
+        "description": "엘프의 대표적인 특징인 이 귀 형태는 단지 자연 환경에서 동료의 신호를 받기 위한 자연선택이라고 여겼으나, 현대의 가설은 그것을 넘어 자연과의 연결을 구축하는 구조라고도 한다."
+      },
+      {
+        "name": "생명 감지",
+        "description": "아르카디아와 연결되었다는 것은 이 형질에서 비롯되었다. 그렇기에 엘프는 암살당하질 않았다. 그들에겐 수풀은 개활지이고 숲은 공터일 뿐이다."
+      },
+      {
+        "name": "환경 부적응",
+        "description": "한 때, 도시개발 열풍이 돌던 시절에 심어진 모든 식생을 갈아엎은 적이 있었다. 열풍이 끝나고도 5년동안 엘프들의 정신질환자 비율과 자살률이 상승했다."
+      }
+    ]
+  }
+};
 function raceDefinition(id){const details={...defaultRaceDetails[id],...project.raceDetails?.[id]};return {description:typeof details.description==='string'?details.description:'',traits:Array.isArray(details.traits)?details.traits.slice(0,id==='automaton'?4:3):[],divisions:Array.isArray(details.divisions)?details.divisions.filter(item=>item&&typeof item.id==='string'&&item.id.length>0&&item.id.length<=100&&typeof item.name==='string').slice(0,100):[]}}
-function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions}=raceDefinition(id);return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id])}</span><p class="race-description">${esc(description)}</p></div>`:''}${showTraits?`<div class="race-trait-cards">${[0,1,2].map(index=>{const trait=traits[index];return `<article class="race-trait-card" style="--trait-order:${index}"><small>고유 특성 ${index+1}</small><h4>${esc(trait?.name||'미등록')}</h4><p>${esc(trait?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`}).join('')}</div>`:''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>숨겨진 고유 특성 4</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${save.build.race.divisions[id]===item.id}"><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}</small></button>`).join('')}</div>`:'<p>세부 분류가 아직 등록되지 않았습니다.</p>'}</section></section>`}
+function raceDescriptionMarkup(id,description){
+ const entry=defaultRaceDetails[id];
+ if(description!==entry?.description)return esc(description);
+ return description.split('\n').map((line,index)=>index===entry.emphasisLine
+  ?`<strong>${esc(line)}</strong>`
+  :esc(line)).join('\n');
+}
+function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions}=raceDefinition(id);return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id])}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?`<div class="race-trait-cards">${[0,1,2].map(index=>{const trait=traits[index];return `<article class="race-trait-card" style="--trait-order:${index}"><small>고유 특성 ${index+1}</small><h4>${esc(trait?.name||'미등록')}</h4><p>${esc(trait?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`}).join('')}</div>`:''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>숨겨진 고유 특성 4</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${save.build.race.divisions[id]===item.id}"><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}</small></button>`).join('')}</div>`:'<p>세부 분류가 아직 등록되지 않았습니다.</p>'}</section></section>`}
 // Original white modifier symbols share the theme's monochrome polarity.
 const raceModifierArtwork={immortal:'assets/race-modifier-immortal.png',mixed:'assets/race-modifier-hybrid.png'};
 function raceModifierButton(id,name,english,selected){const art=raceModifierArtwork[id];return `<button type="button" data-action="race-option" data-id="${id}" aria-pressed="${selected}"><span class="race-modifier-icon" aria-hidden="true">${art?`<img src="${esc(art)}" alt="" width="64" height="64" decoding="async">`:''}</span><span class="race-modifier-label"><span class="race-modifier-echo" aria-hidden="true">${geometricGlyphs(english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><strong>${name}</strong></span></button>`}
