@@ -467,3 +467,58 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .race-description{font:13px/2 'Gowun Batang',serif;color:#b5cbbf;white-space:pre-line;margin:0;overflow-wrap:anywhere}
 .race-trait-card h4{font-size:clamp(22px,3vw,26px);line-height:1.3;overflow-wrap:anywhere}
 .race-trait-card p{white-space:pre-line}
+
+/* Acrylic Sky */
+:root{
+ --acrylic-rainbow:linear-gradient(112deg,#f8d2db,#fbe8c4 25%,#def3df 50%,#d4e9fa 75%,#e9dcf9);
+ --acrylic-art:url('assets/acrylic-sky.webp');
+}
+.acrylic-sky-world{
+ background:linear-gradient(90deg,#52406465,transparent 72%),
+  var(--acrylic-art) center center/cover no-repeat,var(--acrylic-rainbow);
+}
+.theme-namecard[data-preview="acrylic-sky"] .theme-card-city{
+ background:linear-gradient(90deg,#fff7f1f7,#fbedffdf 58%,#fbeaff35),
+  var(--acrylic-art) 68% center/cover no-repeat,var(--acrylic-rainbow);
+ opacity:1;
+}
+.theme-namecard[data-preview="acrylic-sky"] .theme-card-art{background:var(--acrylic-rainbow)}
+.theme-namecard[data-preview="acrylic-sky"] .theme-card-glass,
+.theme-namecard[data-preview="acrylic-sky"] .theme-card-frame,
+.theme-namecard[data-preview="acrylic-sky"] .theme-card-ornament{display:none}
+.theme-namecard[data-preview="acrylic-sky"]{color:#3e3048;border-color:#d6bbc9}
+.theme-namecard[data-preview="acrylic-sky"]:disabled{opacity:.82;filter:none}
+.theme-namecard[data-preview="acrylic-sky"] .theme-card-copy{text-shadow:none}
+.theme-namecard[data-preview="acrylic-sky"] :is(.theme-card-kicker,.theme-card-note,.theme-card-condition){color:#55415d}
+.theme-namecard[data-preview="acrylic-sky"] .theme-card-status{color:#4b3756;background:#fffbffec;border-color:#bb9fbb}
+:root[data-theme="acrylic-sky"]{--green:#f1d9f9;--mint:#e9cbff26;--line:#ead0ff42;--amber:#fae4b6}
+[data-theme="acrylic-sky"] .start-card{
+ color:#382a49;
+ border-radius:16px;
+ padding-inline:clamp(16px,4vw,48px);
+ background:linear-gradient(105deg,#fff8faeb,#fff5f5b8 60%,#fff2ff36);
+}
+[data-theme="acrylic-sky"] .start-card h1{text-shadow:none}
+[data-theme="acrylic-sky"] .start-card :is(h1 em,.start-description,.start-kicker,.start-import,.continue-note){color:#594665}
+[data-theme="acrylic-sky"] .start-card .title-rule{background:var(--acrylic-rainbow)}
+[data-theme="acrylic-sky"] :is(button.start-button,button.primary){
+ color:#382a49;
+ background:var(--acrylic-rainbow);
+ border-color:#e7cced;
+}
+[data-theme="acrylic-sky"] :is(.start-top,.start-bottom,.window-coordinate,.window-caption,.window-caption span){
+ color:#392a4b;
+ text-shadow:0 1px 3px #fff;
+}
+[data-theme="acrylic-sky"] .player-panel{
+ background:linear-gradient(135deg,#44304bea,#222f4ceb 54%,#44314beb);
+ border-color:#e8d7f185;
+}
+[data-theme="acrylic-sky"] :is(.settings-dialog,.navigation-dialog,.customization-dialog){
+ background:linear-gradient(135deg,#42334ff7,#222f48f7 54%,#40314cf7);
+ border-color:#e8d7f170;
+}
+[data-theme="acrylic-sky"] .customization-dialog .custom-popup-heading{background:#382f49}
+@media(max-width:600px){
+ .acrylic-sky-world{background-position:center,65% center,center}
+}
