@@ -609,6 +609,9 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 }
 
 .immortal-details{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
  display:grid;
  justify-items:center;
  gap:7px;
@@ -616,9 +619,44 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  padding:24px 16px;
  text-align:center;
  border-block:1px solid var(--line);
+ --aeon-mist:#b8cef042;
+ --aeon-spark:#f7e4bdb3;
 }
-.immortal-details h3{margin:0;font:400 22px 'Gowun Batang',serif}
-.immortal-details p{max-width:40ch;margin:0;line-height:1.8}
+.immortal-details::before{
+ content:"";
+ position:absolute;
+ z-index:-1;
+ inset:24% -12% -30%;
+ pointer-events:none;
+ background:
+  radial-gradient(circle at 27% 58%,var(--aeon-spark) 0 1px,transparent 3px),
+  radial-gradient(circle at 69% 38%,var(--aeon-spark) 0 1px,transparent 3px),
+  radial-gradient(circle at 51% 72%,var(--aeon-spark) 0 1px,transparent 3px),
+  radial-gradient(ellipse at 34% 82%,var(--aeon-mist),transparent 60%),
+  radial-gradient(ellipse at 74% 78%,var(--aeon-mist),transparent 52%);
+ animation:aeon-mist-rise 8s ease-out infinite;
+}
+@keyframes aeon-mist-rise{
+ 0%{opacity:0;transform:translateY(14%) scale(.94)}
+ 35%{opacity:.75}
+ 100%{opacity:0;transform:translateY(-31%) scale(1.14)}
+}
+.immortal-details h3{
+ position:relative;
+ isolation:isolate;
+ display:grid;
+ place-items:center;
+ width:min(100%,220px);
+ min-height:48px;
+ margin:0;
+ font:400 22px 'Gowun Batang',serif;
+}
+.immortal-title-echo{position:absolute;inset:0;z-index:-1;opacity:.24;pointer-events:none}
+.immortal-title-echo svg{display:block;width:100%;height:100%}
+.immortal-description{width:min(100%,48ch);text-align:left}
+.immortal-description p{margin:0 0 1em;line-height:1.85}
+.immortal-description p:last-child{margin-bottom:0}
+.immortal-description .immortal-quote{text-align:center;color:var(--ink)}
 .immortal-symbol{
  display:block;
  width:72px;
@@ -631,5 +669,12 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  from{opacity:0;transform:translateY(12px) scale(.88)}
  to{opacity:1;transform:translateY(0) scale(1)}
 }
-[data-theme="acrylic-sky"] .immortal-details{border-color:var(--acrylic-edge)}
-@media(prefers-reduced-motion:reduce){.immortal-appearing .immortal-symbol{animation:none}}
+[data-theme="acrylic-sky"] .immortal-details{
+ border-color:var(--acrylic-edge);
+ --aeon-mist:#a681c341;
+ --aeon-spark:#995c72a6;
+}
+@media(prefers-reduced-motion:reduce){
+ .immortal-appearing .immortal-symbol,.immortal-details::before{animation:none}
+ .immortal-details::before{opacity:.35}
+}
