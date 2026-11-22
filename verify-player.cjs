@@ -66,6 +66,10 @@ vm.runInNewContext(code+`
  toggleBeastkin('mythic-beast');
  assert.ok(investigatorCard().includes('환수인'));
  assert.ok(beastTraits().includes('<h4>혼합된 형질</h4>')&&beastTraits().includes('<h4>환수</h4>'));
+ assert.ok(!beastTraits().includes('<h4>동물적 특징</h4>'));
+ const cryptid=beastTraits().split('</article>').find(card=>card.includes('<h4>환수</h4>'));
+ assert.ok(cryptid.includes('<small>고유 특성 1</small>'));
+ assert.ok(!cryptid.includes('<small>추가 특성</small>'));
  for(const id of ['mythic-beast','chimera']){
   assert.ok(beastTraits().split('<button').some(markup=>markup.includes('data-action="race-division"')&&markup.includes(id)&&markup.includes('aria-pressed="true"')));
  }
@@ -81,6 +85,23 @@ vm.runInNewContext(code+`
  const legacyBeast=normalizePlayer({build:{...save.build,race:{primary:'beastkin',divisions:{beastkin:'mythic-beast'}}}});
  assert.equal(legacyBeast.build.race.divisions.beastkin.join(','),'mythic-beast');
  assert.equal(legacyBeast.build.profile.race,'환수인');
+ actions['race-primary']('celestial');
+ const celestialTraits=()=>$('#modalBody').innerHTML;
+ assert.ok(celestialTraits().includes('어떤 이들은 날개 없이 고요하다.'));
+ assert.ok(celestialTraits().includes('어떤 천족들은 신비한 흔적을 남겼다.'));
+ assert.ok(celestialTraits().includes('<h4>광륜과 날개</h4>'));
+ actions['race-division'](JSON.stringify(['celestial','akasha']));
+ assert.ok(investigatorCard().includes('천족(아카샤)'));
+ assert.ok(celestialTraits().includes('<h4>광륜과 권익</h4>'));
+ assert.ok(!celestialTraits().includes('<h4>광륜과 날개</h4>'));
+ actions['race-division'](JSON.stringify(['celestial','nymph']));
+ assert.ok(investigatorCard().includes('천족(님프)'));
+ assert.ok(celestialTraits().includes('<h4>요정의 날개</h4>'));
+ assert.ok(!celestialTraits().includes('<h4>광륜과 권익</h4>'));
+ const dust=celestialTraits().split('</article>').find(card=>card.includes('<h4>님프 더스트</h4>'));
+ assert.ok(dust.includes('<small>추가 특성</small>'));
+ assert.ok(dust.includes('race-trait-altered'));
+ assert.equal(decodePlayer(project,encodePlayer(project,save)).build.profile.race,'천족(님프)');
  project.raceDetails={human:{traits:[{name:'검증 특성 1',description:'1'},{name:'검증 특성 2',description:'2'},{name:'검증 특성 3',description:'3'}],divisions:[{id:'test-lineage',name:'검증 분화',description:'분화 검증'}]}};actions['race-primary']('human');assert.ok($('#modalBody').innerHTML.includes('검증 특성 3'));actions['race-division'](JSON.stringify(['human','test-lineage']));assert.equal(save.build.race.divisions.human,'test-lineage');actions['race-division'](JSON.stringify(['human','not-owned']));assert.equal(save.build.race.divisions.human,'test-lineage');
  assert.ok(!raceEditorUI().includes('>ON<'));assert.ok(!raceEditorUI().includes('>OFF<'));assert.ok(!raceEditorUI().includes('immortal-details'));actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,251);
  const raceHtml=$('#modalBody').innerHTML;

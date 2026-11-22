@@ -48,10 +48,10 @@ export const raceDivisionDetails={
    englishName:'Cryptid',
    description:'어떤 수인들은 조금 이질적이다.',
    profileName:'환수인',
-   extraTraits:[{
-    name:'환수',
-    description:"자연에서 근간의 반쪽을 찾지 못한 이들을 '환수인'이라고 부른다. 아예 그들을 기반으로 상상의 생물 '환수'들을 만들거나 '미스틱'이라는 괴물들의 형태에서 환수인의 형질을 발견하기도 한다."
-   }]
+   traitOverrides:{
+    0:{tone:'altered',name:'환수',
+     description:"자연에서 근간의 반쪽을 찾지 못한 이들을 '환수인'이라고 부른다. 아예 그들을 기반으로 상상의 생물 '환수'들을 만들거나 '미스틱'이라는 괴물들의 형태에서 환수인의 형질을 발견하기도 한다."}
+   }
   },
   {
    id:'chimera',
@@ -61,6 +61,30 @@ export const raceDivisionDetails={
    extraTraits:[{
     name:'혼합된 형질',
     description:"서로 다른 수인들의 자손으로 태어나면 확률적으로 그 형질이 불완전하게 섞인 '키메라'가 된다. 환수인 이상으로 이질적이고 신비한 이 존재들은 장애 비율이 높아 불길하고 역겨운 취급을 당했었다."
+   }]
+  }
+ ],
+ celestial:[
+  {
+   id:'akasha',
+   name:'아카샤',
+   englishName:'akasha',
+   description:'어떤 이들은 날개 없이 고요하다.',
+   traitOverrides:{
+    0:{tone:'altered',name:'광륜과 권익',description:"아카샤라는 존재는 몇몇 지역의 이형 천족으로 날개가 아닌 '권익'이라는 또 다른 광륜을 등쪽에 가진 이들이다."}
+   }
+  },
+  {
+   id:'nymph',
+   name:'님프',
+   englishName:'Nymphe',
+   description:'어떤 천족들은 신비한 흔적을 남겼다.',
+   traitOverrides:{
+    0:{tone:'altered',name:'요정의 날개',description:'광륜은 없고 곤충계 수인의 날개를 닮은 것을 지닌 이 천족들의 날개에는 위조가 불가능한 수준으로 복잡한 미세 문양을 가지고 있다. 미적으로도 기하학적으로도 흥미롭다.'}
+   },
+   extraTraits:[{
+    name:'님프 더스트',
+    description:'님프들은 피부에서 가루를 내뿜는다. 향은 없지만 특유의 감촉과 빛깔이 있고 신비술사들이라면 더스트에 신비력이 깃들기도 한다. 아름답긴 하다만 실생활에선 정밀 기기를 죄다 망가뜨려서 골머리를 앓는다.'
    }]
   }
  ],

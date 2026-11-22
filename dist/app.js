@@ -402,16 +402,7 @@ const defaultRaceDetails={
         "description": "천족의 몸은 타 종족에 비해 자가 항상성 유지와\n면역력에서 부족함을 보인다. 이 진실이 '신에게 선택받은' 이들이 적었던 이유다."
       }
     ],
-    "divisions": [
-      {
-        "id": "akasha",
-        "name": "아카샤"
-      },
-      {
-        "id": "nymph",
-        "name": "님프"
-      }
-    ]
+    "divisions": raceDivisionDetails.celestial
   },
   "demon": {
     "description": "마족들은 침묵으로도 모든 말을 할 수 있었다.\n하지만 그 침묵은 다른 이들에겐 닿지 못했고, 마족들은 이해하고 이해받을 수 있던 이들끼리 모였었다. 현재도 마족들을 타 종족의 시선으로 이해하는 건 힘겹다.\n\n'이해한다는 것은 정녕 행복으로 이어지는가?'",
