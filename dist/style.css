@@ -470,64 +470,66 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 
 /* Acrylic Sky */
 :root{
- --acrylic-rainbow:linear-gradient(112deg,#f8d2db,#fbe8c4 25%,#def3df 50%,#d4e9fa 75%,#e9dcf9);
+ --acrylic-butter:#fff0c9;
+ --acrylic-blush:#f5c5d1;
  --acrylic-art:url('assets/acrylic-sky.webp');
 }
 .acrylic-sky-world{
- background:linear-gradient(90deg,#52406465,transparent 72%),
-  var(--acrylic-art) center center/cover no-repeat,var(--acrylic-rainbow);
+ background:linear-gradient(90deg,#6f45493d,transparent 72%),
+  var(--acrylic-art) center center/cover no-repeat,var(--acrylic-butter);
 }
 .theme-namecard[data-preview="acrylic-sky"] .theme-card-city{
- background:linear-gradient(90deg,#fff7f1f7,#fbedffdf 58%,#fbeaff35),
-  var(--acrylic-art) 68% center/cover no-repeat,var(--acrylic-rainbow);
+ background:linear-gradient(90deg,#fff2d0fa,#fff2d0e8 52%,#f5c5d130 84%),
+  var(--acrylic-art) 68% center/cover no-repeat,var(--acrylic-butter);
  opacity:1;
 }
-.theme-namecard[data-preview="acrylic-sky"] .theme-card-art{background:var(--acrylic-rainbow)}
+.theme-namecard[data-preview="acrylic-sky"] .theme-card-art{background:var(--acrylic-butter)}
 .theme-namecard[data-preview="acrylic-sky"] .theme-card-glass,
 .theme-namecard[data-preview="acrylic-sky"] .theme-card-frame,
 .theme-namecard[data-preview="acrylic-sky"] .theme-card-ornament{display:none}
-.theme-namecard[data-preview="acrylic-sky"]{color:#3e3048;border-color:#d6bbc9}
+.theme-namecard[data-preview="acrylic-sky"]{color:#432a36;border-color:#d7a4b1}
 .theme-namecard[data-preview="acrylic-sky"]:disabled{opacity:.82;filter:none}
 .theme-namecard[data-preview="acrylic-sky"] .theme-card-copy{text-shadow:none}
-.theme-namecard[data-preview="acrylic-sky"] :is(.theme-card-kicker,.theme-card-note,.theme-card-condition){color:#55415d}
-.theme-namecard[data-preview="acrylic-sky"] .theme-card-status{color:#4b3756;background:#fffbffec;border-color:#bb9fbb}
-/* The same palette flows from the start screen into the game and its dialogs. */
+.theme-namecard[data-preview="acrylic-sky"] :is(.theme-card-kicker,.theme-card-note,.theme-card-condition){color:#5b3d48}
+.theme-namecard[data-preview="acrylic-sky"] .theme-card-status{color:#552f40;background:#f8d9e0;border-color:#cf9bac}
+/* Warm paper for large surfaces, blush for calls to action and selection. */
 :root[data-theme="acrylic-sky"]{
- --ink:#352540;
- --muted:#51405d;
- --green:#654c79;
- --mint:#efe4f6;
- --line:#987caa65;
- --amber:#744d43;
- --acrylic-sheet:linear-gradient(130deg,#fff0f4f5,#fff5ddf5 26%,#eaf8edf5 49%,#e8f3fff5 73%,#f3e7fff5);
- --acrylic-tile:linear-gradient(120deg,#fffafbed,#fffcf1ec 32%,#eff9f5ef 64%,#f3edffee);
- --acrylic-edge:#a287b278;
+ --ink:#402936;
+ --muted:#5d4148;
+ --green:#8a3e56;
+ --mint:#fae0e5;
+ --line:#b6738265;
+ --amber:#754b38;
+ --theme-accent:#a4516d;
+ --acrylic-sheet:linear-gradient(155deg,#fff9eafa,#fff0d0f5);
+ --acrylic-tile:#fffaf1f5;
+ --acrylic-edge:#c593a085;
 }
 [data-theme="acrylic-sky"] .start-card{
- color:#382a49;
+ color:var(--ink);
  border-radius:16px;
  padding-inline:clamp(16px,4vw,48px);
- background:linear-gradient(105deg,#fff8faeb,#fff5f5b8 60%,#fff2ff36);
+ background:linear-gradient(105deg,#fff7dff5,#fff2d4df 61%,#fff3dd40);
 }
 [data-theme="acrylic-sky"] .start-card h1{text-shadow:none}
-[data-theme="acrylic-sky"] .start-card :is(h1 em,.start-description,.start-kicker,.start-import,.continue-note){color:#594665}
-[data-theme="acrylic-sky"] .start-card .title-rule{background:var(--acrylic-rainbow)}
+[data-theme="acrylic-sky"] .start-card :is(h1 em,.start-description,.start-kicker,.start-import,.continue-note){color:var(--muted)}
+[data-theme="acrylic-sky"] .start-card .title-rule{background:#b86d83}
 [data-theme="acrylic-sky"] :is(button.start-button,button.primary){
- color:#382a49;
- background:var(--acrylic-rainbow);
- border-color:#e7cced;
+ color:var(--ink);
+ background:var(--acrylic-blush);
+ border-color:#c58298;
 }
 [data-theme="acrylic-sky"] :is(.start-top,.start-bottom,.window-coordinate,.window-caption,.window-caption span){
- color:#392a4b;
+ color:var(--ink);
  text-shadow:0 1px 3px #fff;
 }
 [data-theme="acrylic-sky"] :is(.player-panel,.player-panel.cutscene-panel,dialog){
  background:var(--acrylic-sheet);
  color:var(--ink);
  border-color:var(--acrylic-edge);
- box-shadow:0 16px 60px #6752752b;
+ box-shadow:0 16px 60px #75424e2b;
 }
-[data-theme="acrylic-sky"] dialog::backdrop{background:#65537055}
+[data-theme="acrylic-sky"] dialog::backdrop{background:#73485250}
 [data-theme="acrylic-sky"] :is(.game-header,.customization-dialog .custom-popup-heading){
  background:var(--acrylic-sheet);
  color:var(--ink);
@@ -542,24 +544,24 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  border-color:var(--acrylic-edge);
 }
 [data-theme="acrylic-sky"] :is(.drawer-nav>button.active,.drawer-nav>button:hover:not(:disabled),.custom-category:hover:not(:disabled),.custom-category.selected,.race-modifiers button[aria-pressed=true],.race-division-options button[aria-pressed=true],.choice:hover:not(:disabled)){
- background:var(--acrylic-rainbow);
+ background:var(--acrylic-blush);
  color:var(--ink);
- border-color:#a482bc;
+ border-color:#ba748c;
 }
-[data-theme="acrylic-sky"] .drawer-nav>button::before{background:var(--acrylic-rainbow)}
-[data-theme="acrylic-sky"] :is(.custom-category-mark,.custom-category-english,.custom-category.selected .custom-category-english,.race-introduction-echo,.race-modifier-label .race-modifier-echo){color:#765883}
+[data-theme="acrylic-sky"] .drawer-nav>button::before{background:var(--acrylic-blush)}
+[data-theme="acrylic-sky"] :is(.custom-category-mark,.custom-category-english,.custom-category.selected .custom-category-english,.race-introduction-echo,.race-modifier-label .race-modifier-echo){color:#8a455b}
 [data-theme="acrylic-sky"] :is(.player .field input,.player .field textarea,.player .data-code,dialog textarea){
- background:#fffaffea;
+ background:#fffaf0f2;
  color:var(--ink);
  border-color:var(--acrylic-edge);
 }
 [data-theme="acrylic-sky"] .name-entry-form .cutscene-field input{
- background:#fffaffea!important;
+ background:#fffaf0f2!important;
  color:var(--ink);
  border-bottom-color:var(--acrylic-edge);
 }
 [data-theme="acrylic-sky"] :is(.player .primary,dialog .primary,.player .primary:hover,dialog .primary:hover){
- background:var(--acrylic-rainbow);
+ background:var(--acrylic-blush);
  color:var(--ink);
  border-color:var(--acrylic-edge);
 }
