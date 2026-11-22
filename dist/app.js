@@ -35,7 +35,7 @@ const themeChoices=[{id:'rain',name:'수사관 사무실의 유리창',englishNa
  note:'꿈을 꾸는 새우.',
  preview:'acrylic-sky',
  unlock:player=>player.perks.includes('acrylic-sky'),
- presentation:{symbolTone:'white',background:acrylicSkyWeather,touch:rainImpact,transition:prismTransition}
+ presentation:{symbolTone:'black',background:acrylicSkyWeather,touch:rainImpact,transition:prismTransition}
 }];
 function themeUnlocked(theme){
  return !!theme&&(testThemesEnabled()||!theme.unlock||theme.unlock(save,project)===true);

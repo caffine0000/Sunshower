@@ -491,7 +491,18 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .theme-namecard[data-preview="acrylic-sky"] .theme-card-copy{text-shadow:none}
 .theme-namecard[data-preview="acrylic-sky"] :is(.theme-card-kicker,.theme-card-note,.theme-card-condition){color:#55415d}
 .theme-namecard[data-preview="acrylic-sky"] .theme-card-status{color:#4b3756;background:#fffbffec;border-color:#bb9fbb}
-:root[data-theme="acrylic-sky"]{--green:#f1d9f9;--mint:#e9cbff26;--line:#ead0ff42;--amber:#fae4b6}
+/* The same palette flows from the start screen into the game and its dialogs. */
+:root[data-theme="acrylic-sky"]{
+ --ink:#392b48;
+ --muted:#64546e;
+ --green:#654c79;
+ --mint:#efe4f6;
+ --line:#987caa65;
+ --amber:#744d43;
+ --acrylic-sheet:linear-gradient(130deg,#fff0f4f5,#fff5ddf5 26%,#eaf8edf5 49%,#e8f3fff5 73%,#f3e7fff5);
+ --acrylic-tile:linear-gradient(120deg,#fffafbed,#fffcf1ec 32%,#eff9f5ef 64%,#f3edffee);
+ --acrylic-edge:#a287b278;
+}
 [data-theme="acrylic-sky"] .start-card{
  color:#382a49;
  border-radius:16px;
@@ -510,15 +521,54 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  color:#392a4b;
  text-shadow:0 1px 3px #fff;
 }
-[data-theme="acrylic-sky"] .player-panel{
- background:linear-gradient(135deg,#44304bea,#222f4ceb 54%,#44314beb);
- border-color:#e8d7f185;
+[data-theme="acrylic-sky"] :is(.player-panel,.player-panel.cutscene-panel,dialog){
+ background:var(--acrylic-sheet);
+ color:var(--ink);
+ border-color:var(--acrylic-edge);
+ box-shadow:0 16px 60px #6752752b;
 }
-[data-theme="acrylic-sky"] :is(.settings-dialog,.navigation-dialog,.customization-dialog){
- background:linear-gradient(135deg,#42334ff7,#222f48f7 54%,#40314cf7);
- border-color:#e8d7f170;
+[data-theme="acrylic-sky"] dialog::backdrop{background:#65537055}
+[data-theme="acrylic-sky"] :is(.game-header,.customization-dialog .custom-popup-heading){
+ background:var(--acrylic-sheet);
+ color:var(--ink);
+ border-color:var(--acrylic-edge);
 }
-[data-theme="acrylic-sky"] .customization-dialog .custom-popup-heading{background:#382f49}
+[data-theme="acrylic-sky"] .customization-dialog .custom-popup-heading{backdrop-filter:blur(12px)}
+[data-theme="acrylic-sky"] :is(.tab-heading h1,.cutscene-body h1,.cutscene-prose .narrative-emphasis,.customization-heading h1,.navigation-dialog h2,.drawer-nav .nav-title,.drawer-nav>button.active .nav-title,.drawer-nav .nav-description,.race-trait-card h4,.thought-limit-page strong,.thought-limit-popup strong){color:var(--ink)}
+[data-theme="acrylic-sky"] :is(.tab-heading p,.cutscene-top,.cutscene-prose,.cutscene-speaker,.customization-heading .cutscene-speaker,.navigation-dialog .suitcase-subtitle,.navigation-dialog .drawer-top .eyebrow,.navigation-dialog .drawer-top button,.drawer-nav .nav-quotation,.drawer-nav .nav-arrow,.drawer-nav>button:hover .nav-arrow,.race-description,.race-trait-card p,.race-trait-card small,.race-division>p,.race-division-options small,.race-modifiers button span,.thought-limit-page span,.thought-limit-popup,dialog p,.settings-section p,.settings-section small,.info-card small,.hint){color:var(--muted)}
+[data-theme="acrylic-sky"] :is(.drawer-nav>button,.custom-category,.race-trait-card,.race-modifiers button,.race-division-options button,.player .stat-tile,.player .info-card,.player .progress-grid div,.story,.choice,.thought-limit-page,.thought-limit-popup){
+ background:var(--acrylic-tile);
+ color:var(--ink);
+ border-color:var(--acrylic-edge);
+}
+[data-theme="acrylic-sky"] :is(.drawer-nav>button.active,.drawer-nav>button:hover:not(:disabled),.custom-category:hover:not(:disabled),.custom-category.selected,.race-modifiers button[aria-pressed=true],.race-division-options button[aria-pressed=true],.choice:hover:not(:disabled)){
+ background:var(--acrylic-rainbow);
+ color:var(--ink);
+ border-color:#a482bc;
+}
+[data-theme="acrylic-sky"] .drawer-nav>button::before{background:var(--acrylic-rainbow)}
+[data-theme="acrylic-sky"] :is(.custom-category-mark,.custom-category-english,.custom-category.selected .custom-category-english,.race-introduction-echo,.race-modifier-label .race-modifier-echo){color:#765883}
+[data-theme="acrylic-sky"] :is(.player .field input,.player .field textarea,.player .data-code,dialog textarea){
+ background:#fffaffea;
+ color:var(--ink);
+ border-color:var(--acrylic-edge);
+}
+[data-theme="acrylic-sky"] .name-entry-form .cutscene-field input{
+ background:#fffaffea!important;
+ color:var(--ink);
+ border-bottom-color:var(--acrylic-edge);
+}
+[data-theme="acrylic-sky"] :is(.player .primary,dialog .primary,.player .primary:hover,dialog .primary:hover){
+ background:var(--acrylic-rainbow);
+ color:var(--ink);
+ border-color:var(--acrylic-edge);
+}
+[data-theme="acrylic-sky"] .thought-limit-page.is-overlimit,
+[data-theme="acrylic-sky"] .thought-limit-popup.is-overlimit{
+ background:linear-gradient(130deg,#ffe6ea,#fff2e4);
+ border-top-color:#ad5071;
+}
+[data-theme="acrylic-sky"] :is(.cutscene-top,.settings-toggle,.menu-toggle){background:var(--acrylic-tile)}
 @media(max-width:600px){
  .acrylic-sky-world{background-position:center,65% center,center}
 }
