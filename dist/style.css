@@ -607,3 +607,31 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 @media(max-width:600px) and (orientation:portrait){
  .acrylic-sky-world{background-position:center,82% center,center}
 }
+
+.immortal-details{
+ display:grid;
+ justify-items:center;
+ gap:7px;
+ margin:0 0 20px;
+ padding:24px 16px;
+ text-align:center;
+ border:1px solid var(--line);
+ border-radius:8px;
+ background:linear-gradient(155deg,#b0d7ce17,#0717225c);
+}
+.immortal-details h3{margin:0;font:400 22px 'Gowun Batang',serif}
+.immortal-details p{max-width:40ch;margin:0;line-height:1.8}
+.immortal-symbol{
+ display:block;
+ width:72px;
+ height:72px;
+ object-fit:contain;
+ filter:invert(var(--menu-symbol-invert,0)) drop-shadow(0 4px 12px var(--menu-symbol-shadow,#dcefeb38));
+}
+.immortal-appearing .immortal-symbol{animation:immortal-rise .55s cubic-bezier(.18,.72,.32,1) both}
+@keyframes immortal-rise{
+ from{opacity:0;transform:translateY(12px) scale(.88)}
+ to{opacity:1;transform:translateY(0) scale(1)}
+}
+[data-theme="acrylic-sky"] .immortal-details{background:var(--acrylic-tile);border-color:var(--acrylic-edge)}
+@media(prefers-reduced-motion:reduce){.immortal-appearing .immortal-symbol{animation:none}}
