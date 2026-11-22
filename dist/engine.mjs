@@ -88,6 +88,39 @@ export const raceDivisionDetails={
    }]
   }
  ],
+ demon:[
+  {
+   id:'vampire',
+   name:'뱀파이어',
+   englishName:'Vampire',
+   description:'어떤 마족들은 피에 이끌린다.',
+   extraTraits:[
+    {name:'흡혈 충동',description:'정확하게 말하자면 철분 갈망이다. 다만 어지간한 철분 수급처는 인간의 이로는 씹어먹을 수 없어 피를 찾게 된 것이다. 현재는 전용 철분 섭취제만 있으면 갈망에 시달리지 않는다.'},
+    {name:'혈감각',description:'뱀파이어들은 피... 정확히는 섭취 가능한 형태의 철분을 찾기 위해 피를 후각으로 감지할 수 있다. 다만 최근 도시화로 인한 철제 구조물 증가로 이 감각이 둔해졌다는 연구가 있다.'}
+   ]
+  },
+  {
+   id:'gargoyle',
+   name:'가고일',
+   englishName:'Gargoyle',
+   description:'어떤 마족들의 피부는 견고하다.',
+   extraTraits:[{name:'피부 경화',description:'유하지만 반결정 구조의 피부는 상상 이상으로 튼튼하여 차와 부딪혀도 생존률이 비교적 높다는 연구가 있다. 최근 가고일의 신체를 이용한 폭행을 특수 폭행으로 취급하겠다는 법 개정이 추진되고 있다.'}]
+  },
+  {
+   id:'nachzehrer',
+   name:'나흐체러',
+   englishName:'nachzehrer',
+   description:'어떤 마족은 자신을 숨길 수 없다.',
+   extraTraits:[{name:'체향',description:'나흐체러들에게는 고유한 체향이 크게 난다. 태어날 때부터 정해지는 이 향은 향기이든 악취이든 코를 찌르는 건 매한가지라 탈취제를 필요로 하게 된다.'}]
+  },
+  {
+   id:'shade',
+   name:'셰이드',
+   englishName:'Shade',
+   description:'어떤 마족은 그림자에 녹아든다.',
+   extraTraits:[{name:'분진화',description:'마치 가루로 흩어지는 이 기술은 영혼이라는 것의 존재를 말하는 것 같다. 몸은 형체를 잃어도 그것을 기억해줄 존재가 있다는 듯. 그럼에도 쌓아올리는 데에는 시간이 필요하다.'}]
+  }
+ ],
  dwarf:[{
   id:'sky',
   name:'천공',

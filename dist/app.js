@@ -426,22 +426,7 @@ const defaultRaceDetails={
       }
     ],
     "divisions": [
-      {
-        "id": "vampire",
-        "name": "뱀파이어"
-      },
-      {
-        "id": "gargoyle",
-        "name": "가고일"
-      },
-      {
-        "id": "nachzehrer",
-        "name": "나흐체러"
-      },
-      {
-        "id": "shade",
-        "name": "셰이드"
-      },
+      ...raceDivisionDetails.demon,
       {
         "id": "imp",
         "name": "임프"

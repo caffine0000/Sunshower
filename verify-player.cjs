@@ -110,6 +110,21 @@ vm.runInNewContext(code+`
  assert.ok(!celestialTraits().includes('<h4>님프 더스트</h4>'));
  assert.ok(celestialTraits().split('<button').some(markup=>markup.includes('data-action="race-division"')&&markup.includes('nymph')&&markup.includes('aria-pressed="false"')));
  assert.equal(decodePlayer(project,encodePlayer(project,save)).build.profile.race,'천족');
+ actions['race-primary']('demon');
+ const demonDivisions=[['vampire','뱀파이어',['흡혈 충동','혈감각']],['gargoyle','가고일',['피부 경화']],['nachzehrer','나흐체러',['체향']],['shade','셰이드',['분진화']]];
+ const demonExtraCards=()=>$('#modalBody').innerHTML.split('</article>').filter(card=>card.includes('race-trait-altered'));
+ for(const [id,name,traits] of demonDivisions){
+  actions['race-division'](JSON.stringify(['demon',id]));
+  assert.equal(save.build.race.divisions.demon,id);
+  assert.ok(investigatorCard().includes('마족('+name+')'));
+  assert.equal(demonExtraCards().length,traits.length);
+  assert.ok(traits.every(trait=>demonExtraCards().some(card=>card.includes('<h4>'+trait+'</h4>'))));
+  assert.equal($('#modalBody').innerHTML.split('<button').filter(card=>card.includes('data-action="race-division"')&&card.includes('aria-pressed="true"')).length,1);
+ }
+ assert.equal(decodePlayer(project,encodePlayer(project,save)).build.profile.race,'마족(셰이드)');
+ actions['race-division'](JSON.stringify(['demon','shade']));
+ assert.equal(save.build.profile.race,'마족');
+ assert.equal(demonExtraCards().length,0);
  project.raceDetails={human:{traits:[{name:'검증 특성 1',description:'1'},{name:'검증 특성 2',description:'2'},{name:'검증 특성 3',description:'3'}],divisions:[{id:'test-lineage',name:'검증 분화',description:'분화 검증'}]}};actions['race-primary']('human');assert.ok($('#modalBody').innerHTML.includes('검증 특성 3'));actions['race-division'](JSON.stringify(['human','test-lineage']));assert.equal(save.build.race.divisions.human,'test-lineage');actions['race-division'](JSON.stringify(['human','not-owned']));assert.equal(save.build.race.divisions.human,'test-lineage');
  assert.ok(!raceEditorUI().includes('>ON<'));assert.ok(!raceEditorUI().includes('>OFF<'));assert.ok(!raceEditorUI().includes('immortal-details'));actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,251);
  const raceHtml=$('#modalBody').innerHTML;
