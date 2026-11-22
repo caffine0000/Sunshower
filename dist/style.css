@@ -493,8 +493,8 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .theme-namecard[data-preview="acrylic-sky"] .theme-card-status{color:#4b3756;background:#fffbffec;border-color:#bb9fbb}
 /* The same palette flows from the start screen into the game and its dialogs. */
 :root[data-theme="acrylic-sky"]{
- --ink:#392b48;
- --muted:#64546e;
+ --ink:#352540;
+ --muted:#51405d;
  --green:#654c79;
  --mint:#efe4f6;
  --line:#987caa65;
@@ -569,6 +569,46 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  border-top-color:#ad5071;
 }
 [data-theme="acrylic-sky"] :is(.cutscene-top,.settings-toggle,.menu-toggle){background:var(--acrylic-tile)}
-@media(max-width:600px){
- .acrylic-sky-world{background-position:center,65% center,center}
+
+/* Night-theme text colors need explicit foregrounds on these light surfaces. */
+[data-theme="acrylic-sky"] :is(
+ .settings-toggle,.menu-toggle,.profile-fixed-field strong,.custom-popup-heading h2
+){color:var(--ink)}
+[data-theme="acrylic-sky"] :is(
+ .chapter,.prose,.choose-label,.choice small,.choice .arrow,.storyfooter,.progress-grid span,
+ .cutscene-buttons .quiet,.cutscene-draft,.name-entry-hint,.profile-gender,
+ .gender-options .gender-choice-description,.custom-popup-options p:not(.idcard-intro),
+ .profile-photo-tools small,.profile-color-label output,.profile-fixed-field,.profile-fixed-field small,
+ .profile-collection-reserved p,.collection-choice small,.thought-limit-archived,.nav-num
+){color:var(--muted)}
+[data-theme="acrylic-sky"] .nav-group{color:var(--muted)!important}
+[data-theme="acrylic-sky"] .race-modifiers button[aria-pressed=true] span{color:var(--ink)}
+[data-theme="acrylic-sky"] :is(.player,.customization-dialog) :is(input,textarea)::placeholder{
+ color:var(--muted);
+ opacity:1;
+}
+[data-theme="acrylic-sky"] .settings-reset-button{
+ color:#732b4b;
+ background:#fce8ef;
+ border-color:#b76f8b;
+}
+[data-theme="acrylic-sky"] .settings-reset-button:hover:not(:disabled){background:#f8dbe6}
+[data-theme="acrylic-sky"] .is-overlimit .thought-label-corrupted{color:#842c51;text-shadow:none}
+
+@media(max-width:600px) and (orientation:portrait){
+ :root[data-theme="acrylic-sky"]{--acrylic-scene-height:clamp(240px,42svh,350px)}
+ .acrylic-sky-world{background:var(--acrylic-rainbow)}
+ .acrylic-sky-world::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:var(--acrylic-scene-height);
+  background:var(--acrylic-art) 88% center/cover no-repeat;
+  mask-image:linear-gradient(#000 0 88%,transparent);
+ }
+ [data-theme="acrylic-sky"] .start-screen .start-card{
+  margin:calc(var(--acrylic-scene-height) - 52px) 0 auto;
+  padding-block:24px 20px;
+  background:var(--acrylic-sheet);
+ }
 }
