@@ -1,24 +1,24 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 (async()=>{
  const base=process.env.PAGE_URL;if(!base)throw Error('Missing Pages URL');
- const expected=fs.readFileSync('dist/index.html','utf8');
+ const expected=fs.readFileSync('live/index.html','utf8');
  const app=expected.match(/src="(app\.[a-f0-9]+\.js)"/)[1],css=expected.match(/href="(style\.[a-f0-9]+\.css)"/)[1];
- const appText=fs.readFileSync(path.join('dist',app),'utf8'),engine=appText.match(/from '\.\/(engine\.[a-f0-9]+\.mjs)'/)[1];
+ const appText=fs.readFileSync(path.join('live',app),'utf8'),engine=appText.match(/from '\.\/(engine\.[a-f0-9]+\.mjs)'/)[1];
  for(let attempt=0;attempt<10;attempt++){
   try{
-   const index=await fetch(new URL('?release='+process.env.GITHUB_SHA,base),{cache:'no-store'});assert.equal(index.status,200);const html=await index.text();assert.ok(html.includes(app)&&html.includes(css),'HTML references stale assets');
-   for(const file of [app,css,engine]){const r=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(r.status,200,file);assert.equal(await r.text(),fs.readFileSync(path.join('dist',file),'utf8'),file+' contents differ')}
-   for(const match of appText.matchAll(/icon:'(assets\/menu-[^']+\.(?:png|webp))'/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('dist',file)),file+' image differs')}
-   for(const match of fs.readFileSync(path.join('dist',engine),'utf8').matchAll(/image:'(assets\/[^']+\.(?:jpg|png|webp))'/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('dist',file)),file+' image differs')}
-   for(const match of appText.matchAll(/src="(assets\/observer-[^"]+\.webp)"/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('dist',file)),file+' image differs')}
-   for(const match of appText.matchAll(/(?:sd|standing):'(assets\/thought-assist-[^']+\.(?:png|webp))'/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('dist',file)),file+' image differs')}
-   for(const match of appText.matchAll(/(?:human|elf|dwarf|beastkin|celestial|demon|spirit|automaton):'(assets\/race-[^']+\.(?:png|jpg|webp))'/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('dist',file)),file+' image differs')}
-   for(const match of appText.matchAll(/(?:immortal|mixed):'(assets\/race-modifier-[^']+\.png)'/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('dist',file)),file+' image differs')}
+   const index=await fetch(new URL('?release='+process.env.GITHUB_SHA,base),{cache:'no-store'});assert.equal(index.status,200);const html=await index.text();assert.ok(html.includes('data-release-channel="live"'),'Published page must use live theme rules');assert.ok(html.includes(app)&&html.includes(css),'HTML references stale assets');
+   for(const file of [app,css,engine]){const r=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(r.status,200,file);assert.equal(await r.text(),fs.readFileSync(path.join('live',file),'utf8'),file+' contents differ')}
+   for(const match of appText.matchAll(/icon:'(assets\/menu-[^']+\.(?:png|webp))'/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('live',file)),file+' image differs')}
+   for(const match of fs.readFileSync(path.join('live',engine),'utf8').matchAll(/image:'(assets\/[^']+\.(?:jpg|png|webp))'/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('live',file)),file+' image differs')}
+   for(const match of appText.matchAll(/src="(assets\/observer-[^"]+\.webp)"/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('live',file)),file+' image differs')}
+   for(const match of appText.matchAll(/(?:sd|standing):'(assets\/thought-assist-[^']+\.(?:png|webp))'/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('live',file)),file+' image differs')}
+   for(const match of appText.matchAll(/(?:human|elf|dwarf|beastkin|celestial|demon|spirit|automaton):'(assets\/race-[^']+\.(?:png|jpg|webp))'/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('live',file)),file+' image differs')}
+   for(const match of appText.matchAll(/(?:immortal|mixed):'(assets\/race-modifier-[^']+\.png)'/g)){const file=match[1],response=await fetch(new URL(file,base),{cache:'no-store'});assert.equal(response.status,200,file);assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync(path.join('live',file)),file+' image differs')}
    const acrylicArt='assets/acrylic-sky.webp';
-   assert.ok(fs.readFileSync(path.join('dist',css),'utf8').includes(acrylicArt));
+   assert.ok(fs.readFileSync(path.join('live',css),'utf8').includes(acrylicArt));
    const acrylicResponse=await fetch(new URL(acrylicArt,base),{cache:'no-store'});
    assert.equal(acrylicResponse.status,200,acrylicArt);
-   assert.deepEqual(Buffer.from(await acrylicResponse.arrayBuffer()),fs.readFileSync(path.join('dist',acrylicArt)),acrylicArt+' image differs');
+   assert.deepEqual(Buffer.from(await acrylicResponse.arrayBuffer()),fs.readFileSync(path.join('live',acrylicArt)),acrylicArt+' image differs');
    assert.ok(appText.includes('runeInscription()'));assert.ok(appText.includes('Failed and Find'));assert.ok(!appText.includes('class="hidden-inscription"'));
    console.log('PASS: live HTML and versioned CSS, JS, engine match this release; geometric rune ornament is served.');return;
   }catch(e){if(attempt===9)throw e;console.log('Waiting for Pages propagation:',e.message);await new Promise(r=>setTimeout(r,5000))}
