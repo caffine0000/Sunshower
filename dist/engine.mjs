@@ -41,6 +41,29 @@ const elfDivisions=[
 ];
 export const raceDivisionDetails={
  elf:elfDivisions,
+ beastkin:[
+  {
+   id:'mythic-beast',
+   name:'환수인',
+   englishName:'Cryptid',
+   description:'어떤 수인들은 조금 이질적이다.',
+   profileName:'환수인',
+   extraTraits:[{
+    name:'환수',
+    description:"자연에서 근간의 반쪽을 찾지 못한 이들을 '환수인'이라고 부른다. 아예 그들을 기반으로 상상의 생물 '환수'들을 만들거나 '미스틱'이라는 괴물들의 형태에서 환수인의 형질을 발견하기도 한다."
+   }]
+  },
+  {
+   id:'chimera',
+   name:'키메라',
+   englishName:'Chimera',
+   description:'어떤 수인들은 여러 본질을 보유했다.',
+   extraTraits:[{
+    name:'혼합된 형질',
+    description:"서로 다른 수인들의 자손으로 태어나면 확률적으로 그 형질이 불완전하게 섞인 '키메라'가 된다. 환수인 이상으로 이질적이고 신비한 이 존재들은 장애 비율이 높아 불길하고 역겨운 취급을 당했었다."
+   }]
+  }
+ ],
  dwarf:[{
   id:'sky',
   name:'천공',
@@ -52,15 +75,42 @@ export const raceDivisionDetails={
   }]
  }]
 };
-export function normalizeRace(raw={}){if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('종족 데이터 형식을 확인해 주세요.');const r={primary:raw.primary??'',secondary:raw.secondary??'',immortal:raw.immortal??false,mixed:raw.mixed??false,divisions:{...raw.divisions}};const valid=id=>id===''||raceTypes.some(race=>race.id===id);if(!valid(r.primary)||!valid(r.secondary)||typeof r.immortal!=='boolean'||typeof r.mixed!=='boolean'||(raw.divisions!=null&&(typeof raw.divisions!=='object'||Array.isArray(raw.divisions))))throw Error('종족 선택 형식을 확인해 주세요.');if(r.secondary==='automaton'&&r.primary!=='automaton'){[r.primary,r.secondary]=[r.secondary,r.primary]}if(!r.primary||!r.mixed||r.primary===r.secondary)r.secondary='';for(const [id,value] of Object.entries(r.divisions)){if(!raceTypes.some(race=>race.id===id)||typeof value!=='string'||value.length>100)throw Error('종족 분화 형식을 확인해 주세요.');if(![r.primary,r.secondary].includes(id))delete r.divisions[id]}return r}
+export const allowsMultipleRaceDivisions=id=>id==='beastkin';
+export function selectedRaceDivisionIds(race,id){
+ const saved=race.divisions[id];
+ return Array.isArray(saved)?saved:saved?[saved]:[];
+}
+export function normalizeRace(raw={}){
+ if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('종족 데이터 형식을 확인해 주세요.');
+ const r={primary:raw.primary??'',secondary:raw.secondary??'',immortal:raw.immortal??false,mixed:raw.mixed??false,divisions:{...raw.divisions}};
+ const valid=id=>id===''||raceTypes.some(race=>race.id===id);
+ if(!valid(r.primary)||!valid(r.secondary)||typeof r.immortal!=='boolean'||typeof r.mixed!=='boolean'||(raw.divisions!=null&&(typeof raw.divisions!=='object'||Array.isArray(raw.divisions))))throw Error('종족 선택 형식을 확인해 주세요.');
+ if(r.secondary==='automaton'&&r.primary!=='automaton'){[r.primary,r.secondary]=[r.secondary,r.primary]}
+ if(!r.primary||!r.mixed||r.primary===r.secondary)r.secondary='';
+ for(const [id,saved] of Object.entries(r.divisions)){
+  const multiple=allowsMultipleRaceDivisions(id);
+  const ids=multiple&&Array.isArray(saved)?saved:[saved];
+  if(!id||!valid(id)||ids.length>100||ids.some(value=>typeof value!=='string'||value.length>100))throw Error('종족 분화 형식을 확인해 주세요.');
+  if(![r.primary,r.secondary].includes(id)){
+   delete r.divisions[id];
+  }else if(multiple){
+   const unique=[...new Set(ids.filter(Boolean))];
+   if(unique.length)r.divisions[id]=unique;
+   else delete r.divisions[id];
+  }
+ }
+ return r;
+}
 // Selection order is retained except that automaton always takes the primary slot.
 export function selectRace(raw,id){if(!raceTypes.some(race=>race.id===id))throw Error('종족을 확인해 주세요.');const r=normalizeRace(raw);if(!r.mixed)return normalizeRace({...r,primary:id,secondary:''});if(r.primary===id)return normalizeRace({...r,primary:r.secondary,secondary:''});if(r.secondary===id)return normalizeRace({...r,secondary:''});return normalizeRace(r.primary?{...r,secondary:id}:{...r,primary:id})}
 export function raceDisplay(raw){
  const r=normalizeRace(raw);
  const names=[r.primary,r.secondary].filter(Boolean).map(id=>{
   const name=raceTypes.find(race=>race.id===id).name;
-  const division=raceDivisionDetails[id]?.find(item=>item.id===r.divisions[id]);
-  return division?name+'('+division.name+')':name;
+  const selected=selectedRaceDivisionIds(r,id);
+  const divisions=raceDivisionDetails[id]?.filter(item=>selected.includes(item.id))||[];
+  if(allowsMultipleRaceDivisions(id))return divisions.find(item=>item.profileName)?.profileName||name;
+  return divisions.length?name+'('+divisions[0].name+')':name;
  });
  return names.length?names.join(' · ')+(r.immortal?' / 영생종':''):'';
 }

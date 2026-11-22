@@ -54,6 +54,33 @@ vm.runInNewContext(code+`
  assert.ok(resonance.includes('길잡이별의 위치'));
  assert.ok(investigatorCard().includes('드워프(천공)'));
  assert.equal(decodePlayer(project,encodePlayer(project,save)).build.profile.race,'드워프(천공)');
+ actions['race-primary']('beastkin');
+ const toggleBeastkin=id=>actions['race-division'](JSON.stringify(['beastkin',id]));
+ const beastTraits=()=>$('#modalBody').innerHTML;
+ assert.ok(beastTraits().includes('어떤 수인들은 조금 이질적이다.'));
+ assert.ok(beastTraits().includes('어떤 수인들은 여러 본질을 보유했다.'));
+ toggleBeastkin('chimera');
+ assert.equal(save.build.profile.race,'수인');
+ assert.ok(beastTraits().includes('<h4>혼합된 형질</h4>'));
+ assert.ok(!beastTraits().includes('<h4>환수</h4>'));
+ toggleBeastkin('mythic-beast');
+ assert.ok(investigatorCard().includes('환수인'));
+ assert.ok(beastTraits().includes('<h4>혼합된 형질</h4>')&&beastTraits().includes('<h4>환수</h4>'));
+ for(const id of ['mythic-beast','chimera']){
+  assert.ok(beastTraits().split('<button').some(markup=>markup.includes('data-action="race-division"')&&markup.includes(id)&&markup.includes('aria-pressed="true"')));
+ }
+ const beastBackup=decodePlayer(project,encodePlayer(project,save));
+ assert.equal(beastBackup.build.profile.race,'환수인');
+ assert.equal(beastBackup.build.race.divisions.beastkin.length,2);
+ toggleBeastkin('mythic-beast');
+ assert.equal(save.build.profile.race,'수인');
+ assert.ok(!beastTraits().includes('<h4>환수</h4>')&&beastTraits().includes('<h4>혼합된 형질</h4>'));
+ toggleBeastkin('chimera');
+ assert.equal(save.build.race.divisions.beastkin,undefined);
+ assert.ok(!beastTraits().includes('<h4>혼합된 형질</h4>'));
+ const legacyBeast=normalizePlayer({build:{...save.build,race:{primary:'beastkin',divisions:{beastkin:'mythic-beast'}}}});
+ assert.equal(legacyBeast.build.race.divisions.beastkin.join(','),'mythic-beast');
+ assert.equal(legacyBeast.build.profile.race,'환수인');
  project.raceDetails={human:{traits:[{name:'검증 특성 1',description:'1'},{name:'검증 특성 2',description:'2'},{name:'검증 특성 3',description:'3'}],divisions:[{id:'test-lineage',name:'검증 분화',description:'분화 검증'}]}};actions['race-primary']('human');assert.ok($('#modalBody').innerHTML.includes('검증 특성 3'));actions['race-division'](JSON.stringify(['human','test-lineage']));assert.equal(save.build.race.divisions.human,'test-lineage');actions['race-division'](JSON.stringify(['human','not-owned']));assert.equal(save.build.race.divisions.human,'test-lineage');
  assert.ok(!raceEditorUI().includes('>ON<'));assert.ok(!raceEditorUI().includes('>OFF<'));assert.ok(!raceEditorUI().includes('immortal-details'));actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,251);
  const raceHtml=$('#modalBody').innerHTML;

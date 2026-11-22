@@ -1,4 +1,4 @@
-import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,normalizeRace,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift} from './engine.mjs';
+import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,allowsMultipleRaceDivisions,selectedRaceDivisionIds,normalizeRace,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift} from './engine.mjs';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),uid=()=>crypto.randomUUID(),clone=x=>JSON.parse(JSON.stringify(x));
 const displayText=value=>esc(formatPlayerText(value,save?.build));
 const APP_VERSION='0.1.0';
@@ -129,7 +129,20 @@ const actions={
  'thought-assist'(){if(busy||screen!=='game'||playerTab!=='building'||!canReceiveThoughtGift())return;try{const candidate=grantThoughtGift(save);if(!put(playerSaveKey(),candidate))return;const dialog=$('#modal'),inPopup=dialog.open&&dialog.classList.contains('customization-dialog'),scroll=dialog.scrollTop,section=customSection;save=candidate;clearTimeout(thoughtGiftTimer);thoughtGiftPresentation={started:Date.now()};const scene=thoughtGiftPresentation;render();if(inPopup){customizationPopup(section);dialog.scrollTop=scroll;document.querySelector('.custom-popup-heading button')?.focus({preventScroll:true})}thoughtGiftTimer=setTimeout(()=>finishThoughtGiftPresentation(scene),3600)}catch(e){toast(e.message)}},
  'race-primary'(id){if(!editableRace()||!raceTypes.some(r=>r.id===id))return;commitRace(selectRace(save.build.race,id))},
  'race-option'(key){if(!editableRace()||!['immortal','mixed'].includes(key))return;commitRace({...save.build.race,[key]:!save.build.race[key]})},
- 'race-division'(encoded){if(!editableRace())return;try{const [race,id]=JSON.parse(encoded),selected=[save.build.race.primary,save.build.race.secondary];if(!selected.includes(race)||!raceDefinition(race).divisions.some(item=>item.id===id))return;commitRace({...save.build.race,divisions:{...save.build.race.divisions,[race]:id}})}catch{toast('분화 선택을 확인해 주세요.')}},
+ 'race-division'(encoded){
+  if(!editableRace())return;
+  try{
+   const [race,id]=JSON.parse(encoded);
+   const current=save.build.race;
+   if(![current.primary,current.secondary].includes(race)||!raceDefinition(race).divisions.some(item=>item.id===id))return;
+   let selection=id;
+   if(allowsMultipleRaceDivisions(race)){
+    const ids=selectedRaceDivisionIds(current,race);
+    selection=ids.includes(id)?ids.filter(value=>value!==id):[...ids,id];
+   }
+   commitRace({...current,divisions:{...current.divisions,[race]:selection}});
+  }catch{toast('분화 선택을 확인해 주세요.')}
+ },
 
  'upload-portrait'(){if(editableProfile()&&!portraitProcessing)$('#characterPortraitFile').click()},
  'clear-portrait'(){if(!editableProfile())return;portraitUploadToken++;portraitProcessing=false;try{storePortrait('');customizationPopup('profile')}catch(e){toast(e.message)}},
@@ -370,16 +383,7 @@ const defaultRaceDetails={
         "description": "그 어떤 발걸음에 힘이 들지 않을까?\n모든 진화도 대가를 치른다. 짐승들의 힘을 얻고\n인류의 이성을 어느정도 반납하였다. 이 점이 옛날 수인들을 노예 신세로 몰아넣었다 주장하는 과격한 역사학자들도 있다."
       }
     ],
-    "divisions": [
-      {
-        "id": "mythic-beast",
-        "name": "환수"
-      },
-      {
-        "id": "chimera",
-        "name": "키메라"
-      }
-    ]
+    "divisions": raceDivisionDetails.beastkin
   },
   "celestial": {
     "description": "천족의 광륜과 날개는 한때, 신에게 선택받았다는 증거라고 여겨졌었고 수마저 적었던 그들은 특별한 존재로 여겨졌었다. 현대에 이르러 그것이 그저 흔한 '인류'의 특징임이 알려지자 천족은 땅으로 내려왔다.\n\n'그럼에도 찬란하게 빛나는 것은 숭고일 것이다.'",
@@ -519,10 +523,11 @@ function raceTraitCard(trait,override,index,label=`고유 특성 ${index+1}`){
   <p>${esc(description||'특성 내용이 아직 등록되지 않았습니다.')}</p>
  </article>`;
 }
-function raceTraitsUI(id,traits,division){
+function raceTraitsUI(id,traits,divisions){
  const count=defaultRaceDetails[id]?.traitCount??3;
- const cards=Array.from({length:count},(_,index)=>raceTraitCard(traits[index],division?.traitOverrides?.[index],index));
- const extraTraits=Array.isArray(division?.extraTraits)?division.extraTraits:[];
+ const overrides=Object.assign({},...divisions.map(division=>division.traitOverrides));
+ const cards=Array.from({length:count},(_,index)=>raceTraitCard(traits[index],overrides[index],index));
+ const extraTraits=divisions.flatMap(division=>Array.isArray(division.extraTraits)?division.extraTraits:[]);
  extraTraits.forEach((trait,index)=>cards.push(raceTraitCard(trait,{tone:'altered'},count+index,'추가 특성')));
  return `<div class="race-trait-cards">${cards.join('')}</div>`;
 }
@@ -532,7 +537,7 @@ function raceDivisionTitle(item){
   :'';
  return `<strong>${echo}<span>${esc(item.name)}</span></strong>`;
 }
-function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions,divisionNote}=raceDefinition(id),selectedDivision=divisions.find(item=>item.id===save.build.race.divisions[id]);return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?raceTraitsUI(id,traits,selectedDivision):''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>숨겨진 고유 특성 4</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options" data-race-division-list="${esc(id)}">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${save.build.race.divisions[id]===item.id}">${raceDivisionTitle(item)}${item.description?`<small>${esc(item.description)}</small>`:''}</button>`).join('')}</div>`:`<p>${esc(divisionNote||'세부 분류가 아직 등록되지 않았습니다.')}</p>`}</section></section>`}
+function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions,divisionNote}=raceDefinition(id),selectedIds=selectedRaceDivisionIds(save.build.race,id),selectedDivisions=divisions.filter(item=>selectedIds.includes(item.id));return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?raceTraitsUI(id,traits,selectedDivisions):''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>숨겨진 고유 특성 4</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options" data-race-division-list="${esc(id)}">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${selectedIds.includes(item.id)}">${raceDivisionTitle(item)}${item.description?`<small>${esc(item.description)}</small>`:''}</button>`).join('')}</div>`:`<p>${esc(divisionNote||'세부 분류가 아직 등록되지 않았습니다.')}</p>`}</section></section>`}
 // Original white modifier symbols share the theme's monochrome polarity.
 const raceModifierArtwork={immortal:'assets/race-modifier-immortal.png',mixed:'assets/race-modifier-hybrid.png'};
 function raceModifierButton(id,name,english,selected){const art=raceModifierArtwork[id];return `<button type="button" data-action="race-option" data-id="${id}" aria-pressed="${selected}"><span class="race-modifier-icon" aria-hidden="true">${art?`<img src="${esc(art)}" alt="" width="64" height="64" decoding="async">`:''}</span><span class="race-modifier-label"><span class="race-modifier-echo" aria-hidden="true">${geometricGlyphs(english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><strong>${name}</strong></span></button>`}
