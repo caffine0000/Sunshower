@@ -595,20 +595,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 [data-theme="acrylic-sky"] .settings-reset-button:hover:not(:disabled){background:#f8dbe6}
 [data-theme="acrylic-sky"] .is-overlimit .thought-label-corrupted{color:#842c51;text-shadow:none}
 
+/* Keep the full-screen backdrop and crop toward the girl on narrow screens. */
 @media(max-width:600px) and (orientation:portrait){
- :root[data-theme="acrylic-sky"]{--acrylic-scene-height:clamp(240px,42svh,350px)}
- .acrylic-sky-world{background:var(--acrylic-rainbow)}
- .acrylic-sky-world::before{
-  content:"";
-  position:absolute;
-  inset:0 0 auto;
-  height:var(--acrylic-scene-height);
-  background:var(--acrylic-art) 88% center/cover no-repeat;
-  mask-image:linear-gradient(#000 0 88%,transparent);
- }
- [data-theme="acrylic-sky"] .start-screen .start-card{
-  margin:calc(var(--acrylic-scene-height) - 52px) 0 auto;
-  padding-block:24px 20px;
-  background:var(--acrylic-sheet);
- }
+ .acrylic-sky-world{background-position:center,82% center,center}
 }
