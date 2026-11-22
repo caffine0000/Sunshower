@@ -135,12 +135,16 @@ const actions={
    const [race,id]=JSON.parse(encoded);
    const current=save.build.race;
    if(![current.primary,current.secondary].includes(race)||!raceDefinition(race).divisions.some(item=>item.id===id))return;
-   let selection=id;
+   const divisions={...current.divisions};
+   const ids=selectedRaceDivisionIds(current,race);
    if(allowsMultipleRaceDivisions(race)){
-    const ids=selectedRaceDivisionIds(current,race);
-    selection=ids.includes(id)?ids.filter(value=>value!==id):[...ids,id];
+    divisions[race]=ids.includes(id)?ids.filter(value=>value!==id):[...ids,id];
+   }else if(ids.includes(id)){
+    delete divisions[race];
+   }else{
+    divisions[race]=id;
    }
-   commitRace({...current,divisions:{...current.divisions,[race]:selection}});
+   commitRace({...current,divisions});
   }catch{toast('분화 선택을 확인해 주세요.')}
  },
 
