@@ -386,7 +386,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 
 /* Intrusive thought moves as diffuse currents rather than angular fragments. */
 .thought-limit-page.is-overlimit,.thought-limit-popup.is-overlimit{background:linear-gradient(0deg,#26121eed,#131c25f5);border-top-color:#e75c7099;box-shadow:0 -8px 32px #b52b3b2b,inset 0 1px 0 #ee99a42b}.is-overlimit>strong{color:#f0b0b7;text-shadow:0 0 12px #dc496b4d}
-.thought-collapse{position:absolute;left:0;right:0;bottom:100%;height:min(300px,40vh);overflow:hidden;pointer-events:none;user-select:none;isolation:isolate;mask-image:linear-gradient(to top,#000 0%,#000c 35%,#0003 72%,transparent 100%);-webkit-mask-image:linear-gradient(to top,#000 0%,#000c 35%,#0003 72%,transparent 100%)}.thought-limit-popup .thought-collapse{height:min(210px,30vh)}
+.thought-collapse{position:fixed;left:0;right:0;bottom:0;height:min(300px,40vh);overflow:hidden;pointer-events:none;user-select:none;isolation:isolate;mask-image:linear-gradient(to top,#000 0%,#000c 35%,#0003 72%,transparent 100%);-webkit-mask-image:linear-gradient(to top,#000 0%,#000c 35%,#0003 72%,transparent 100%)}
 .collapse-haze{position:absolute;inset:0;background:radial-gradient(ellipse at 48% 115%,#ac274c6b,transparent 76%),linear-gradient(to top,#731c3d42,transparent 78%);animation:thought-mist-breathe 6.6s ease-in-out infinite}
 .collapse-undertow{position:absolute;left:-30%;bottom:-55%;width:160%;height:100%;border-radius:50%;background:radial-gradient(ellipse at 50% 50%,#c9385c69,#87244826 48%,transparent 73%);animation:thought-undertow 7.8s ease-in-out infinite}
 .collapse-mist{position:absolute;left:-20%;bottom:-22%;width:140%;height:105%;background:radial-gradient(ellipse at 26% 73%,#b2375e59,transparent 38%),radial-gradient(ellipse at 70% 85%,#7d244a4a,transparent 44%);transform-origin:50% 100%;animation:thought-mist-sway 5.8s ease-in-out infinite}
@@ -419,7 +419,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 
 .settings-reset-section p{font:11px/1.9 'Noto Sans KR',sans-serif;color:#a8b9bc;margin:0 0 16px}.settings-reset-button{width:100%;min-height:44px;text-align:center;background:#5d26352b;border:1px solid #cf7f8855;color:#e5b5b9;font:11px 'Noto Sans KR',sans-serif}.settings-reset-button:hover:not(:disabled){background:#74304444;border-color:#df9c9f88}
 
-/* One viewport-fixed helper in the browser top layer, independent of dialog blur. */
+/* The helper and collapse share one viewport layer above dialog blur. */
 .thought-helper-layer{position:fixed;inset:auto -14px calc(84px + env(safe-area-inset-bottom)) auto;display:block;width:140px;height:140px;max-width:none;max-height:none;margin:0;padding:0;border:0;overflow:visible;background:transparent;color:inherit;box-shadow:none;pointer-events:none;z-index:2147483200;isolation:isolate}.thought-helper-layer[hidden]{display:none}.thought-helper-layer::backdrop{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;pointer-events:none}.thought-helper-layer .thought-helper-peek,.thought-helper-layer .thought-gift-inline{position:absolute;inset:0;width:100%;height:100%;margin:0}.thought-helper-layer .thought-helper-peek{pointer-events:auto}.thought-helper-layer .thought-gift-inline{pointer-events:none}.thought-helper-layer .thought-helper-bubble{right:119px;bottom:59px;width:min(225px,calc(100vw - 160px))}dialog.helper-layer-fallback{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important;transform:none!important;will-change:auto!important;animation:none!important}
 @media(max-width:600px){.thought-helper-layer{right:-13px;width:116px;height:116px;bottom:calc(80px + env(safe-area-inset-bottom))}.thought-helper-layer .thought-helper-bubble{right:96px;bottom:51px}}
 
@@ -615,9 +615,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  margin:0 0 20px;
  padding:24px 16px;
  text-align:center;
- border:1px solid var(--line);
- border-radius:8px;
- background:linear-gradient(155deg,#b0d7ce17,#0717225c);
+ border-block:1px solid var(--line);
 }
 .immortal-details h3{margin:0;font:400 22px 'Gowun Batang',serif}
 .immortal-details p{max-width:40ch;margin:0;line-height:1.8}
@@ -633,5 +631,5 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  from{opacity:0;transform:translateY(12px) scale(.88)}
  to{opacity:1;transform:translateY(0) scale(1)}
 }
-[data-theme="acrylic-sky"] .immortal-details{background:var(--acrylic-tile);border-color:var(--acrylic-edge)}
+[data-theme="acrylic-sky"] .immortal-details{border-color:var(--acrylic-edge)}
 @media(prefers-reduced-motion:reduce){.immortal-appearing .immortal-symbol{animation:none}}

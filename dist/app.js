@@ -212,13 +212,62 @@ function playerUI(state){const tabs=investigatorTabs.map(tab=>[tab.id,tab.label]
 
 function cutsceneProse(stage){const raw=String(stage.body??''),mark=stage.emphasis;if(!mark||!Number.isInteger(mark.start)||!Number.isInteger(mark.length)||mark.start<0||mark.length<1||mark.start+mark.length>raw.length)return displayText(raw);return displayText(raw.slice(0,mark.start))+'<strong class="narrative-emphasis">'+displayText(raw.slice(mark.start,mark.start+mark.length))+'</strong>'+displayText(raw.slice(mark.start+mark.length))}
 const customCategories=[{id:'profile',name:'프로필',english:'Profile'},{id:'race',name:'종족',english:'Race'},{id:'identity',name:'특성',english:'Identity'},{id:'authorization',name:'권한',english:'Authorization'},{id:'privilege',name:'특수',english:'Privilege'}];
-function buildingPointsUI(location='page'){const exceeded=!save.build.completed&&save.build.thoughtLimit>thoughtLimitMaximum(save.build);return `<div class="thought-limit-${location} ${exceeded?'is-overlimit':''}" role="status" aria-label="사고 한계">${exceeded?thoughtCollapseUI():''}<span class="thought-limit-label ${exceeded?'thought-label-corrupted':''}">사고 한계${exceeded?'<span class="thought-label-ghost ghost-red" aria-hidden="true">사고 한계</span><span class="thought-label-ghost ghost-ash" aria-hidden="true">사고 한계</span>':''}</span><strong>${save.build.thoughtLimit}/${thoughtMaximumUI()}</strong></div>`}
+function buildingPointsUI(location='page'){const exceeded=isThoughtOverLimit();return `<div class="thought-limit-${location} ${exceeded?'is-overlimit':''}" role="status" aria-label="사고 한계"><span class="thought-limit-label ${exceeded?'thought-label-corrupted':''}">사고 한계${exceeded?'<span class="thought-label-ghost ghost-red" aria-hidden="true">사고 한계</span><span class="thought-label-ghost ghost-ash" aria-hidden="true">사고 한계</span>':''}</span><strong>${save.build.thoughtLimit}/${thoughtMaximumUI()}</strong></div>`}
 // The SD artwork is shared by the idle helper and the inline departure.
 const thoughtAssistAssets={sd:'assets/thought-assist-sd-c817b19264.webp'};
-function canReceiveThoughtGift(){return !save.build.completed&&!save.build.thoughtGiftReceived&&save.build.thoughtLimit>thoughtLimitMaximum(save.build)}
+function isThoughtOverLimit(){return !save.build.completed&&save.build.thoughtLimit>thoughtLimitMaximum(save.build)}
+function canReceiveThoughtGift(){return !save.build.thoughtGiftReceived&&isThoughtOverLimit()}
 function thoughtMaximumUI(){return `<span class="thought-maximum ${save.build.thoughtGiftReceived?'thought-maximum-prism':''}">${thoughtLimitMaximum(save.build)}</span>`}
-// A single movable host keeps the helper clickable above native dialog backdrops.
-function syncThoughtHelperLayer(){const wanted=screen==='game'&&playerTab==='building'&&!save.build.completed&&(canReceiveThoughtGift()||thoughtGiftPresentation);if(!wanted&&!thoughtHelperLayer)return;const dialog=$('#modal');if(!wanted){if(typeof thoughtHelperLayer.hidePopover==='function'&&thoughtHelperLayer.matches(':popover-open'))thoughtHelperLayer.hidePopover();thoughtHelperLayer.hidden=true;thoughtHelperLayer.innerHTML='';thoughtHelperMarkup='';thoughtHelperParent=null;dialog.classList.remove('helper-layer-fallback');return}if(!thoughtHelperLayer){thoughtHelperLayer=document.createElement('div');thoughtHelperLayer.id='thoughtHelperLayer';thoughtHelperLayer.className='thought-helper-layer';thoughtHelperLayer.setAttribute('popover','manual');thoughtHelperLayer.setAttribute('aria-label','미래의 도움')}const layer=thoughtHelperLayer,supports=typeof layer.showPopover==='function',parent=dialog.open?dialog:document.body,parentChanged=layer.parentNode!==parent;if(parentChanged){if(supports&&layer.matches(':popover-open'))layer.hidePopover();parent.appendChild(layer)}layer.hidden=false;const html=thoughtGiftPresentation?thoughtGiftInlineUI():thoughtHelperUI();if(html!==thoughtHelperMarkup){layer.innerHTML=html;thoughtHelperMarkup=html}if(supports){dialog.classList.remove('helper-layer-fallback');if(thoughtHelperParent!==parent&&layer.matches(':popover-open'))layer.hidePopover();if(!layer.matches(':popover-open'))layer.showPopover()}else{if(dialog.open)dialog.classList.add('helper-layer-fallback');else dialog.classList.remove('helper-layer-fallback')}thoughtHelperParent=parent}
+// One movable popover keeps the collapse and helper above the active dialog.
+function syncThoughtHelperLayer(){
+ const onBuildingScreen=screen==='game'&&playerTab==='building'&&!save.build.completed;
+ const showCollapse=onBuildingScreen&&isThoughtOverLimit();
+ const showGift=onBuildingScreen&&!!thoughtGiftPresentation;
+ const wanted=showCollapse||showGift;
+ if(!wanted&&!thoughtHelperLayer)return;
+
+ const dialog=$('#modal');
+ if(!wanted){
+  if(typeof thoughtHelperLayer.hidePopover==='function'&&thoughtHelperLayer.matches(':popover-open'))thoughtHelperLayer.hidePopover();
+  thoughtHelperLayer.hidden=true;
+  thoughtHelperLayer.innerHTML='';
+  thoughtHelperMarkup='';
+  thoughtHelperParent=null;
+  dialog.classList.remove('helper-layer-fallback');
+  return;
+ }
+ if(!thoughtHelperLayer){
+  thoughtHelperLayer=document.createElement('div');
+  thoughtHelperLayer.id='thoughtHelperLayer';
+  thoughtHelperLayer.className='thought-helper-layer';
+  thoughtHelperLayer.setAttribute('popover','manual');
+ }
+ const layer=thoughtHelperLayer;
+ const supports=typeof layer.showPopover==='function';
+ const parent=dialog.open?dialog:document.body;
+ if(layer.parentNode!==parent){
+  if(supports&&layer.matches(':popover-open'))layer.hidePopover();
+  parent.appendChild(layer);
+ }
+ layer.hidden=false;
+ const collapse=showCollapse?thoughtCollapseUI():'';
+ const helper=showGift?thoughtGiftInlineUI():canReceiveThoughtGift()?thoughtHelperUI():'';
+ const html=collapse+helper;
+ if(html!==thoughtHelperMarkup){
+  layer.innerHTML=html;
+  thoughtHelperMarkup=html;
+ }
+ if(supports){
+  dialog.classList.remove('helper-layer-fallback');
+  if(thoughtHelperParent!==parent&&layer.matches(':popover-open'))layer.hidePopover();
+  if(!layer.matches(':popover-open'))layer.showPopover();
+ }else if(dialog.open){
+  dialog.classList.add('helper-layer-fallback');
+ }else{
+  dialog.classList.remove('helper-layer-fallback');
+ }
+ thoughtHelperParent=parent;
+}
 function thoughtHelperUI(){return `<button type="button" class="thought-helper-peek" data-action="thought-assist" aria-label="미래에게 사고 한계 도움받기"><img src="${thoughtAssistAssets.sd}" alt="오른쪽에서 고개를 내민 미래" width="768" height="768" decoding="async" draggable="false"></button>`}
 function thoughtGiftInlineUI(){const scene=thoughtGiftPresentation;if(!scene||save.build.completed)return '';const elapsed=Math.min(3.6,(Date.now()-scene.started)/1000);return `<div class="thought-gift-inline" style="--gift-elapsed:-${elapsed.toFixed(3)}s"><div class="thought-spark-burst" aria-hidden="true"><i class="thought-burst-flare"></i><i class="thought-burst-ring"></i>${Array.from({length:14},(_,i)=>{const angle=i*Math.PI*2/14,radius=48+i%4*16;return `<i class="thought-burst-spark" style="--spark-x:${(Math.cos(angle)*radius).toFixed(1)}px;--spark-y:${(Math.sin(angle)*radius).toFixed(1)}px;--spark-delay:${(i%3*.035).toFixed(3)}s;--spark-size:${5+i%4*2}px"></i>`}).join('')}</div><div class="thought-helper-leaving" aria-hidden="true"><img src="${thoughtAssistAssets.sd}" alt="" width="768" height="768" draggable="false"></div><div class="thought-helper-bubble" role="status"><p>${displayText('정말이지... [오빠/언니]는 욕심쟁이구나?')}</p><small>사고 한계 최대치 +50</small></div></div>`}
 function finishThoughtGiftPresentation(scene){if(thoughtGiftPresentation!==scene)return;clearTimeout(thoughtGiftTimer);thoughtGiftTimer=null;thoughtGiftPresentation=null;syncThoughtHelperLayer()}
