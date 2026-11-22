@@ -297,7 +297,8 @@ const defaultRaceDetails={
         "description": "그 어떤 종족과도 공통점이 없는 것이 아닌 차별점이 없는 것이기에, 휴먼은 언제나 모든 종족의 가교였다.\n다른 것들과 이어지길 바라는 것이 휴먼의 형질이다."
       }
     ],
-    "emphasisLine": 1
+    "emphasisLine": 1,
+    "divisionNote": "휴먼에게는 아종이 없다. 아종이 없기에 휴먼인 것일까."
   },
   "elf": {
     "description": "아르카디아의 몸에 연결된 이 종족은 자신들이 선택받았다 믿고, 한때 다른 종족들을 배척했으나 아르카디아는 말했다.\n'모든 것이 아르카디아다.'",
@@ -314,6 +315,16 @@ const defaultRaceDetails={
       {
         "name": "환경 부적응",
         "description": "한 때, 도시개발 열풍이 돌던 시절에 심어진 모든 식생을 갈아엎은 적이 있었다. 열풍이 끝나고도 5년동안 엘프들의 정신질환자 비율과 자살률이 상승했다."
+      }
+    ],
+    "divisions": [
+      {
+        "id": "modern",
+        "name": "모던"
+      },
+      {
+        "id": "snowfield",
+        "name": "설원"
       }
     ]
   },
@@ -333,6 +344,12 @@ const defaultRaceDetails={
         "name": "금속 친화",
         "description": "드워프들은 체내에 축적되는 금속의 영향을 덜 받으며, 금속의 자성이나 진동을 감지하는 것으로 추정되는 특유의 감각으로 묻힌 금속제 물품도 감지할 수 있다.\n몇몇은 기계를 만져 회로를 감으로 읽어내는 경우도 있다."
       }
+    ],
+    "divisions": [
+      {
+        "id": "sky",
+        "name": "천공"
+      }
     ]
   },
   "beastkin": {
@@ -347,6 +364,16 @@ const defaultRaceDetails={
       {
         "name": "이성 둔화",
         "description": "그 어떤 발걸음에 힘이 들지 않을까?\n모든 진화도 대가를 치른다. 짐승들의 힘을 얻고\n인류의 이성을 어느정도 반납하였다. 이 점이 옛날 수인들을 노예 신세로 몰아넣었다 주장하는 과격한 역사학자들도 있다."
+      }
+    ],
+    "divisions": [
+      {
+        "id": "mythic-beast",
+        "name": "환수"
+      },
+      {
+        "id": "chimera",
+        "name": "키메라"
       }
     ]
   },
@@ -366,6 +393,16 @@ const defaultRaceDetails={
         "name": "순수한 육신",
         "description": "천족의 몸은 타 종족에 비해 자가 항상성 유지와\n면역력에서 부족함을 보인다. 이 진실이 '신에게 선택받은' 이들이 적었던 이유다."
       }
+    ],
+    "divisions": [
+      {
+        "id": "akasha",
+        "name": "아카샤"
+      },
+      {
+        "id": "nymph",
+        "name": "님프"
+      }
     ]
   },
   "demon": {
@@ -384,6 +421,40 @@ const defaultRaceDetails={
         "name": "정신 취성",
         "description": "이해한다는 것은 저주이기도 하다. 한 가설에 따르면 마족들은 '심공명'을 사용하지 않아도 주변 사람들의 마음에 휩쓸려 정신이 불안정해진다고 한다. 마족으로 살아가는 것은 어쩌면 그것을 버티는 것이다."
       }
+    ],
+    "divisions": [
+      {
+        "id": "vampire",
+        "name": "뱀파이어"
+      },
+      {
+        "id": "gargoyle",
+        "name": "가고일"
+      },
+      {
+        "id": "nachzehrer",
+        "name": "나흐체러"
+      },
+      {
+        "id": "shade",
+        "name": "셰이드"
+      },
+      {
+        "id": "imp",
+        "name": "임프"
+      },
+      {
+        "id": "oni",
+        "name": "오니"
+      },
+      {
+        "id": "succubus",
+        "name": "서큐버스"
+      },
+      {
+        "id": "dokkaebi",
+        "name": "도깨비"
+      }
     ]
   },
   "spirit": {
@@ -398,6 +469,12 @@ const defaultRaceDetails={
       {
         "name": "신비력 친화",
         "description": "자체적으로 신비력을 내뿜는 이들이기에, 신비술사로 각성하는 비율이 많은 종족이다. 과연 이것은 축복일까? 아니면 저주일까?"
+      }
+    ],
+    "divisions": [
+      {
+        "id": "modern",
+        "name": "모던"
       }
     ]
   },
@@ -417,10 +494,11 @@ const defaultRaceDetails={
         "name": "비재생성",
         "description": "생물을 불완전하게 모방하였기에 알아서 조직이 재생하지 않고, 단지 부서진 채로 타 종족보단 오래 버틸 수 있을 뿐이다. 의사가 아닌 오토마타 조형사를 찾아야 한다는 것도 골칫거리."
       }
-    ]
+    ],
+    "divisionNote": "오토마타는 유의미한 아종을 가지지 않는다. 현재는 그렇게 알려졌다."
   }
 };
-function raceDefinition(id){const details={...defaultRaceDetails[id],...project.raceDetails?.[id]};return {description:typeof details.description==='string'?details.description:'',traits:Array.isArray(details.traits)?details.traits.slice(0,id==='automaton'?4:3):[],divisions:Array.isArray(details.divisions)?details.divisions.filter(item=>item&&typeof item.id==='string'&&item.id.length>0&&item.id.length<=100&&typeof item.name==='string').slice(0,100):[]}}
+function raceDefinition(id){const details={...defaultRaceDetails[id],...project.raceDetails?.[id]};return {description:typeof details.description==='string'?details.description:'',divisionNote:typeof details.divisionNote==='string'?details.divisionNote:'',traits:Array.isArray(details.traits)?details.traits.slice(0,id==='automaton'?4:3):[],divisions:Array.isArray(details.divisions)?details.divisions.filter(item=>item&&typeof item.id==='string'&&item.id.length>0&&item.id.length<=100&&typeof item.name==='string').slice(0,100):[]}}
 function raceDescriptionMarkup(id,description){
  const entry=defaultRaceDetails[id];
  if(description!==entry?.description)return esc(description);
@@ -428,7 +506,7 @@ function raceDescriptionMarkup(id,description){
   ?`<strong>${esc(line)}</strong>`
   :esc(line)).join('\n');
 }
-function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions}=raceDefinition(id);return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?`<div class="race-trait-cards">${Array.from({length:defaultRaceDetails[id]?.traitCount??3},(_,index)=>{const trait=traits[index];return `<article class="race-trait-card" style="--trait-order:${index}"><small>고유 특성 ${index+1}</small><h4>${esc(trait?.name||'미등록')}</h4><p>${esc(trait?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`}).join('')}</div>`:''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>숨겨진 고유 특성 4</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${save.build.race.divisions[id]===item.id}"><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}</small></button>`).join('')}</div>`:'<p>세부 분류가 아직 등록되지 않았습니다.</p>'}</section></section>`}
+function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions,divisionNote}=raceDefinition(id);return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?`<div class="race-trait-cards">${Array.from({length:defaultRaceDetails[id]?.traitCount??3},(_,index)=>{const trait=traits[index];return `<article class="race-trait-card" style="--trait-order:${index}"><small>고유 특성 ${index+1}</small><h4>${esc(trait?.name||'미등록')}</h4><p>${esc(trait?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`}).join('')}</div>`:''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>숨겨진 고유 특성 4</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${save.build.race.divisions[id]===item.id}"><strong>${esc(item.name)}</strong>${item.description?`<small>${esc(item.description)}</small>`:''}</button>`).join('')}</div>`:`<p>${esc(divisionNote||'세부 분류가 아직 등록되지 않았습니다.')}</p>`}</section></section>`}
 // Original white modifier symbols share the theme's monochrome polarity.
 const raceModifierArtwork={immortal:'assets/race-modifier-immortal.png',mixed:'assets/race-modifier-hybrid.png'};
 function raceModifierButton(id,name,english,selected){const art=raceModifierArtwork[id];return `<button type="button" data-action="race-option" data-id="${id}" aria-pressed="${selected}"><span class="race-modifier-icon" aria-hidden="true">${art?`<img src="${esc(art)}" alt="" width="64" height="64" decoding="async">`:''}</span><span class="race-modifier-label"><span class="race-modifier-echo" aria-hidden="true">${geometricGlyphs(english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><strong>${name}</strong></span></button>`}
