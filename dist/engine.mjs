@@ -17,10 +17,40 @@ export const THOUGHT_LIMIT_GIFT_BONUS=50;
 export function thoughtLimitMaximum(build){return THOUGHT_LIMIT_DEFAULT_MAX+(build?.thoughtGiftReceived===true?THOUGHT_LIMIT_GIFT_BONUS:0)}
 export const IMMORTAL_THOUGHT_COST=251;
 export const raceTypes=[{id:'human',name:'휴먼'},{id:'elf',name:'엘프'},{id:'dwarf',name:'드워프'},{id:'beastkin',name:'수인'},{id:'celestial',name:'천족'},{id:'demon',name:'마족'},{id:'spirit',name:'정령'},{id:'automaton',name:'오토마타'}];
+export const elfDivisions=[
+ {
+  id:'modern',
+  name:'모던',
+  englishName:'Modern',
+  description:'어떤 엘프들은 돌벽에, 아스팔트에 적응했다.',
+  traitOverrides:{
+   1:{tone:'altered',name:'제육감',description:"모던 엘프들은 특유의 생명 감지는 약화되었지만 미약하게나마 시선 밖의 모든 것을 감지할 수 있다. 어디까지나 '미약한'이기에 감지 그 이상은 힘들다."},
+   2:{tone:'faded',description:'인간은 적응하기 마련이기에 엘프들 중에도, 그런 환경에서 끝없이 살아가며 그 후손들은 점차 자유로워져갔다.'}
+  }
+ },
+ {
+  id:'snowfield',
+  name:'설원',
+  englishName:'Frost',
+  description:'어떤 엘프들은 생명 없는 곳에서 살아갔다.',
+  traitOverrides:{
+   1:{tone:'faded',description:'생명 없는 곳으로 이민간 엘프들의 후손은 점차 식생을 감지하는 힘이 약해져갔다. 사냥을 하는데 필요한 정도까지 약해진 이 감각은 움직이지 않는 것의 위치는 도저히 알 수 없다.'},
+   2:{tone:'altered',name:'저온 적응',description:'생명이라면 기피할 땅에서 살아온 이 엘프들은 냉동고에서 하루를 머물러도 멀쩡하다. 오히려 저온을 선호하여 여름이 되면 설원 엘프들의 냉방비 지출이 폭발적으로 늘어난다.'}
+  }
+ }
+];
 export function normalizeRace(raw={}){if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('종족 데이터 형식을 확인해 주세요.');const r={primary:raw.primary??'',secondary:raw.secondary??'',immortal:raw.immortal??false,mixed:raw.mixed??false,divisions:{...raw.divisions}};const valid=id=>id===''||raceTypes.some(race=>race.id===id);if(!valid(r.primary)||!valid(r.secondary)||typeof r.immortal!=='boolean'||typeof r.mixed!=='boolean'||(raw.divisions!=null&&(typeof raw.divisions!=='object'||Array.isArray(raw.divisions))))throw Error('종족 선택 형식을 확인해 주세요.');if(r.secondary==='automaton'&&r.primary!=='automaton'){[r.primary,r.secondary]=[r.secondary,r.primary]}if(!r.primary||!r.mixed||r.primary===r.secondary)r.secondary='';for(const [id,value] of Object.entries(r.divisions)){if(!raceTypes.some(race=>race.id===id)||typeof value!=='string'||value.length>100)throw Error('종족 분화 형식을 확인해 주세요.');if(![r.primary,r.secondary].includes(id))delete r.divisions[id]}return r}
 // Selection order is retained except that automaton always takes the primary slot.
 export function selectRace(raw,id){if(!raceTypes.some(race=>race.id===id))throw Error('종족을 확인해 주세요.');const r=normalizeRace(raw);if(!r.mixed)return normalizeRace({...r,primary:id,secondary:''});if(r.primary===id)return normalizeRace({...r,primary:r.secondary,secondary:''});if(r.secondary===id)return normalizeRace({...r,secondary:''});return normalizeRace(r.primary?{...r,secondary:id}:{...r,primary:id})}
-export function raceDisplay(raw){const r=normalizeRace(raw),names=[r.primary,r.secondary].filter(Boolean).map(id=>raceTypes.find(race=>race.id===id).name),tags=[r.immortal?'영생종':''].filter(Boolean);return names.length?names.join(' · ')+(tags.length?' / '+tags.join(' · '):''):''}
+export function raceDisplay(raw){
+ const r=normalizeRace(raw);
+ const names=[r.primary,r.secondary].filter(Boolean).map(id=>{
+  const name=raceTypes.find(race=>race.id===id).name;
+  const division=id==='elf'?elfDivisions.find(item=>item.id===r.divisions[id]):null;
+  return division?name+'('+division.name+')':name;
+ });
+ return names.length?names.join(' · ')+(r.immortal?' / 영생종':''):'';
+}
 
 // Player data is independent of the five-tab interface and scene text.
 export function normalizePlayer(raw={}) {
@@ -67,3 +97,4 @@ export function chooseBuildingGender(project,build,value){const current=building
 export function formatPlayerText(value,build){const replacements={'[플레이어 이름]':build?.name||'이름 미설정','[오빠/언니]':build?.gender==='male'?'오빠':build?.gender==='female'?'언니':'오빠/언니'};return String(value??'').replace(/\[플레이어 이름\]|\[오빠\/언니\]/g,token=>replacements[token])}
 
 export function chooseBuildingBranch(project,build,id){const current=buildingPosition(project,build);if(build.completed||current.stage.type!=='branch')throw Error('선택지를 고르는 장면이 아닙니다.');const choice=current.stage.choices.find(option=>option.id===id);if(!choice||!buildingStages(project).some(stage=>stage.id===choice.target))throw Error('올바른 선택이 아닙니다.');const next=normalizePlayer({build}).build;next.cutscene.choices[current.stage.id]=choice.id;next.cutscene.scene=choice.target;return next}
+

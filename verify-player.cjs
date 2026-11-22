@@ -26,6 +26,20 @@ vm.runInNewContext(code+`
  }
  function testRaceEditor(){
  actions['custom-section']('race');assert.equal(($('#modalBody').innerHTML.match(/data-action="race-primary"/g)||[]).length,8);actions['race-primary']('human');assert.equal(save.build.race.primary,'human');assert.equal(($('#modalBody').innerHTML.match(/class="race-trait-card"/g)||[]).length,3);assert.ok($('#modalBody').innerHTML.includes('분화: 휴먼'));actions['race-primary']('elf');assert.equal(save.build.race.primary,'elf');actions['race-primary']('bad');assert.equal(save.build.race.primary,'elf');
+ const selectElfDivision=id=>actions['race-division'](JSON.stringify(['elf',id]));
+ const elfTrait=title=>$('#modalBody').innerHTML.split('</article>').find(card=>card.includes('<h4>'+title+'</h4>'));
+ assert.ok($('#modalBody').innerHTML.includes('어떤 엘프들은 돌벽에, 아스팔트에 적응했다.'));
+ assert.ok($('#modalBody').innerHTML.includes('어떤 엘프들은 생명 없는 곳에서 살아갔다.'));
+ selectElfDivision('modern');
+ assert.ok(investigatorCard().includes('엘프(모던)'));
+ assert.ok(elfTrait('제육감').includes('race-trait-altered'));
+ assert.ok(elfTrait('환경 부적응').includes('race-trait-faded'));
+ selectElfDivision('snowfield');
+ assert.ok(investigatorCard().includes('엘프(설원)'));
+ assert.ok(elfTrait('생명 감지').includes('race-trait-faded'));
+ assert.ok(elfTrait('저온 적응').includes('race-trait-altered'));
+ assert.ok(!$('#modalBody').innerHTML.includes('제육감'));
+ assert.equal(decodePlayer(project,encodePlayer(project,save)).build.profile.race,'엘프(설원)');
  project.raceDetails={human:{traits:[{name:'검증 특성 1',description:'1'},{name:'검증 특성 2',description:'2'},{name:'검증 특성 3',description:'3'}],divisions:[{id:'test-lineage',name:'검증 분화',description:'분화 검증'}]}};actions['race-primary']('human');assert.ok($('#modalBody').innerHTML.includes('검증 특성 3'));actions['race-division'](JSON.stringify(['human','test-lineage']));assert.equal(save.build.race.divisions.human,'test-lineage');actions['race-division'](JSON.stringify(['human','not-owned']));assert.equal(save.build.race.divisions.human,'test-lineage');
  assert.ok(!raceEditorUI().includes('>ON<'));assert.ok(!raceEditorUI().includes('>OFF<'));assert.ok(!raceEditorUI().includes('immortal-details'));actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,251);
  const raceHtml=$('#modalBody').innerHTML;

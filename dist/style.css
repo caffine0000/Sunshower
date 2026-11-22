@@ -424,7 +424,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 
 @media(prefers-reduced-motion:reduce){.thought-collapse *,.thought-label-corrupted,.thought-label-ghost{animation:none!important;transform:none!important}.thought-label-ghost{display:none}.collapse-haze{opacity:.55}.collapse-undertow,.collapse-mist{opacity:.35}}
 
-.race-replica-trait{margin-top:12px;border-color:#a8b8d15c;background:linear-gradient(140deg,#7687ae1a,#101f2d99)}.race-replica-trait>small{color:#b5c7df}
+.race-replica-trait{margin-top:12px}
 
 /* Mirae's one-time intervention and permanent prism maximum. */
 .thought-limit-page .thought-maximum,.thought-limit-popup .thought-maximum,.thought-limit-archived .thought-maximum{font:inherit;letter-spacing:0;color:inherit}
@@ -702,4 +702,27 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 @media(prefers-reduced-motion:reduce){
  .immortal-appearing .immortal-symbol,.immortal-details::before{animation:none}
  .immortal-details::before{opacity:.35}
+}
+
+.race-division-options strong{position:relative;isolation:isolate;width:100%}
+.race-division-echo{
+ position:absolute;
+ inset:50% 0 auto 0;
+ max-width:110px;
+ height:25px;
+ transform:translateY(-50%);
+ opacity:.24;
+ z-index:-1;
+ pointer-events:none;
+}
+.race-division-echo svg{display:block;width:100%;height:100%}
+.race-trait-faded{opacity:.72}
+.race-trait-altered,.race-replica-trait{
+ border-color:#a8b8d15c;
+ background:linear-gradient(140deg,#7687ae1a,#101f2d99);
+}
+:is(.race-trait-altered,.race-replica-trait)>small{color:#b5c7df}
+[data-theme="acrylic-sky"] :is(.race-trait-card.race-trait-altered,.race-trait-card.race-replica-trait){
+ background:linear-gradient(140deg,#edf3fbe8,#e1dbf2e8);
+ border-color:#797491aa;
 }
