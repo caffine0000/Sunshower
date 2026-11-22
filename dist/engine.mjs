@@ -17,7 +17,7 @@ export const THOUGHT_LIMIT_GIFT_BONUS=50;
 export function thoughtLimitMaximum(build){return THOUGHT_LIMIT_DEFAULT_MAX+(build?.thoughtGiftReceived===true?THOUGHT_LIMIT_GIFT_BONUS:0)}
 export const IMMORTAL_THOUGHT_COST=251;
 export const raceTypes=[{id:'human',name:'휴먼'},{id:'elf',name:'엘프'},{id:'dwarf',name:'드워프'},{id:'beastkin',name:'수인'},{id:'celestial',name:'천족'},{id:'demon',name:'마족'},{id:'spirit',name:'정령'},{id:'automaton',name:'오토마타'}];
-export const elfDivisions=[
+const elfDivisions=[
  {
   id:'modern',
   name:'모던',
@@ -39,6 +39,19 @@ export const elfDivisions=[
   }
  }
 ];
+export const raceDivisionDetails={
+ elf:elfDivisions,
+ dwarf:[{
+  id:'sky',
+  name:'천공',
+  englishName:'Stella',
+  description:'어떤 드워프들은 대지보다 하늘을 멍하니 쳐다봤다.',
+  extraTraits:[{
+   name:'천체 공명',
+   description:'별도 중앙이 금속일 것이라는 말처럼 천공 드워프들은 별들을 느낄 수 있다. 하늘에 구름이 끼어도 길잡이별의 위치를 알 수 있었던 그들은 길잡이로 여겨졌다.'
+  }]
+ }]
+};
 export function normalizeRace(raw={}){if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('종족 데이터 형식을 확인해 주세요.');const r={primary:raw.primary??'',secondary:raw.secondary??'',immortal:raw.immortal??false,mixed:raw.mixed??false,divisions:{...raw.divisions}};const valid=id=>id===''||raceTypes.some(race=>race.id===id);if(!valid(r.primary)||!valid(r.secondary)||typeof r.immortal!=='boolean'||typeof r.mixed!=='boolean'||(raw.divisions!=null&&(typeof raw.divisions!=='object'||Array.isArray(raw.divisions))))throw Error('종족 선택 형식을 확인해 주세요.');if(r.secondary==='automaton'&&r.primary!=='automaton'){[r.primary,r.secondary]=[r.secondary,r.primary]}if(!r.primary||!r.mixed||r.primary===r.secondary)r.secondary='';for(const [id,value] of Object.entries(r.divisions)){if(!raceTypes.some(race=>race.id===id)||typeof value!=='string'||value.length>100)throw Error('종족 분화 형식을 확인해 주세요.');if(![r.primary,r.secondary].includes(id))delete r.divisions[id]}return r}
 // Selection order is retained except that automaton always takes the primary slot.
 export function selectRace(raw,id){if(!raceTypes.some(race=>race.id===id))throw Error('종족을 확인해 주세요.');const r=normalizeRace(raw);if(!r.mixed)return normalizeRace({...r,primary:id,secondary:''});if(r.primary===id)return normalizeRace({...r,primary:r.secondary,secondary:''});if(r.secondary===id)return normalizeRace({...r,secondary:''});return normalizeRace(r.primary?{...r,secondary:id}:{...r,primary:id})}
@@ -46,7 +59,7 @@ export function raceDisplay(raw){
  const r=normalizeRace(raw);
  const names=[r.primary,r.secondary].filter(Boolean).map(id=>{
   const name=raceTypes.find(race=>race.id===id).name;
-  const division=id==='elf'?elfDivisions.find(item=>item.id===r.divisions[id]):null;
+  const division=raceDivisionDetails[id]?.find(item=>item.id===r.divisions[id]);
   return division?name+'('+division.name+')':name;
  });
  return names.length?names.join(' · ')+(r.immortal?' / 영생종':''):'';

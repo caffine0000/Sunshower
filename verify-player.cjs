@@ -40,6 +40,20 @@ vm.runInNewContext(code+`
  assert.ok(elfTrait('저온 적응').includes('race-trait-altered'));
  assert.ok(!$('#modalBody').innerHTML.includes('제육감'));
  assert.equal(decodePlayer(project,encodePlayer(project,save)).build.profile.race,'엘프(설원)');
+ actions['race-primary']('dwarf');
+ assert.ok($('#modalBody').innerHTML.includes('어떤 드워프들은 대지보다 하늘을 멍하니 쳐다봤다.'));
+ assert.ok(!$('#modalBody').innerHTML.includes('<h4>천체 공명</h4>'));
+ actions['race-division'](JSON.stringify(['dwarf','sky']));
+ const skyCards=$('#modalBody').innerHTML.split('</article>');
+ for(const title of ['뾰족한 귀','유형성숙','금속 친화','천체 공명']){
+  assert.ok(skyCards.some(card=>card.includes('<h4>'+title+'</h4>')));
+ }
+ const resonance=skyCards.find(card=>card.includes('<h4>천체 공명</h4>'));
+ assert.ok(resonance.includes('race-trait-altered'));
+ assert.ok(resonance.includes('<small>추가 특성</small>'));
+ assert.ok(resonance.includes('길잡이별의 위치'));
+ assert.ok(investigatorCard().includes('드워프(천공)'));
+ assert.equal(decodePlayer(project,encodePlayer(project,save)).build.profile.race,'드워프(천공)');
  project.raceDetails={human:{traits:[{name:'검증 특성 1',description:'1'},{name:'검증 특성 2',description:'2'},{name:'검증 특성 3',description:'3'}],divisions:[{id:'test-lineage',name:'검증 분화',description:'분화 검증'}]}};actions['race-primary']('human');assert.ok($('#modalBody').innerHTML.includes('검증 특성 3'));actions['race-division'](JSON.stringify(['human','test-lineage']));assert.equal(save.build.race.divisions.human,'test-lineage');actions['race-division'](JSON.stringify(['human','not-owned']));assert.equal(save.build.race.divisions.human,'test-lineage');
  assert.ok(!raceEditorUI().includes('>ON<'));assert.ok(!raceEditorUI().includes('>OFF<'));assert.ok(!raceEditorUI().includes('immortal-details'));actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,251);
  const raceHtml=$('#modalBody').innerHTML;

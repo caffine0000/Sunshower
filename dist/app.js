@@ -1,4 +1,4 @@
-import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,elfDivisions,normalizeRace,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift} from './engine.mjs';
+import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,normalizeRace,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift} from './engine.mjs';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),uid=()=>crypto.randomUUID(),clone=x=>JSON.parse(JSON.stringify(x));
 const displayText=value=>esc(formatPlayerText(value,save?.build));
 const APP_VERSION='0.1.0';
@@ -335,7 +335,7 @@ const defaultRaceDetails={
         "description": "한 때, 도시개발 열풍이 돌던 시절에 심어진 모든 식생을 갈아엎은 적이 있었다. 열풍이 끝나고도 5년동안 엘프들의 정신질환자 비율과 자살률이 상승했다."
       }
     ],
-    "divisions": elfDivisions
+    "divisions": raceDivisionDetails.elf
   },
   "dwarf": {
     "description": "작디 작고 어려보이기만 하지만, 아르카디아의 표면에 적층된 기술들은 이들의 손에서 태어났다.\n작은 거인들은 오늘도 말한다.\n\n'가장 낮은 곳에서 바라본 나의 넓은 하늘을 향하여.'",
@@ -354,12 +354,7 @@ const defaultRaceDetails={
         "description": "드워프들은 체내에 축적되는 금속의 영향을 덜 받으며, 금속의 자성이나 진동을 감지하는 것으로 추정되는 특유의 감각으로 묻힌 금속제 물품도 감지할 수 있다.\n몇몇은 기계를 만져 회로를 감으로 읽어내는 경우도 있다."
       }
     ],
-    "divisions": [
-      {
-        "id": "sky",
-        "name": "천공"
-      }
-    ]
+    "divisions": raceDivisionDetails.dwarf
   },
   "beastkin": {
     "description": "수인은 동물적인 본능을 주체하지 못해 박해당하고 멸시받았었다. 이성은 과연 본능과 분리된 것일까? 합리라는 것도 어쩌면 '맞다는 느낌'이라는 걸지도 모른다.\n\n'무엇이 인간을 짐승보다 고귀하게 하는가?'",
@@ -515,14 +510,21 @@ function raceDescriptionMarkup(id,description){
   ?`<strong>${esc(line)}</strong>`
   :esc(line)).join('\n');
 }
-function raceTraitCard(trait,override,index){
+function raceTraitCard(trait,override,index,label=`고유 특성 ${index+1}`){
  const {name,description,tone}={...trait,...override};
  const accent=tone==='altered'?' race-trait-altered':tone==='faded'?' race-trait-faded':'';
  return `<article class="race-trait-card${accent}" style="--trait-order:${index}">
-  <small>고유 특성 ${index+1}</small>
+  <small>${label}</small>
   <h4>${esc(name||'미등록')}</h4>
   <p>${esc(description||'특성 내용이 아직 등록되지 않았습니다.')}</p>
  </article>`;
+}
+function raceTraitsUI(id,traits,division){
+ const count=defaultRaceDetails[id]?.traitCount??3;
+ const cards=Array.from({length:count},(_,index)=>raceTraitCard(traits[index],division?.traitOverrides?.[index],index));
+ const extraTraits=Array.isArray(division?.extraTraits)?division.extraTraits:[];
+ extraTraits.forEach((trait,index)=>cards.push(raceTraitCard(trait,{tone:'altered'},count+index,'추가 특성')));
+ return `<div class="race-trait-cards">${cards.join('')}</div>`;
 }
 function raceDivisionTitle(item){
  const echo=typeof item.englishName==='string'
@@ -530,7 +532,7 @@ function raceDivisionTitle(item){
   :'';
  return `<strong>${echo}<span>${esc(item.name)}</span></strong>`;
 }
-function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions,divisionNote}=raceDefinition(id),selectedDivision=divisions.find(item=>item.id===save.build.race.divisions[id]);return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?`<div class="race-trait-cards">${Array.from({length:defaultRaceDetails[id]?.traitCount??3},(_,index)=>raceTraitCard(traits[index],selectedDivision?.traitOverrides?.[index],index)).join('')}</div>`:''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>숨겨진 고유 특성 4</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options" data-race-division-list="${esc(id)}">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${save.build.race.divisions[id]===item.id}">${raceDivisionTitle(item)}${item.description?`<small>${esc(item.description)}</small>`:''}</button>`).join('')}</div>`:`<p>${esc(divisionNote||'세부 분류가 아직 등록되지 않았습니다.')}</p>`}</section></section>`}
+function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions,divisionNote}=raceDefinition(id),selectedDivision=divisions.find(item=>item.id===save.build.race.divisions[id]);return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?raceTraitsUI(id,traits,selectedDivision):''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>숨겨진 고유 특성 4</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options" data-race-division-list="${esc(id)}">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${save.build.race.divisions[id]===item.id}">${raceDivisionTitle(item)}${item.description?`<small>${esc(item.description)}</small>`:''}</button>`).join('')}</div>`:`<p>${esc(divisionNote||'세부 분류가 아직 등록되지 않았습니다.')}</p>`}</section></section>`}
 // Original white modifier symbols share the theme's monochrome polarity.
 const raceModifierArtwork={immortal:'assets/race-modifier-immortal.png',mixed:'assets/race-modifier-hybrid.png'};
 function raceModifierButton(id,name,english,selected){const art=raceModifierArtwork[id];return `<button type="button" data-action="race-option" data-id="${id}" aria-pressed="${selected}"><span class="race-modifier-icon" aria-hidden="true">${art?`<img src="${esc(art)}" alt="" width="64" height="64" decoding="async">`:''}</span><span class="race-modifier-label"><span class="race-modifier-echo" aria-hidden="true">${geometricGlyphs(english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><strong>${name}</strong></span></button>`}

@@ -722,7 +722,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  pointer-events:none;
 }
 .race-division-echo svg{display:block;width:100%;height:100%}
-.race-trait-faded{--race-trait-opacity:.72;opacity:var(--race-trait-opacity)}
+.race-trait-faded{--race-trait-opacity:.58;opacity:var(--race-trait-opacity)}
 .race-trait-altered,.race-replica-trait{
  background:var(--race-trait-special-surface,linear-gradient(140deg,#3d4b69,#192d43));
  border-color:var(--race-trait-special-edge,#8e9fc399);
