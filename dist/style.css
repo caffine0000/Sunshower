@@ -534,9 +534,9 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  --race-trait-surface:var(--acrylic-tile);
  --race-trait-edge:var(--acrylic-edge);
  --race-trait-caption:var(--muted);
- --race-trait-special-surface:linear-gradient(140deg,#c7d7f6,#ded1ee);
- --race-trait-special-edge:#77619a;
- --race-trait-special-label:#493968;
+ --race-trait-special-surface:linear-gradient(140deg,#f3c3b5,#f9dfce);
+ --race-trait-special-edge:#a85e57;
+ --race-trait-special-label:#793d3c;
 }
 [data-theme="acrylic-sky"] .start-card{
  color:var(--ink);
