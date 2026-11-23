@@ -166,12 +166,17 @@ vm.runInNewContext(code+`
  const replicaPanel=()=>$('#modalBody').innerHTML;
  assert.ok(!replicaPanel().includes('<h4>레플리카</h4>'));
  actions['race-primary']('elf');
+ assert.ok(investigatorCard().includes('<dt>종족</dt><dd>오토마타-엘프</dd>'));
+ assert.equal(decodePlayer(project,encodePlayer(project,save)).build.profile.race,'오토마타-엘프');
+ actions['race-division'](JSON.stringify(['elf','modern']));
+ assert.ok(investigatorCard().includes('<dt>종족</dt><dd>오토마타-엘프(모던)</dd>'));
  const replicaCard=replicaPanel().split('</article>').find(card=>card.includes('race-replica-trait'));
  assert.ok(replicaCard.includes('<small>추가 특성</small>'));
  assert.ok(replicaCard.includes('<h4>레플리카</h4>'));
  assert.ok(replicaCard.includes('오토마타에겐 혼혈이 존재하지 않는다.'));
  assert.ok(replicaCard.includes('신체를 가지게 될 뿐이다.'));
  actions['race-primary']('elf');
+ assert.ok(investigatorCard().includes('<dt>종족</dt><dd>오토마타</dd>'));
  assert.ok(!replicaPanel().includes('<h4>레플리카</h4>'));
  project.raceDetails={automaton:{traits:[{name:'기계 특성 1'},{name:'기계 특성 2'},{name:'기계 특성 3'},{name:'숨겨진 기계 특성',description:'4번 특성 설명'}]},human:{traits:[{name:'공개되면 안 되는 휴먼 특성'}],divisions:[{id:'test-human',name:'휴먼 분화'}]},elf:{traits:[{name:'공개되면 안 되는 엘프 특성'}]}};
  save=normalizePlayer({...save,build:{...save.build,race:{primary:'human',mixed:true,secondary:'elf'}}});actions['custom-section']('race');assert.ok($('#modalBody').innerHTML.includes('공개되면 안 되는 휴먼 특성'));actions['race-primary']('automaton');assert.equal(save.build.race.primary,'automaton');assert.equal(save.build.race.secondary,'human');assert.ok($('#modalBody').innerHTML.includes('<strong>레플리카</strong>'));assert.ok(!$('#modalBody').innerHTML.includes('<strong>혼혈</strong>'));assert.ok($('#modalBody').innerHTML.includes('숨겨진 기계 특성'));assert.ok($('#modalBody').innerHTML.includes('4번 특성 설명'));assert.ok(!$('#modalBody').innerHTML.includes('공개되면 안 되는 휴먼 특성'));assert.ok($('#modalBody').innerHTML.includes('분화: 휴먼'));assert.equal(($('#modalBody').innerHTML.match(/class="race-trait-card"/g)||[]).length,3);assert.equal(($('#modalBody').innerHTML.match(/race-replica-trait/g)||[]).length,1);

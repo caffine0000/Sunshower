@@ -213,7 +213,8 @@ export function raceDisplay(raw){
   if(allowsMultipleRaceDivisions(id))return divisions.find(item=>item.profileName)?.profileName||name;
   return divisions.length?name+'('+divisions[0].name+')':name;
  });
- return names.length?names.join(' · ')+(r.immortal?' / 영생종':''):'';
+ const separator=r.primary==='automaton'?'-':' · ';
+ return names.length?names.join(separator)+(r.immortal?' / 영생종':''):'';
 }
 
 // Player data is independent of the five-tab interface and scene text.
