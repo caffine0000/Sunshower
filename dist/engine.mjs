@@ -119,6 +119,40 @@ export const raceDivisionDetails={
    englishName:'Shade',
    description:'어떤 마족은 그림자에 녹아든다.',
    extraTraits:[{name:'분진화',description:'마치 가루로 흩어지는 이 기술은 영혼이라는 것의 존재를 말하는 것 같다. 몸은 형체를 잃어도 그것을 기억해줄 존재가 있다는 듯. 그럼에도 쌓아올리는 데에는 시간이 필요하다.'}]
+  },
+  {
+   id:'imp',
+   name:'임프',
+   englishName:'Imp',
+   description:'어떤 마족들은 세상이 지루하다.',
+   traitOverrides:{
+    0:{tone:'altered',name:'뿔과 긴 꼬리',description:'임프들의 꼬리는 더 길고 자유롭게 움직인다. 과거에는 이 특징을 이용해 암살 병력으로 활용하려 했으나 후술할 단점에 계획은 폐기되었다.'}
+   },
+   extraTraits:[
+    {name:'유형 성숙',description:'드워프들의 그것과 비슷하나 정확히는 성장을 평생에 걸쳐 하는 것이 아닌 최종 성장 자체가 어리게 되어 있다. 이런 임프들의 특징을 사랑하는 이상한 이들도 있다. 꽤 많이.'},
+    {name:'트릭스터',description:'임프들의 신경 수용체 구조는 일반인과 다르게 도파민 수용체가 변질되어 더더욱 스릴과 예외성을 갈망한다. 그렇기에 임프들은 본능적으로 장난을 사랑한다. 그것마저도 외견에 걸맞다.'}
+   ]
+  },
+  {
+   id:'oni',
+   name:'오니',
+   englishName:'Oni',
+   description:'어떤 마족은 가면을 쓴다.',
+   extraTraits:[{name:'광화',description:'오니들은 분노와 스트레스가 일정 이상의 지점까지 쌓였다면 이성을 잃고 몸에서 엄청난 발열을 내며 날뛰는 상태가 된다. 그런 특징 탓에 오니 가정에서는 의외로 엄격하게 교육하지 않는다. 대신 화를 방출하고 해소하는 법을 철저히 가르친다.'}]
+  },
+  {
+   id:'succubus',
+   name:'서큐버스',
+   englishName:'Succubus',
+   description:'어떤 마족들은 육체에 관심을 가졌다.',
+   extraTraits:[{name:'매료',description:'서큐버스들은 본능적으로 사람의 마음에 접속하고 그 통제를 얻는 힘을 가졌다. 이러한 특징과 과거 자신의 성도 수단으로 여기던 문화 탓에 사교계에서 굉장히 무서운 존재로 여겨졌다.'}]
+  },
+  {
+   id:'dokkaebi',
+   name:'도깨비',
+   englishName:'Dokkabi',
+   description:'어떤 마족들은 만드는 것을 좋아했다.',
+   extraTraits:[{name:'신비술 각인',description:'어째서인지 신비술사인 도깨비들에겐 이 힘이 있었다. 물건에 자신의 신비술을 새길 수 있었던 이 힘은 과거 여러 유물들과 연관이 있다는 역사학자들의 추론을 이끌었다.'}]
   }
  ],
  dwarf:[{
