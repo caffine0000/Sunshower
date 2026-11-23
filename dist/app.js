@@ -441,12 +441,7 @@ const defaultRaceDetails={
         "description": "자체적으로 신비력을 내뿜는 이들이기에, 신비술사로 각성하는 비율이 많은 종족이다. 과연 이것은 축복일까? 아니면 저주일까?"
       }
     ],
-    "divisions": [
-      {
-        "id": "modern",
-        "name": "모던"
-      }
-    ]
+    "divisions": raceDivisionDetails.spirit
   },
   "automaton": {
     "description": "죽은 자는 절대 원래의 모습으로는 아르카디아를 밟을 수는 없다. 오토마타는 그런 의미에서 육신도 기억도 남지 않은 모습으로 눈을 뜬다. 누가 인형을 만드는 지도 모르는 이 세상에서\n\n'누가 이 잔혹한 세계를 사랑하기에 그들을 이끄나.'",
@@ -463,6 +458,10 @@ const defaultRaceDetails={
       {
         "name": "비재생성",
         "description": "생물을 불완전하게 모방하였기에 알아서 조직이 재생하지 않고, 단지 부서진 채로 타 종족보단 오래 버틸 수 있을 뿐이다. 의사가 아닌 오토마타 조형사를 찾아야 한다는 것도 골칫거리."
+      },
+      {
+        "name": "레플리카",
+        "description": "오토마타에겐 혼혈이 존재하지 않는다.\n단지 일정 확률에 따라 오토마타로 태어날 때,\n자신의 다른 부모의 종족이 가진 특징을 모방한\n신체를 가지게 될 뿐이다."
       }
     ],
     "divisionNote": "오토마타는 유의미한 아종을 가지지 않는다. 현재는 그렇게 알려졌다."
@@ -499,7 +498,7 @@ function raceDivisionTitle(item){
   :'';
  return `<strong>${echo}<span>${esc(item.name)}</span></strong>`;
 }
-function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions,divisionNote}=raceDefinition(id),selectedIds=selectedRaceDivisionIds(save.build.race,id),selectedDivisions=divisions.filter(item=>selectedIds.includes(item.id));return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?raceTraitsUI(id,traits,selectedDivisions):''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>숨겨진 고유 특성 4</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options" data-race-division-list="${esc(id)}">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${selectedIds.includes(item.id)}">${raceDivisionTitle(item)}${item.description?`<small>${esc(item.description)}</small>`:''}</button>`).join('')}</div>`:`<p>${esc(divisionNote||'세부 분류가 아직 등록되지 않았습니다.')}</p>`}</section></section>`}
+function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions,divisionNote}=raceDefinition(id),selectedIds=selectedRaceDivisionIds(save.build.race,id),selectedDivisions=divisions.filter(item=>selectedIds.includes(item.id));return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?raceTraitsUI(id,traits,selectedDivisions):''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>추가 특성</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options" data-race-division-list="${esc(id)}">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${selectedIds.includes(item.id)}">${raceDivisionTitle(item)}${item.description?`<small>${esc(item.description)}</small>`:''}</button>`).join('')}</div>`:`<p>${esc(divisionNote||'세부 분류가 아직 등록되지 않았습니다.')}</p>`}</section></section>`}
 // Original white modifier symbols share the theme's monochrome polarity.
 const raceModifierArtwork={immortal:'assets/race-modifier-immortal.png',mixed:'assets/race-modifier-hybrid.png'};
 function raceModifierButton(id,name,english,selected){const art=raceModifierArtwork[id];return `<button type="button" data-action="race-option" data-id="${id}" aria-pressed="${selected}"><span class="race-modifier-icon" aria-hidden="true">${art?`<img src="${esc(art)}" alt="" width="64" height="64" decoding="async">`:''}</span><span class="race-modifier-label"><span class="race-modifier-echo" aria-hidden="true">${geometricGlyphs(english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><strong>${name}</strong></span></button>`}

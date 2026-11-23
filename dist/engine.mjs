@@ -155,6 +155,16 @@ export const raceDivisionDetails={
    extraTraits:[{name:'신비술 각인',description:'어째서인지 신비술사인 도깨비들에겐 이 힘이 있었다. 물건에 자신의 신비술을 새길 수 있었던 이 힘은 과거 여러 유물들과 연관이 있다는 역사학자들의 추론을 이끌었다.'}]
   }
  ],
+ spirit:[{
+  id:'modern',
+  name:'모던',
+  englishName:'Modern',
+  description:'어떤 정령들은 사물에 애착을 가지기 시작했다.',
+  extraTraits:[{
+   name:'귀속',
+   description:'현대의 몇몇 정령들은 신비술사가 되는 순간, 자신이 애착을 가지고 함께 있던 사물과 연결되는 감각을 느낀다. 트라우마가 될 사건의 곁에 있었기에 물건과 사람은 떨어지지 않는다. 물건또한 신비를 가지게 된다.'
+  }]
+ }],
  dwarf:[{
   id:'sky',
   name:'천공',

@@ -133,6 +133,18 @@ vm.runInNewContext(code+`
  actions['race-division'](JSON.stringify(['demon','dokkaebi']));
  assert.equal(save.build.profile.race,'마족');
  assert.equal(demonExtraCards().length,0);
+ actions['race-primary']('spirit');
+ const spiritHtml=()=>$('#modalBody').innerHTML;
+ assert.ok(spiritHtml().includes('race-division-echo'));
+ assert.ok(spiritHtml().includes('어떤 정령들은 사물에 애착을 가지기 시작했다.'));
+ assert.ok(!spiritHtml().includes('<h4>귀속</h4>'));
+ actions['race-division'](JSON.stringify(['spirit','modern']));
+ assert.ok(investigatorCard().includes('정령(모던)'));
+ assert.ok(spiritHtml().split('</article>').some(card=>card.includes('race-trait-altered')&&card.includes('<h4>귀속</h4>')&&card.includes('물건또한 신비를 가지게 된다.')));
+ assert.equal(decodePlayer(project,encodePlayer(project,save)).build.profile.race,'정령(모던)');
+ actions['race-division'](JSON.stringify(['spirit','modern']));
+ assert.equal(save.build.profile.race,'정령');
+ assert.ok(!spiritHtml().includes('<h4>귀속</h4>'));
  project.raceDetails={human:{traits:[{name:'검증 특성 1',description:'1'},{name:'검증 특성 2',description:'2'},{name:'검증 특성 3',description:'3'}],divisions:[{id:'test-lineage',name:'검증 분화',description:'분화 검증'}]}};actions['race-primary']('human');assert.ok($('#modalBody').innerHTML.includes('검증 특성 3'));actions['race-division'](JSON.stringify(['human','test-lineage']));assert.equal(save.build.race.divisions.human,'test-lineage');actions['race-division'](JSON.stringify(['human','not-owned']));assert.equal(save.build.race.divisions.human,'test-lineage');
  assert.ok(!raceEditorUI().includes('>ON<'));assert.ok(!raceEditorUI().includes('>OFF<'));assert.ok(!raceEditorUI().includes('immortal-details'));actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,251);
  const raceHtml=$('#modalBody').innerHTML;
@@ -147,7 +159,21 @@ vm.runInNewContext(code+`
  save.build.thoughtLimitBase=42;save=normalizePlayer(save);persist();render();assert.ok($('#app').innerHTML.includes('thought-limit-page'));assert.ok(buildingPointsUI().replace(/<[^>]*>/g,'').includes('293/250'));assert.ok(buildingPointsUI('popup').replace(/<[^>]*>/g,'').includes('293/250'));const backed=decodePlayer(project,encodePlayer(project,save));assert.equal(backed.build.thoughtLimit,293);assert.equal(backed.build.race.secondary,'elf');assert.equal(backed.build.race.divisions.human,'test-lineage');close();delete project.raceDetails;
  }
  function testAutomatonReplica(){
- const original=save,definitions=project.raceDetails;project.raceDetails={automaton:{traits:[{name:'기계 특성 1'},{name:'기계 특성 2'},{name:'기계 특성 3'},{name:'숨겨진 기계 특성',description:'4번 특성 설명'}]},human:{traits:[{name:'공개되면 안 되는 휴먼 특성'}],divisions:[{id:'test-human',name:'휴먼 분화'}]},elf:{traits:[{name:'공개되면 안 되는 엘프 특성'}]}};
+ const original=save,definitions=project.raceDetails;
+ save=normalizePlayer({...save,build:{...save.build,race:{primary:'automaton'}}});
+ actions['custom-section']('race');
+ actions['race-option']('mixed');
+ const replicaPanel=()=>$('#modalBody').innerHTML;
+ assert.ok(!replicaPanel().includes('<h4>레플리카</h4>'));
+ actions['race-primary']('elf');
+ const replicaCard=replicaPanel().split('</article>').find(card=>card.includes('race-replica-trait'));
+ assert.ok(replicaCard.includes('<small>추가 특성</small>'));
+ assert.ok(replicaCard.includes('<h4>레플리카</h4>'));
+ assert.ok(replicaCard.includes('오토마타에겐 혼혈이 존재하지 않는다.'));
+ assert.ok(replicaCard.includes('신체를 가지게 될 뿐이다.'));
+ actions['race-primary']('elf');
+ assert.ok(!replicaPanel().includes('<h4>레플리카</h4>'));
+ project.raceDetails={automaton:{traits:[{name:'기계 특성 1'},{name:'기계 특성 2'},{name:'기계 특성 3'},{name:'숨겨진 기계 특성',description:'4번 특성 설명'}]},human:{traits:[{name:'공개되면 안 되는 휴먼 특성'}],divisions:[{id:'test-human',name:'휴먼 분화'}]},elf:{traits:[{name:'공개되면 안 되는 엘프 특성'}]}};
  save=normalizePlayer({...save,build:{...save.build,race:{primary:'human',mixed:true,secondary:'elf'}}});actions['custom-section']('race');assert.ok($('#modalBody').innerHTML.includes('공개되면 안 되는 휴먼 특성'));actions['race-primary']('automaton');assert.equal(save.build.race.primary,'automaton');assert.equal(save.build.race.secondary,'human');assert.ok($('#modalBody').innerHTML.includes('<strong>레플리카</strong>'));assert.ok(!$('#modalBody').innerHTML.includes('<strong>혼혈</strong>'));assert.ok($('#modalBody').innerHTML.includes('숨겨진 기계 특성'));assert.ok($('#modalBody').innerHTML.includes('4번 특성 설명'));assert.ok(!$('#modalBody').innerHTML.includes('공개되면 안 되는 휴먼 특성'));assert.ok($('#modalBody').innerHTML.includes('분화: 휴먼'));assert.equal(($('#modalBody').innerHTML.match(/class="race-trait-card"/g)||[]).length,3);assert.equal(($('#modalBody').innerHTML.match(/race-replica-trait/g)||[]).length,1);
  actions['race-primary']('elf');assert.equal(save.build.race.primary,'automaton');assert.equal(save.build.race.secondary,'elf');assert.ok(!$('#modalBody').innerHTML.includes('공개되면 안 되는 엘프 특성'));actions['race-option']('mixed');assert.equal(save.build.race.secondary,'');assert.ok(!$('#modalBody').innerHTML.includes('숨겨진 기계 특성'));assert.ok($('#modalBody').innerHTML.includes('<strong>레플리카</strong>'));actions['race-option']('mixed');assert.ok(!$('#modalBody').innerHTML.includes('숨겨진 기계 특성'));actions['race-primary']('human');assert.ok($('#modalBody').innerHTML.includes('숨겨진 기계 특성'));actions['race-primary']('automaton');assert.equal(save.build.race.primary,'human');assert.ok($('#modalBody').innerHTML.includes('<strong>혼혈</strong>'));assert.ok(!$('#modalBody').innerHTML.includes('숨겨진 기계 특성'));
  save=original;project.raceDetails=definitions;close();render();
