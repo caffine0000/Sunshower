@@ -652,6 +652,72 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  .acrylic-sky-world{background-position:center,82% center,center}
 }
 
+:root{
+ --choice-positive:#79dfca;
+ --choice-negative:#f3a3ae;
+}
+:root[data-theme="acrylic-sky"]{
+ --choice-positive:#286e64;
+ --choice-negative:#a53f66;
+}
+.identity-traits{display:grid;gap:16px}
+.identity-trait{
+ --trait-tone:var(--muted);
+ padding:clamp(14px,4vw,24px);
+ border:1px solid color-mix(in srgb,var(--trait-tone) 45%,transparent);
+ border-radius:9px;
+ background:color-mix(in srgb,var(--trait-tone) 9%,transparent);
+}
+.identity-trait[data-tone="positive"]{--trait-tone:var(--choice-positive)}
+.identity-trait[data-tone="negative"]{--trait-tone:var(--choice-negative)}
+.identity-trait-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 18px}
+.identity-trait-heading h3{margin:0;color:var(--ink);font-size:19px}
+.identity-trait-heading small{color:var(--trait-tone);font-size:12px;white-space:nowrap}
+.identity-trait-switch{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:3px;
+ margin-top:16px;
+ padding:3px;
+ border:1px solid var(--line);
+ border-radius:8px;
+}
+.identity-trait-switch button{
+ min-height:42px;
+ padding:6px 2px;
+ border:1px solid transparent;
+ border-radius:5px;
+ background:transparent;
+ color:var(--ink);
+ box-shadow:none;
+ font:500 12px 'Noto Sans KR',sans-serif;
+}
+.identity-trait-switch button:hover{border-color:var(--line)}
+.identity-trait-switch button[aria-pressed="true"]{
+ border-color:var(--trait-tone);
+ background:color-mix(in srgb,var(--trait-tone) 16%,transparent);
+ color:var(--ink);
+ font-weight:700;
+}
+.identity-trait p{margin:14px 0 0;line-height:1.75;white-space:pre-line}
+
+.choice-impact-host{position:relative;isolation:isolate}
+.touch-impact.choice-impact{position:absolute;z-index:-1;color:var(--choice-ripple)}
+.choice-impact-positive{--choice-ripple:var(--choice-positive)}
+.choice-impact-negative{--choice-ripple:var(--choice-negative)}
+.choice-impact .touch-drop{
+ background:linear-gradient(transparent,currentColor);
+ box-shadow:0 2px 5px color-mix(in srgb,currentColor 45%,transparent);
+}
+.choice-impact .touch-splash{background:currentColor;box-shadow:0 0 7px 1px currentColor}
+.choice-impact .touch-ring{
+ border-color:currentColor;
+ box-shadow:0 0 3px color-mix(in srgb,currentColor 45%,transparent);
+}
+.choice-impact .touch-ring-one{--ring-size:230px}
+.choice-impact .touch-ring-two{--ring-size:190px}
+.choice-impact .touch-ring-three{--ring-size:146px}
+
 .immortal-details{
  position:relative;
  isolation:isolate;

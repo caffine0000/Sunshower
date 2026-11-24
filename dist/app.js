@@ -1,4 +1,4 @@
-import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,allowsMultipleRaceDivisions,selectedRaceDivisionIds,normalizeRace,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift} from './engine.mjs';
+import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,allowsMultipleRaceDivisions,selectedRaceDivisionIds,normalizeRace,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift,identityTraits,identityTraitLevels} from './engine.mjs';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),uid=()=>crypto.randomUUID(),clone=x=>JSON.parse(JSON.stringify(x));
 const displayText=value=>esc(formatPlayerText(value,save?.build));
 const APP_VERSION='0.1.0';
@@ -108,7 +108,7 @@ async function choose(id){if(busy)return;const r=replay(project,save),c=r.scene.
 function prismTransition(commit){if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){commit();return Promise.resolve()}busy=true;endAllRippleHolds();return (async()=>{let overlay,release=()=>{},committed=false,cancelled=false,wake=null;const subscriptions=[];const stop=()=>{cancelled=true;wake?.()};const wait=ms=>cancelled?Promise.resolve():new Promise(resolve=>{const done=()=>{clearTimeout(timer);wake=null;resolve()},timer=setTimeout(done,ms);wake=done});const listen=(target,type,callback)=>{if(!target?.addEventListener)return;target.addEventListener(type,callback,{passive:true});subscriptions.push(()=>target.removeEventListener(type,callback))};try{const viewport=effectViewport(),snapshot=sceneSnapshot(viewport),pieces=screenFragments(viewport.width,viewport.height);release=lockTransitionScroll(viewport);overlay=document.createElement('div');overlay.className='prism-transition character-intervention fast-intervention';overlay.setAttribute('aria-hidden','true');Object.assign(overlay.style,{left:viewport.left+'px',top:viewport.top+'px',width:viewport.width+'px',height:viewport.height+'px',right:'auto',bottom:'auto'});overlay.style.setProperty('--observer-height',viewport.height*(viewport.width<640?1.32:1.38)+'px');overlay.style.setProperty('--seal-size',Math.min(viewport.width*(viewport.width<640?1.08:.84),viewport.height*.9,710)+'px');overlay.innerHTML='<div class="observer-veil"></div>'+observerPresence()+'<div class="prism-shards">'+fragmentMarkup(viewport,snapshot,pieces)+'</div>'+fractureMesh(viewport,pieces)+'<div class="prism-refraction"></div><div class="prism-scanlines"></div>'+prismMagicLayer();overlay.addEventListener('pointerdown',event=>event.stopPropagation());document.body.appendChild(overlay);document.body.classList.add('is-prism-break');listen(window,'resize',()=>{const now=effectViewport();if(Math.abs(now.width-viewport.width)>40||Math.abs(now.height-viewport.height)>120)stop()});listen(window.visualViewport,'resize',()=>{const now=effectViewport();if(Math.abs(now.width-viewport.width)>40||Math.abs(now.height-viewport.height)>120)stop()});listen(document,'visibilitychange',()=>{if(document.hidden)stop()});await wait(1640);commit();committed=true;release(true);document.querySelectorAll('#app .build-cutscene,#app .player-panel').forEach(node=>{node.style.animation='none'});if(!cancelled){const incoming=fragmentSceneMarkup(sceneSnapshot(viewport));overlay.querySelectorAll('.shard-surface').forEach(face=>{face.innerHTML=incoming});await wait(1560)}}finally{wake?.();subscriptions.forEach(remove=>remove());release(committed);overlay?.remove();document.body.classList.remove('is-prism-break');busy=false}})()}
 function effectViewport(){const visual=window.visualViewport,zoomed=visual&&Math.abs((visual.scale||1)-1)>.01;return {width:Math.max(1,Math.round(zoomed?visual.width:window.innerWidth)),height:Math.max(1,Math.round(visual?.height||window.innerHeight)),left:zoomed?visual.offsetLeft||0:0,top:visual?.offsetTop||0,layoutWidth:document.documentElement.clientWidth}}
 function lockTransitionScroll(viewport){const body=document.body,root=document.documentElement,props=['position','top','left','width','overflow'],saved=Object.fromEntries(props.map(key=>[key,body.style[key]])),behavior=root.style.scrollBehavior,x=window.scrollX||0,y=window.scrollY||0;let released=false;root.style.scrollBehavior='auto';Object.assign(body.style,{position:'fixed',top:-y+'px',left:-x+'px',width:viewport.layoutWidth+'px',overflow:'hidden'});return success=>{if(released)return;released=true;for(const key of props)body.style[key]=saved[key];window.scrollTo(success?0:x,success?0:y);root.style.scrollBehavior=behavior}}
-function sceneSnapshot(viewport){const source=$('#app'),rect=source.getBoundingClientRect(),clone=source.cloneNode(true);clone.removeAttribute('id');clone.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));clone.querySelectorAll('.rain-layer,.glass-drops,script,iframe,video,audio').forEach(node=>node.remove());const weather=clone.querySelector('.weather-world');if(weather)Object.assign(weather.style,{position:'absolute',left:viewport.left-rect.left+'px',top:viewport.top-rect.top+'px',width:viewport.width+'px',height:viewport.height+'px'});return {markup:clone.outerHTML,left:rect.left-viewport.left,top:rect.top-viewport.top,width:rect.width}}
+function sceneSnapshot(viewport){const source=$('#app'),rect=source.getBoundingClientRect(),clone=source.cloneNode(true);clone.removeAttribute('id');clone.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));clone.querySelectorAll('.rain-layer,.glass-drops,.touch-impact,script,iframe,video,audio').forEach(node=>node.remove());const weather=clone.querySelector('.weather-world');if(weather)Object.assign(weather.style,{position:'absolute',left:viewport.left-rect.left+'px',top:viewport.top-rect.top+'px',width:viewport.width+'px',height:viewport.height+'px'});return {markup:clone.outerHTML,left:rect.left-viewport.left,top:rect.top-viewport.top,width:rect.width}}
 function screenFragments(width,height){const columns=width<640?4:6,rows=width<640?3:4,points=Array.from({length:rows+1},(_,row)=>Array.from({length:columns+1},(_,column)=>[column*width/columns+(column>0&&column<columns?Math.sin(row*19+column*7)*width/columns*.16:0),row*height/rows+(row>0&&row<rows?Math.sin(row*11+column*17)*height/rows*.16:0)])),pieces=[];for(let row=0;row<rows;row++)for(let column=0;column<columns;column++){const a=points[row][column],b=points[row][column+1],c=points[row+1][column+1],d=points[row+1][column];const triangles=(row+column)%2?[[a,b,d],[b,c,d]]:[[a,b,c],[a,c,d]];for(const triangle of triangles){const x=Math.min(...triangle.map(p=>p[0])),y=Math.min(...triangle.map(p=>p[1])),w=Math.max(...triangle.map(p=>p[0]))-x,h=Math.max(...triangle.map(p=>p[1]))-y,cx=triangle.reduce((n,p)=>n+p[0],0)/3,cy=triangle.reduce((n,p)=>n+p[1],0)/3,index=pieces.length;pieces.push({x,y,width:w,height:h,points:triangle,clip:'polygon('+triangle.map(p=>((p[0]-x)/w*100).toFixed(4)+'% '+((p[1]-y)/h*100).toFixed(4)+'%').join(',')+')',dx:(cx/width-.5)*width*.8+Math.sin(index*2.7)*width*.08,dy:(cy/height-.5)*height*.6,turn:(index%2?1:-1)*(9+index%5*4)})}}return pieces}
 function fragmentSceneMarkup(snapshot){return '<div class="shatter-copy" inert style="left:'+snapshot.left+'px;top:'+snapshot.top+'px;width:'+snapshot.width+'px">'+snapshot.markup+'</div>'}
 function fragmentMarkup(viewport,snapshot,pieces){const markup=fragmentSceneMarkup(snapshot);return pieces.map(piece=>'<div class="prism-shard screen-piece" style="left:'+piece.x+'px;top:'+piece.y+'px;width:'+(piece.width+.15)+'px;height:'+(piece.height+.15)+'px;clip-path:'+piece.clip+';--shift-x:'+piece.dx+'px;--shift-y:'+piece.dy+'px;--piece-turn:'+piece.turn+'deg"><div class="shard-surface" style="left:'+-piece.x+'px;top:'+-piece.y+'px;width:'+viewport.width+'px;height:'+viewport.height+'px">'+markup+'</div></div>').join('')}
@@ -117,16 +117,52 @@ function observerPresence(){return '<div class="observer-presence"><img class="o
 function prismMagicLayer(){return crystalFlowerMarkup().replaceAll('<path ','<path pathLength="1" ').replaceAll('<circle ','<circle pathLength="1" ')}
 function crystalFlowerMarkup(){const petals=Array.from({length:8},(_,i)=>'<g class="crystal-petal" transform="rotate('+(i*45)+' 150 150)"><path d="M150 146L129 107L150 40L171 107Z" fill="url(#crystal-petal-light)" stroke="#dec7ff" stroke-width=".85"/><path d="M150 40V146M129 107L150 117L171 107M150 117L138 91M150 117L162 91" fill="none" stroke="#f1e2ff" stroke-opacity=".65" stroke-width=".55"/><path d="M150 40L129 107L150 117Z" fill="#7846b8" fill-opacity=".16"/></g>').join('');const inner=Array.from({length:8},(_,i)=>'<g transform="rotate('+(i*45+22.5)+' 150 150)"><path d="M150 149L140 123L150 83L160 123Z" fill="url(#crystal-petal-inner)" stroke="#d6b4f9" stroke-width=".55"/><path d="M150 83V149M140 123L150 130L160 123" fill="none" stroke="#ead2ff" stroke-opacity=".65" stroke-width=".45"/></g>').join('');const orbit=Array.from({length:12},(_,i)=>'<g transform="rotate('+(i*30)+' 150 150)"><path d="M150 13L154 23L150 33L146 23Z" fill="#b589e9" fill-opacity=".24" stroke="#dcc3ff" stroke-width=".55"/><path d="M150 13V33" stroke="#ead8ff" stroke-width=".4"/></g>').join('');return '<svg class="prism-sigil crystal-flower" viewBox="0 0 300 300" aria-hidden="true"><defs><linearGradient id="crystal-petal-light" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efd8ff" stop-opacity=".5"/><stop offset=".46" stop-color="#b184e4" stop-opacity=".18"/><stop offset="1" stop-color="#60359c" stop-opacity=".38"/></linearGradient><linearGradient id="crystal-petal-inner" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dfc5ff" stop-opacity=".42"/><stop offset="1" stop-color="#8f5ccc" stop-opacity=".22"/></linearGradient><radialGradient id="crystal-flower-heart"><stop stop-color="#f3deff" stop-opacity=".75"/><stop offset="1" stop-color="#8450bf" stop-opacity=".38"/></radialGradient></defs><g fill="none" stroke="currentColor"><circle cx="150" cy="150" r="138" stroke-width=".45" opacity=".65"/><circle cx="150" cy="150" r="122" stroke-width=".5" stroke-dasharray="1 10" opacity=".7"/><circle cx="150" cy="150" r="116" stroke-width=".35" opacity=".3"/></g>'+orbit+petals+inner+'<g class="crystal-heart"><path d="M150 129L168 140V160L150 171L132 160V140Z" fill="url(#crystal-flower-heart)" stroke="#f1ddff" stroke-width="1"/><path d="M150 129V171M132 140L150 150L168 140M132 160L150 150L168 160" fill="none" stroke="#ead3ff" stroke-width=".6"/><path d="M150 141L156 150L150 159L144 150Z" fill="#f8e9ff" fill-opacity=".7"/></g></svg><div class="prism-magic">'+Array.from({length:18},(_,i)=>'<i class="prism-mote" style="--mote-x:'+((i*37+8)%100)+'%;--mote-y:'+((i*23+12)%100)+'%;--mote-dx:'+((i%2?1:-1)*(18+i%5*12))+'px;--mote-dy:'+(-20-i%7*9)+'px;--mote-delay:'+((i%6)*.017).toFixed(3)+'s"></i>').join('')+'</div>'}
 function microRipples(random=Math.random){const count=2+Math.floor(random()*5);return Array.from({length:count},()=>{const angle=random()*Math.PI*2,radius=8+random()*16,size=10+random()*14,delay=.12+random()*.22,duration=.45+random()*.24;return `<i class="touch-ring touch-micro" style="left:${(Math.cos(angle)*radius).toFixed(1)}px;top:${(Math.sin(angle)*radius).toFixed(1)}px;--ring-size:${size.toFixed(1)}px;animation-delay:${delay.toFixed(3)}s;animation-duration:${duration.toFixed(3)}s"></i>`}).join('')}
-function rainImpact(event){if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;const dialog=event.target?.closest?.('dialog[open]'),host=dialog||document.body,rect=dialog?.getBoundingClientRect();const fx=document.createElement('span');fx.className='touch-impact'+(dialog?' in-dialog':'');fx.setAttribute('aria-hidden','true');fx.style.left=(event.clientX-(rect?.left||0)+(dialog?.scrollLeft||0))+'px';fx.style.top=(event.clientY-(rect?.top||0)+(dialog?.scrollTop||0))+'px';fx.innerHTML='<i class="touch-drop"></i><i class="touch-splash"></i><i class="touch-ring touch-ring-one"></i><i class="touch-ring touch-ring-two"></i><i class="touch-ring touch-ring-three"></i>'+microRipples();const existing=document.querySelectorAll('.touch-impact');if(existing.length>=12)existing[0].remove();host.appendChild(fx);setTimeout(()=>fx.remove(),1150)}
+function spawnRainImpact(host,x,y,tone=''){
+ const fx=document.createElement('span');
+ fx.className='touch-impact'+(tone?' choice-impact choice-impact-'+tone:host!==document.body?' in-dialog':'');
+ fx.setAttribute('aria-hidden','true');
+ fx.style.left=x+'px';
+ fx.style.top=y+'px';
+ fx.innerHTML='<i class="touch-drop"></i><i class="touch-splash"></i><i class="touch-ring touch-ring-one"></i><i class="touch-ring touch-ring-two"></i><i class="touch-ring touch-ring-three"></i>'+microRipples();
+ const existing=document.querySelectorAll('.touch-impact');
+ if(existing.length>=12)existing[0].remove();
+ host.appendChild(fx);
+ setTimeout(()=>fx.remove(),1150);
+}
+function rainImpact(event){
+ if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+ const dialog=event.target?.closest?.('dialog[open]'),rect=dialog?.getBoundingClientRect();
+ spawnRainImpact(dialog||document.body,event.clientX-(rect?.left||0)+(dialog?.scrollLeft||0),event.clientY-(rect?.top||0)+(dialog?.scrollTop||0));
+}
+const rippleChoiceActions=new Set([
+ 'choose','choose-building-scene','choose-gender','race-primary','race-option','race-division',
+ 'identity-trait','custom-section','card-theme','display-collectible','set-theme','player-tab','apply-perk',
+ 'build-next','build-back','build-complete','speak-name','enter','event','event-complete'
+]);
+function choiceRipple(button,event,tone){
+ if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+ const dialog=$('#modal'),scope=dialog.open?dialog:$('#app');
+ const matching=scope.contains(button)?button:Array.from(scope.querySelectorAll('button[data-action]'))
+  .find(item=>item.dataset.action===button.dataset.action&&item.dataset.id===button.dataset.id);
+ const host=matching?.closest('.identity-trait')||matching||
+  scope.querySelector(dialog.open?'.custom-popup-options, .settings-content, .drawer-nav, .custom-popup-heading':'.player-panel, .start-card')||scope;
+ const bounds=host.getBoundingClientRect();
+ const keyboard=event.detail===0;
+ const x=keyboard?bounds.width/2:Math.max(0,Math.min(bounds.width,event.clientX-bounds.left));
+ const y=keyboard?bounds.height/2:Math.max(0,Math.min(bounds.height,event.clientY-bounds.top));
+ host.classList.add('choice-impact-host');
+ spawnRainImpact(host,x+host.scrollLeft,y+host.scrollTop,tone);
+}
 const rippleHolds=new Map();
 function endRippleHold(id){const hold=rippleHolds.get(id);if(!hold)return;clearTimeout(hold.timer);rippleHolds.delete(id)}
 function endAllRippleHolds(){for(const id of rippleHolds.keys())endRippleHold(id)}
-function beginRippleHold(e){if(e.button!==0||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;endRippleHold(e.pointerId);themeTouchImpact(e);if(rippleHolds.size>=4)return;const hold={target:e.target,clientX:e.clientX,clientY:e.clientY,timer:null};rippleHolds.set(e.pointerId,hold);const repeat=()=>{if(rippleHolds.get(e.pointerId)!==hold)return;themeTouchImpact(hold);hold.timer=setTimeout(repeat,360)};hold.timer=setTimeout(repeat,300)}
+function beginRippleHold(e){if(e.button!==0||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;endRippleHold(e.pointerId);if(rippleChoiceActions.has(e.target?.closest?.('button[data-action]')?.dataset.action))return;themeTouchImpact(e);if(rippleHolds.size>=4)return;const hold={target:e.target,clientX:e.clientX,clientY:e.clientY,timer:null};rippleHolds.set(e.pointerId,hold);const repeat=()=>{if(rippleHolds.get(e.pointerId)!==hold)return;themeTouchImpact(hold);hold.timer=setTimeout(repeat,360)};hold.timer=setTimeout(repeat,300)}
 function moveRippleHold(e){const hold=rippleHolds.get(e.pointerId);if(!hold)return;if(e.pointerType==='mouse'&&e.buttons===0){endRippleHold(e.pointerId);return}hold.clientX=e.clientX;hold.clientY=e.clientY;hold.target=e.target}
 
 const actions={
  'reset-site-data'(){resetCurrentSiteData()},
  'thought-assist'(){if(busy||screen!=='game'||playerTab!=='building'||!canReceiveThoughtGift())return;try{const candidate=grantThoughtGift(save);if(!put(playerSaveKey(),candidate))return;const dialog=$('#modal'),inPopup=dialog.open&&dialog.classList.contains('customization-dialog'),scroll=dialog.scrollTop,section=customSection;save=candidate;clearTimeout(thoughtGiftTimer);thoughtGiftPresentation={started:Date.now()};const scene=thoughtGiftPresentation;render();if(inPopup){customizationPopup(section);dialog.scrollTop=scroll;document.querySelector('.custom-popup-heading button')?.focus({preventScroll:true})}thoughtGiftTimer=setTimeout(()=>finishThoughtGiftPresentation(scene),3600)}catch(e){toast(e.message)}},
+ 'identity-trait':changeIdentityTrait,
  'race-primary'(id){if(!editableRace()||!raceTypes.some(r=>r.id===id))return;commitRace(selectRace(save.build.race,id))},
  'race-option'(key){if(!editableRace()||!['immortal','mixed'].includes(key))return;commitRace({...save.build.race,[key]:!save.build.race[key]})},
  'race-division'(encoded){
@@ -199,7 +235,26 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)endAllRippl
 window.addEventListener?.('blur',endAllRippleHolds);
 window.addEventListener?.('pointerout',e=>{if(!e.relatedTarget)endRippleHold(e.pointerId)},{passive:true});
 document.addEventListener('contextmenu',e=>{if(rippleHolds.size&&!e.target.closest?.('input,textarea,select,[contenteditable="true"],a'))e.preventDefault()});
-document.addEventListener('click',e=>{const el=e.target.closest('[data-action]');if(!el||el.disabled)return;if(el.dataset.action==='choose'){if(busy)return;const r=replay(project,save),c=r.scene.choices.find(c=>c.id===el.dataset.id);if(!c||r.score<c.min)return}if(e.detail===0){const rect=el.getBoundingClientRect();themeTouchImpact({target:el,clientX:rect.left+rect.width/2,clientY:rect.top+rect.height/2})}actions[el.dataset.action]?.(el.dataset.id)});
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-action]'),action=el?.dataset.action;
+ if(!el||el.disabled)return;
+ if(action==='choose'){
+  if(busy)return;
+  const r=replay(project,save),c=r.scene.choices.find(c=>c.id===el.dataset.id);
+  if(!c||r.score<c.min)return;
+ }
+ if(rippleChoiceActions.has(action)){
+  if(busy)return;
+  const tone=actions[action]?.(el.dataset.id);
+  if(action!=='identity-trait'||tone==='positive'||tone==='negative')choiceRipple(el,e,tone==='negative'?'negative':'positive');
+  return;
+ }
+ if(e.detail===0){
+  const rect=el.getBoundingClientRect();
+  themeTouchImpact({target:el,clientX:rect.left+rect.width/2,clientY:rect.top+rect.height/2});
+ }
+ actions[action]?.(el.dataset.id);
+});
 $('#modal').addEventListener('close',syncThoughtHelperLayer);
 $('#modal').addEventListener('cancel',e=>{if($('#modal').classList.contains('navigation-dialog')||$('#modal').classList.contains('customization-dialog')){e.preventDefault();close()}});
 $('#modal').addEventListener('click',e=>{const dialog=$('#modal');if(e.target!==dialog||(!dialog.classList.contains('navigation-dialog')&&!dialog.classList.contains('customization-dialog')))return;const rect=dialog.getBoundingClientRect();if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)close()});
@@ -296,7 +351,26 @@ function finishThoughtGiftPresentation(scene){if(thoughtGiftPresentation!==scene
 
 function thoughtCollapseUI(){return '<div class="thought-collapse" aria-hidden="true"><div class="collapse-haze"></div><div class="collapse-undertow"></div><div class="collapse-mist mist-one"></div><div class="collapse-mist mist-two"></div><div class="collapse-mist mist-three"></div></div>'}
 
-function editableRace(){return !busy&&!save.build.completed&&screen==='game'&&playerTab==='building'&&customSection==='race'&&$('#modal').open&&buildingPosition(project,save.build).stage.type==='customization'}
+function editableCustomization(section){
+ return !busy&&!save.build.completed&&screen==='game'&&playerTab==='building'&&customSection===section&&
+  $('#modal').open&&buildingPosition(project,save.build).stage.type==='customization';
+}
+function editableRace(){return editableCustomization('race')}
+function changeIdentityTrait(encoded){
+ if(!editableCustomization('identity')||typeof encoded!=='string')return;
+ const [id,level]=encoded.split(':');
+ if(!identityTraits.some(item=>item.id===id)||!identityTraitLevels.includes(level)||(save.build.traitChoices[id]??'neutral')===level)return;
+ const candidate=normalizePlayer({...save,build:{...save.build,thoughtLimit:undefined,traitChoices:{...save.build.traitChoices,[id]:level}}});
+ if(!put(playerSaveKey(),candidate))return;
+ const dialog=$('#modal'),scroll=dialog.scrollTop;
+ save=candidate;
+ render();
+ customizationPopup('identity');
+ dialog.scrollTop=scroll;
+ Array.from(document.querySelectorAll('#modal [data-action="identity-trait"]'))
+  .find(button=>button.dataset.id===encoded)?.focus({preventScroll:true});
+ return level;
+}
 function commitRace(raw){
  const wasImmortal=save.build.race.immortal;
  const active=document.activeElement;
@@ -531,7 +605,22 @@ function editableProfile(){return !busy&&!save.build.completed&&screen==='game'&
 function handleProfileInput(event){const input=event.target,key=input.dataset?.profileField;if(!key)return false;if(!editableProfile()||!['intro','height','weight','themeColor'].includes(key))return true;let value=input.value;if(key==='height'||key==='weight'){if(value.trim()===''||!Number.isFinite(Number(value)))return true;value=Number(value)}try{const candidate=normalizeProfile({...save.build.profile,[key]:value});save.build.profile=candidate;persist();$('#profileCardPreview').innerHTML=investigatorCard();$('#profileHeightValue').textContent=candidate.height+' cm';$('#profileColorHex').textContent=candidate.themeColor.toUpperCase()}catch(e){if(event.type==='change')toast(e.message)}return true}
 function profileSummary(){return `<section class="profile-summary">${investigatorCard()}${save.build.completed?'<button type="button" class="profile-exhibit-button" data-action="profile-collection">전시할 수집품 고르기</button>':''}</section>`}
 function collectionUI(){const owned=ownedCollectibles();modal(`<div class="custom-popup-heading"><div><h2>수집품 전시</h2></div><button type="button" class="quiet" data-action="close" aria-label="수집품 전시 닫기">✕</button></div><div class="collection-options">${owned.length?owned.map(item=>`<button type="button" class="collection-choice" data-action="display-collectible" data-id="${esc(item.id)}" aria-pressed="${save.build.profile.collectible===item.id}"><span aria-hidden="true">◇</span><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}</small></button>`).join(''):'<p>아직 획득한 수집품이 없습니다.</p>'}<button type="button" class="quiet" data-action="display-collectible" data-id="">전시하지 않음</button></div>`);$('#modal').setAttribute('aria-label','수집품 전시')}
-function customizationPopup(id,revealImmortal=false){const category=customCategories.find(item=>item.id===id);if(!category)return;modal(`<div class="custom-popup-heading"><div><span class="custom-popup-english" role="img" aria-label="${category.english}">${geometricGlyphs(category.english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><h2>${category.name}</h2></div><button type="button" class="quiet" data-action="close" aria-label="${category.name} 선택 창 닫기">✕</button></div><div class="custom-popup-options">${id==='profile'?profileEditorUI():id==='race'?raceEditorUI(revealImmortal):'<p>세부 항목은 아직 준비되지 않았습니다.</p>'}</div>${buildingPointsUI('popup')}`);$('#modal').classList.add('customization-dialog');$('#modal').setAttribute('aria-label',category.name+' 선택')}
+const identityLevelNames={negative:'네거티브',neutral:'뉴트럴',positive:'포지티브'};
+function identityEditorUI(){
+ return `<div class="identity-traits">${identityTraits.map(({id,name,levels})=>{
+  const selected=save.build.traitChoices[id]??'neutral';
+  const {description,cost}=levels[selected];
+  const amount=cost>0?'+'+cost:String(cost).replace('-', '−');
+  return `<article class="identity-trait" data-tone="${selected}">
+   <div class="identity-trait-heading"><h3>${esc(name)}</h3><small>사고 용량: ${amount}</small></div>
+   <div class="identity-trait-switch" role="group" aria-label="${esc(name)} 상태">${identityTraitLevels.map(level=>
+    `<button type="button" data-action="identity-trait" data-id="${esc(id)}:${level}" aria-pressed="${selected===level}" aria-describedby="identity-description-${esc(id)}">${identityLevelNames[level]}</button>`
+   ).join('')}</div>
+   <p id="identity-description-${esc(id)}">${esc(description)}</p>
+  </article>`;
+ }).join('')}</div>`;
+}
+function customizationPopup(id,revealImmortal=false){const category=customCategories.find(item=>item.id===id);if(!category)return;modal(`<div class="custom-popup-heading"><div><span class="custom-popup-english" role="img" aria-label="${category.english}">${geometricGlyphs(category.english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><h2>${category.name}</h2></div><button type="button" class="quiet" data-action="close" aria-label="${category.name} 선택 창 닫기">✕</button></div><div class="custom-popup-options">${id==='profile'?profileEditorUI():id==='race'?raceEditorUI(revealImmortal):id==='identity'?identityEditorUI():'<p>세부 항목은 아직 준비되지 않았습니다.</p>'}</div>${buildingPointsUI('popup')}`);$('#modal').classList.add('customization-dialog');$('#modal').setAttribute('aria-label',category.name+' 선택')}
 function customizationUI(){return `<article class="customization-hub"><div class="cutscene-top"><span>SHAPE / SOLIPISIS</span></div><div class="customization-heading"><p class="cutscene-speaker">${displayText(save.build.name)}</p><h1>커스터마이징</h1></div><div class="custom-category-grid" role="group" aria-label="커스터마이징 종류">${customCategories.map(item=>`<button type="button" class="custom-category ${item.id==='profile'?'custom-profile-wide':''}" data-action="custom-section" data-id="${item.id}" aria-haspopup="dialog" aria-controls="modal"><span class="custom-category-mark" aria-hidden="true">◇</span><strong>${item.name}</strong><span class="custom-category-english" role="img" aria-label="${item.english}">${geometricGlyphs(item.english)}</span></button>`).join('')}</div><div class="customization-footer"><button class="quiet" data-action="build-back">← 이전 장면</button><button class="primary" data-action="build-next">프로필 작성 계속 <span aria-hidden="true">→</span></button></div></article>`}
 function buildingUI(){if(save.build.completed)return `<div class="tab-heading"><span class="eyebrow">PERSONNEL FILE</span><h1>수사관의 인적 정보</h1><p>확정한 프로필을 살펴봅니다.</p></div>${buildSummary()}<p class="thought-limit-archived">${thoughtUsageLabel}: ${save.build.thoughtLimit}/${thoughtMaximumUI()}</p><div class="profile-actions"><button data-action="build-reopen">인적 정보 다시 작성</button><button class="primary" data-action="player-tab" data-id="story">진술 내용으로 →</button></div>`;
  const {stages,index,stage}=buildingPosition(project,save.build),icon=investigatorTabs.find(tab=>tab.id==='building').icon;

@@ -16,6 +16,18 @@ export const THOUGHT_LIMIT_DEFAULT_MAX=250;
 export const THOUGHT_LIMIT_GIFT_BONUS=50;
 export function thoughtLimitMaximum(build){return THOUGHT_LIMIT_DEFAULT_MAX+(build?.thoughtGiftReceived===true?THOUGHT_LIMIT_GIFT_BONUS:0)}
 export const IMMORTAL_THOUGHT_COST=251;
+export const identityTraitLevels=['negative','neutral','positive'];
+export const identityTraits=[
+ {
+  id:'example',
+  name:'특성 예시',
+  levels:{
+   negative:{description:'이 특성을 네거티브로 선택합니다.',cost:-20},
+   neutral:{description:'이 특성은 뉴트럴 상태입니다.',cost:0},
+   positive:{description:'이 특성을 포지티브로 선택합니다.',cost:20}
+  }
+ }
+];
 export const raceTypes=[{id:'human',name:'휴먼'},{id:'elf',name:'엘프'},{id:'dwarf',name:'드워프'},{id:'beastkin',name:'수인'},{id:'celestial',name:'천족'},{id:'demon',name:'마족'},{id:'spirit',name:'정령'},{id:'automaton',name:'오토마타'}];
 const elfDivisions=[
  {
@@ -217,6 +229,12 @@ export function raceDisplay(raw){
  return names.length?names.join(separator)+(r.immortal?' / 영생종':''):'';
 }
 
+function normalizeIdentityTraits(raw={}){
+ if(!raw||typeof raw!=='object'||Array.isArray(raw)||Object.keys(raw).length>300||
+  Object.values(raw).some(level=>!identityTraitLevels.includes(level)))throw Error('특성 선택 기록을 확인해 주세요.');
+ return Object.fromEntries(identityTraits.filter(({id})=>Object.hasOwn(raw,id)&&raw[id]!=='neutral').map(({id})=>[id,raw[id]]));
+}
+
 // Player data is independent of the five-tab interface and scene text.
 export function normalizePlayer(raw={}) {
  if(!raw||typeof raw!=='object')throw Error('플레이 데이터 형식을 확인해 주세요.');
@@ -232,8 +250,17 @@ export function normalizePlayer(raw={}) {
  if(!cutChoices||typeof cutChoices!=='object'||Array.isArray(cutChoices)||Object.keys(cutChoices).length>300||Object.entries(cutChoices).some(([key,value])=>key.length>300||typeof value!=='string'||value.length>300))throw Error('컷씬 선택 기록 형식을 확인해 주세요.');
  const list=key=>{const a=raw[key]??[];if(!Array.isArray(a)||a.length>10000||a.some(x=>typeof x!=='string'||x.length>300))throw Error('해금 데이터 형식을 확인해 주세요.');return [...new Set(a)]};
  const collectibles=list('collectibles'),profile=normalizeProfile(b.profile??{portrait:b.appearance?.portrait??'',height:b.appearance?.height??170});if(profile.collectible&&!collectibles.includes(profile.collectible))profile.collectible='';
- const race=normalizeRace(b.race??{primary:raceTypes.find(r=>r.name===profile.race)?.id||''}),storedThought=b.thoughtLimit??0,thoughtLimitBase=b.thoughtLimitBase??storedThought;if(!Number.isInteger(storedThought)||storedThought<0||storedThought>1000000+IMMORTAL_THOUGHT_COST||!Number.isInteger(thoughtLimitBase)||thoughtLimitBase<0||thoughtLimitBase>1000000)throw Error('사고 한계 수치를 확인해 주세요.');const thoughtGiftReceived=b.thoughtGiftReceived??false;if(typeof thoughtGiftReceived!=='boolean')throw Error('사고 한계 확장 기록을 확인해 주세요.');const thoughtLimit=thoughtLimitBase+(race.immortal?IMMORTAL_THOUGHT_COST:0);if(race.primary)profile.race=raceDisplay(race);
- return {v:2,history:history.map(h=>({choice:h.choice})),build:{name:b.name,gender,profile,race,thoughtLimitBase,thoughtLimit,thoughtGiftReceived,stats:{...b.stats},completed:b.completed,cutscene:{scene:cut.scene,choices:{...cutChoices}}},bonds:list('bonds'),lore:list('lore'),events:list('events'),perks:list('perks'),collectibles};
+ const race=normalizeRace(b.race??{primary:raceTypes.find(r=>r.name===profile.race)?.id||''});
+ const traitChoices=normalizeIdentityTraits(b.traitChoices);
+ const traitCost=identityTraits.reduce((total,{id,levels})=>total+levels[traitChoices[id]??'neutral'].cost,0);
+ const storedThought=b.thoughtLimit??0,thoughtLimitBase=b.thoughtLimitBase??storedThought;
+ const maxStoredThought=1000000+IMMORTAL_THOUGHT_COST+Math.max(0,traitCost);
+ if(!Number.isInteger(storedThought)||storedThought<0||storedThought>maxStoredThought||!Number.isInteger(thoughtLimitBase)||thoughtLimitBase<0||thoughtLimitBase>1000000)throw Error('사고 한계 수치를 확인해 주세요.');
+ const thoughtGiftReceived=b.thoughtGiftReceived??false;
+ if(typeof thoughtGiftReceived!=='boolean')throw Error('사고 한계 확장 기록을 확인해 주세요.');
+ const thoughtLimit=Math.max(0,thoughtLimitBase+(race.immortal?IMMORTAL_THOUGHT_COST:0)+traitCost);
+ if(race.primary)profile.race=raceDisplay(race);
+ return {v:2,history:history.map(h=>({choice:h.choice})),build:{name:b.name,gender,profile,race,traitChoices,thoughtLimitBase,thoughtLimit,thoughtGiftReceived,stats:{...b.stats},completed:b.completed,cutscene:{scene:cut.scene,choices:{...cutChoices}}},bonds:list('bonds'),lore:list('lore'),events:list('events'),perks:list('perks'),collectibles};
 }
 export function grantThoughtGift(raw){const next=normalizePlayer(raw);if(next.build.completed||next.build.thoughtGiftReceived||next.build.thoughtLimit<=thoughtLimitMaximum(next.build))throw Error('지금은 사고 한계를 확장할 수 없어요.');next.build.thoughtGiftReceived=true;return next}
 export function encodePlayer(p,raw){const s=normalizePlayer(raw),bytes=new TextEncoder().encode(JSON.stringify({...s,project:p.id}));let binary='';for(const b of bytes)binary+=String.fromCharCode(b);return 'GAL2.'+btoa(binary)}
