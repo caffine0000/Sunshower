@@ -134,24 +134,23 @@ function rainImpact(event){
  const dialog=event.target?.closest?.('dialog[open]'),rect=dialog?.getBoundingClientRect();
  spawnRainImpact(dialog||document.body,event.clientX-(rect?.left||0)+(dialog?.scrollLeft||0),event.clientY-(rect?.top||0)+(dialog?.scrollTop||0));
 }
+const inlineRippleActions=new Set([
+ 'race-primary','race-option','race-division','identity-trait','card-theme','display-collectible','set-theme'
+]);
 const rippleChoiceActions=new Set([
- 'choose','choose-building-scene','choose-gender','race-primary','race-option','race-division',
- 'identity-trait','custom-section','card-theme','display-collectible','set-theme','player-tab','apply-perk',
+ ...inlineRippleActions,'choose','choose-building-scene','choose-gender','custom-section','player-tab','apply-perk',
  'build-next','build-back','build-complete','speak-name','enter','event','event-complete'
 ]);
-function choiceRipple(button,event,tone){
+function choiceRipple(button,tone){
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
- const dialog=$('#modal'),scope=dialog.open?dialog:$('#app');
+ const scope=$('#modal').open?$('#modal'):$('#app');
  const matching=scope.contains(button)?button:Array.from(scope.querySelectorAll('button[data-action]'))
   .find(item=>item.dataset.action===button.dataset.action&&item.dataset.id===button.dataset.id);
- const host=matching?.closest('.identity-trait')||matching||
-  scope.querySelector(dialog.open?'.custom-popup-options, .settings-content, .drawer-nav, .custom-popup-heading':'.player-panel, .start-card')||scope;
+ if(!matching)return;
+ const host=matching.closest('.identity-trait')||matching;
  const bounds=host.getBoundingClientRect();
- const keyboard=event.detail===0;
- const x=keyboard?bounds.width/2:Math.max(0,Math.min(bounds.width,event.clientX-bounds.left));
- const y=keyboard?bounds.height/2:Math.max(0,Math.min(bounds.height,event.clientY-bounds.top));
  host.classList.add('choice-impact-host');
- spawnRainImpact(host,x+host.scrollLeft,y+host.scrollTop,tone);
+ spawnRainImpact(host,bounds.width/2+host.scrollLeft,bounds.height/2+host.scrollTop,tone);
 }
 const rippleHolds=new Map();
 function endRippleHold(id){const hold=rippleHolds.get(id);if(!hold)return;clearTimeout(hold.timer);rippleHolds.delete(id)}
@@ -161,7 +160,7 @@ function moveRippleHold(e){const hold=rippleHolds.get(e.pointerId);if(!hold)retu
 
 const actions={
  'reset-site-data'(){resetCurrentSiteData()},
- 'thought-assist'(){if(busy||screen!=='game'||playerTab!=='building'||!canReceiveThoughtGift())return;try{const candidate=grantThoughtGift(save);if(!put(playerSaveKey(),candidate))return;const dialog=$('#modal'),inPopup=dialog.open&&dialog.classList.contains('customization-dialog'),scroll=dialog.scrollTop,section=customSection;save=candidate;clearTimeout(thoughtGiftTimer);thoughtGiftPresentation={started:Date.now()};const scene=thoughtGiftPresentation;render();if(inPopup){customizationPopup(section);dialog.scrollTop=scroll;document.querySelector('.custom-popup-heading button')?.focus({preventScroll:true})}thoughtGiftTimer=setTimeout(()=>finishThoughtGiftPresentation(scene),3600)}catch(e){toast(e.message)}},
+ 'thought-assist'(){if(busy||screen!=='game'||playerTab!=='building'||!canReceiveThoughtGift())return;try{const candidate=grantThoughtGift(save);if(!put(playerSaveKey(),candidate))return;const dialog=$('#modal'),inPopup=dialog.open&&dialog.classList.contains('customization-dialog');save=candidate;clearTimeout(thoughtGiftTimer);thoughtGiftPresentation={started:Date.now()};const scene=thoughtGiftPresentation;refreshBuildingPoints();if(inPopup)document.querySelector('.custom-popup-heading button')?.focus({preventScroll:true});thoughtGiftTimer=setTimeout(()=>finishThoughtGiftPresentation(scene),3600)}catch(e){toast(e.message)}},
  'identity-trait':changeIdentityTrait,
  'race-primary'(id){if(!editableRace()||!raceTypes.some(r=>r.id===id))return;commitRace(selectRace(save.build.race,id))},
  'race-option'(key){if(!editableRace()||!['immortal','mixed'].includes(key))return;commitRace({...save.build.race,[key]:!save.build.race[key]})},
@@ -235,6 +234,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)endAllRippl
 window.addEventListener?.('blur',endAllRippleHolds);
 window.addEventListener?.('pointerout',e=>{if(!e.relatedTarget)endRippleHold(e.pointerId)},{passive:true});
 document.addEventListener('contextmenu',e=>{if(rippleHolds.size&&!e.target.closest?.('input,textarea,select,[contenteditable="true"],a'))e.preventDefault()});
+let pendingChoice=false;
 document.addEventListener('click',e=>{
  const el=e.target.closest('[data-action]'),action=el?.dataset.action;
  if(!el||el.disabled)return;
@@ -244,9 +244,22 @@ document.addEventListener('click',e=>{
   if(!c||r.score<c.min)return;
  }
  if(rippleChoiceActions.has(action)){
-  if(busy)return;
-  const tone=actions[action]?.(el.dataset.id);
-  if(action!=='identity-trait'||tone==='positive'||tone==='negative')choiceRipple(el,e,tone==='negative'?'negative':'positive');
+  if(busy||pendingChoice)return;
+  const activate=()=>actions[action]?.(el.dataset.id);
+  if(inlineRippleActions.has(action)){
+   const tone=activate();
+   if(action!=='identity-trait'||tone==='positive'||tone==='negative')choiceRipple(el,tone==='negative'?'negative':'positive');
+  }else{
+   choiceRipple(el,'positive');
+   if(action==='choose'||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)activate();
+   else{
+    pendingChoice=true;
+    setTimeout(()=>{
+     pendingChoice=false;
+     if(el.isConnected&&!el.disabled&&!busy)activate();
+    },220);
+   }
+  }
   return;
  }
  if(e.detail===0){
@@ -285,10 +298,21 @@ function playerUI(state){const tabs=investigatorTabs.map(tab=>[tab.id,tab.label]
 function cutsceneProse(stage){const raw=String(stage.body??''),mark=stage.emphasis;if(!mark||!Number.isInteger(mark.start)||!Number.isInteger(mark.length)||mark.start<0||mark.length<1||mark.start+mark.length>raw.length)return displayText(raw);return displayText(raw.slice(0,mark.start))+'<strong class="narrative-emphasis">'+displayText(raw.slice(mark.start,mark.start+mark.length))+'</strong>'+displayText(raw.slice(mark.start+mark.length))}
 const customCategories=[{id:'profile',name:'프로필',english:'Profile'},{id:'race',name:'종족',english:'Race'},{id:'identity',name:'특성',english:'Identity'},{id:'authorization',name:'권한',english:'Authorization'},{id:'privilege',name:'특수',english:'Privilege'}];
 const thoughtUsageLabel='사고 용량';
+function buildingPointsContents(exceeded){
+ const label=thoughtUsageLabel+':';
+ return `<span class="thought-limit-label ${exceeded?'thought-label-corrupted':''}">${label}${exceeded?`<span class="thought-label-ghost ghost-red" aria-hidden="true">${label}</span><span class="thought-label-ghost ghost-ash" aria-hidden="true">${label}</span>`:''}</span> <strong>${save.build.thoughtLimit}/${thoughtMaximumUI()}</strong>`;
+}
 function buildingPointsUI(location='page'){
  const exceeded=isThoughtOverLimit();
- const label=thoughtUsageLabel+':';
- return `<div class="thought-limit-${location} ${exceeded?'is-overlimit':''}" role="status" aria-label="${thoughtUsageLabel}"><span class="thought-limit-label ${exceeded?'thought-label-corrupted':''}">${label}${exceeded?`<span class="thought-label-ghost ghost-red" aria-hidden="true">${label}</span><span class="thought-label-ghost ghost-ash" aria-hidden="true">${label}</span>`:''}</span> <strong>${save.build.thoughtLimit}/${thoughtMaximumUI()}</strong></div>`;
+ return `<div class="thought-limit-${location} ${exceeded?'is-overlimit':''}" role="status" aria-label="${thoughtUsageLabel}">${buildingPointsContents(exceeded)}</div>`;
+}
+function refreshBuildingPoints(){
+ const exceeded=isThoughtOverLimit(),contents=buildingPointsContents(exceeded);
+ for(const meter of document.querySelectorAll('.thought-limit-page,.thought-limit-popup')){
+  meter.classList.toggle('is-overlimit',exceeded);
+  meter.innerHTML=contents;
+ }
+ syncThoughtHelperLayer();
 }
 // The SD artwork is shared by the idle helper and the inline departure.
 const thoughtAssistAssets={sd:'assets/thought-assist-sd-c817b19264.webp'};
@@ -364,8 +388,8 @@ function changeIdentityTrait(encoded){
  if(!put(playerSaveKey(),candidate))return;
  const dialog=$('#modal'),scroll=dialog.scrollTop;
  save=candidate;
- render();
  customizationPopup('identity');
+ refreshBuildingPoints();
  dialog.scrollTop=scroll;
  Array.from(document.querySelectorAll('#modal [data-action="identity-trait"]'))
   .find(button=>button.dataset.id===encoded)?.focus({preventScroll:true});
@@ -381,8 +405,8 @@ function commitRace(raw){
   row=>[row.dataset.raceDivisionList,row.scrollLeft]));
  save=normalizePlayer({...save,build:{...save.build,race:normalizeRace(raw)}});
  persist();
- render();
  customizationPopup('race',!wasImmortal&&save.build.race.immortal);
+ refreshBuildingPoints();
  dialog.scrollTop=scroll;
  for(const row of document.querySelectorAll(divisionRows)){
   row.scrollLeft=divisionOffsets.get(row.dataset.raceDivisionList)??0;
