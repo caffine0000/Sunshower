@@ -1,4 +1,4 @@
-import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,allowsMultipleRaceDivisions,selectedRaceDivisionIds,normalizeRace,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift,identityTraits,identityTraitLevels} from './engine.mjs';
+import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,allowsMultipleRaceDivisions,selectedRaceDivisionIds,normalizeRace,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift,identityTraits,identityTraitLevels,IMMORTAL_THOUGHT_COST} from './engine.mjs';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),uid=()=>crypto.randomUUID(),clone=x=>JSON.parse(JSON.stringify(x));
 const displayText=value=>esc(formatPlayerText(value,save?.build));
 const APP_VERSION='0.1.0';
@@ -123,11 +123,13 @@ function spawnRainImpact(host,x,y,tone=''){
  fx.setAttribute('aria-hidden','true');
  fx.style.left=x+'px';
  fx.style.top=y+'px';
- fx.innerHTML='<i class="touch-drop"></i><i class="touch-splash"></i><i class="touch-ring touch-ring-one"></i><i class="touch-ring touch-ring-two"></i><i class="touch-ring touch-ring-three"></i>'+microRipples();
+ const rings='<i class="touch-ring touch-ring-one"></i><i class="touch-ring touch-ring-two"></i><i class="touch-ring touch-ring-three"></i>';
+ fx.innerHTML=tone?rings:'<i class="touch-drop"></i><i class="touch-splash"></i>'+rings+microRipples();
  const existing=document.querySelectorAll('.touch-impact');
  if(existing.length>=12)existing[0].remove();
  host.appendChild(fx);
  setTimeout(()=>fx.remove(),1150);
+ return fx;
 }
 function rainImpact(event){
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
@@ -147,10 +149,15 @@ function choiceRipple(button,tone){
  const matching=scope.contains(button)?button:Array.from(scope.querySelectorAll('button[data-action]'))
   .find(item=>item.dataset.action===button.dataset.action&&item.dataset.id===button.dataset.id);
  if(!matching)return;
- const host=matching.closest('.identity-trait')||matching;
- const bounds=host.getBoundingClientRect();
- host.classList.add('choice-impact-host');
- spawnRainImpact(host,bounds.width/2+host.scrollLeft,bounds.height/2+host.scrollTop,tone);
+ const choice=matching.closest('.identity-trait')||matching,layer=choice.parentElement;
+ if(!layer)return;
+ if(window.getComputedStyle(layer).position==='static')layer.classList.add('choice-impact-anchor');
+ layer.classList.add('choice-impact-layer');
+ const bounds=choice.getBoundingClientRect(),origin=layer.getBoundingClientRect();
+ const x=bounds.left+bounds.width/2-origin.left-layer.clientLeft+layer.scrollLeft;
+ const y=bounds.top+bounds.height/2-origin.top-layer.clientTop+layer.scrollTop;
+ const effect=spawnRainImpact(layer,x,y,tone);
+ effect.style.setProperty('--choice-ring-size',Math.max(230,Math.hypot(bounds.width,bounds.height)+108)+'px');
 }
 const rippleHolds=new Map();
 function endRippleHold(id){const hold=rippleHolds.get(id);if(!hold)return;clearTimeout(hold.timer);rippleHolds.delete(id)}
@@ -298,6 +305,9 @@ function playerUI(state){const tabs=investigatorTabs.map(tab=>[tab.id,tab.label]
 function cutsceneProse(stage){const raw=String(stage.body??''),mark=stage.emphasis;if(!mark||!Number.isInteger(mark.start)||!Number.isInteger(mark.length)||mark.start<0||mark.length<1||mark.start+mark.length>raw.length)return displayText(raw);return displayText(raw.slice(0,mark.start))+'<strong class="narrative-emphasis">'+displayText(raw.slice(mark.start,mark.start+mark.length))+'</strong>'+displayText(raw.slice(mark.start+mark.length))}
 const customCategories=[{id:'profile',name:'프로필',english:'Profile'},{id:'race',name:'종족',english:'Race'},{id:'identity',name:'특성',english:'Identity'},{id:'authorization',name:'권한',english:'Authorization'},{id:'privilege',name:'특수',english:'Privilege'}];
 const thoughtUsageLabel='사고 용량';
+function choiceThoughtCost(cost){
+ return `<small class="choice-thought-cost">${thoughtUsageLabel}: ${String(cost).replace('-', '−')}</small>`;
+}
 function buildingPointsContents(exceeded){
  const label=thoughtUsageLabel+':';
  return `<span class="thought-limit-label ${exceeded?'thought-label-corrupted':''}">${label}${exceeded?`<span class="thought-label-ghost ghost-red" aria-hidden="true">${label}</span><span class="thought-label-ghost ghost-ash" aria-hidden="true">${label}</span>`:''}</span> <strong>${save.build.thoughtLimit}/${thoughtMaximumUI()}</strong>`;
@@ -604,7 +614,7 @@ function raceDivisionTitle(item){
 function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions,divisionNote}=raceDefinition(id),selectedIds=selectedRaceDivisionIds(save.build.race,id),selectedDivisions=divisions.filter(item=>selectedIds.includes(item.id));return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?raceTraitsUI(id,traits,selectedDivisions):''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>추가 특성</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options" data-race-division-list="${esc(id)}">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${selectedIds.includes(item.id)}">${raceDivisionTitle(item)}${item.description?`<small>${esc(item.description)}</small>`:''}</button>`).join('')}</div>`:`<p>${esc(divisionNote||'세부 분류가 아직 등록되지 않았습니다.')}</p>`}</section></section>`}
 // Original white modifier symbols share the theme's monochrome polarity.
 const raceModifierArtwork={immortal:'assets/race-modifier-immortal.png',mixed:'assets/race-modifier-hybrid.png'};
-function raceModifierButton(id,name,english,selected){const art=raceModifierArtwork[id];return `<button type="button" data-action="race-option" data-id="${id}" aria-pressed="${selected}"><span class="race-modifier-icon" aria-hidden="true">${art?`<img src="${esc(art)}" alt="" width="64" height="64" decoding="async">`:''}</span><span class="race-modifier-label"><span class="race-modifier-echo" aria-hidden="true">${geometricGlyphs(english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><strong>${name}</strong></span></button>`}
+function raceModifierButton(id,name,english,selected){const art=raceModifierArtwork[id];return `<button type="button" data-action="race-option" data-id="${id}" aria-pressed="${selected}"><span class="race-modifier-icon" aria-hidden="true">${art?`<img src="${esc(art)}" alt="" width="64" height="64" decoding="async">`:''}</span><span class="race-modifier-label"><span class="race-modifier-echo" aria-hidden="true">${geometricGlyphs(english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><strong>${name}</strong>${id==='immortal'?choiceThoughtCost(IMMORTAL_THOUGHT_COST):''}</span></button>`}
 const immortalEnglishName='Aeon';
 function immortalDetailsUI(reveal){
  return `<section class="immortal-details ${reveal?'immortal-appearing':''}" aria-labelledby="immortal-title">
@@ -634,9 +644,8 @@ function identityEditorUI(){
  return `<div class="identity-traits">${identityTraits.map(({id,name,levels})=>{
   const selected=save.build.traitChoices[id]??'neutral';
   const {description,cost}=levels[selected];
-  const amount=cost>0?'+'+cost:String(cost).replace('-', '−');
   return `<article class="identity-trait" data-tone="${selected}">
-   <div class="identity-trait-heading"><h3>${esc(name)}</h3><small>사고 용량: ${amount}</small></div>
+   <div class="identity-trait-heading"><h3>${esc(name)}</h3>${choiceThoughtCost(cost)}</div>
    <div class="identity-trait-switch" role="group" aria-label="${esc(name)} 상태">${identityTraitLevels.map(level=>
     `<button type="button" data-action="identity-trait" data-id="${esc(id)}:${level}" aria-pressed="${selected===level}" aria-describedby="identity-description-${esc(id)}">${identityLevelNames[level]}</button>`
    ).join('')}</div>

@@ -478,7 +478,8 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .race-modifiers .race-modifier-echo{position:absolute;left:0;bottom:4px;width:100%;max-width:112px;height:23px;opacity:.16;color:inherit;pointer-events:none;z-index:0}
 .race-modifier-echo svg{display:block;width:100%;height:100%}
 .race-modifiers [data-id="immortal"] .race-modifier-label{text-align:left}
-.race-modifiers [data-id="immortal"] .race-modifier-echo{top:50%;bottom:auto;transform:translateY(-50%)}
+.race-modifiers [data-id="immortal"] .race-modifier-echo{top:7px;bottom:auto}
+.race-modifier-label .choice-thought-cost{display:block;position:relative;margin-top:4px}
 @media(max-width:420px){.race-modifiers button{padding:10px;gap:8px}.race-modifiers .race-modifier-icon{flex-basis:36px;width:36px;height:36px}}
 
 
@@ -670,7 +671,8 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .identity-trait[data-tone="negative"]{--trait-tone:var(--choice-negative)}
 .identity-trait-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 18px}
 .identity-trait-heading h3{margin:0;color:var(--ink);font-size:19px}
-.identity-trait-heading small{color:var(--trait-tone);font-size:12px;white-space:nowrap}
+.choice-thought-cost{color:var(--muted);font-size:11px;white-space:nowrap}
+.identity-trait-heading .choice-thought-cost{color:var(--trait-tone)}
 .identity-trait:is([data-tone="positive"],[data-tone="negative"]) .identity-trait-heading small{
  padding:2px 7px;
  border-radius:4px;
@@ -705,22 +707,18 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 }
 .identity-trait p{margin:14px 0 0;line-height:1.75;white-space:pre-line}
 
-.choice-impact-host{position:relative;isolation:isolate}
+.choice-impact-anchor{position:relative}
+.choice-impact-layer{isolation:isolate}
 .touch-impact.choice-impact{position:absolute;z-index:-1;color:var(--choice-ripple)}
 .choice-impact-positive{--choice-ripple:var(--choice-positive);--choice-ripple-edge:var(--choice-positive-edge)}
 .choice-impact-negative{--choice-ripple:var(--choice-negative);--choice-ripple-edge:var(--choice-negative-edge)}
-.choice-impact .touch-drop{
- background:linear-gradient(transparent,currentColor);
- box-shadow:0 2px 5px color-mix(in srgb,currentColor 45%,transparent);
-}
-.choice-impact .touch-splash{background:currentColor;box-shadow:0 0 7px 1px currentColor}
 .choice-impact .touch-ring{
- border-color:currentColor;
- box-shadow:0 0 0 1px var(--choice-ripple-edge);
+ border:1px solid color-mix(in srgb,currentColor 72%,var(--choice-ripple-edge));
+ box-shadow:none;
 }
-.choice-impact .touch-ring-one{--ring-size:230px}
-.choice-impact .touch-ring-two{--ring-size:190px}
-.choice-impact .touch-ring-three{--ring-size:146px}
+.choice-impact .touch-ring-one{--ring-size:var(--choice-ring-size,230px);animation-delay:0s}
+.choice-impact .touch-ring-two{--ring-size:calc(var(--choice-ring-size,230px) * .89);animation-delay:.09s}
+.choice-impact .touch-ring-three{--ring-size:calc(var(--choice-ring-size,230px) * .78);animation-delay:.18s}
 
 .immortal-details{
  position:relative;
