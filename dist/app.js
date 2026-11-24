@@ -306,7 +306,9 @@ function cutsceneProse(stage){const raw=String(stage.body??''),mark=stage.emphas
 const customCategories=[{id:'profile',name:'프로필',english:'Profile'},{id:'race',name:'종족',english:'Race'},{id:'identity',name:'특성',english:'Identity'},{id:'authorization',name:'권한',english:'Authorization'},{id:'privilege',name:'특수',english:'Privilege'}];
 const thoughtUsageLabel='사고 용량';
 function choiceThoughtCost(cost){
- return `<small class="choice-thought-cost">${thoughtUsageLabel}: ${String(cost).replace('-', '−')}</small>`;
+ if(cost===0)return '';
+ const label=cost>0?'사고 요구량':'사고 복원량';
+ return `<small class="choice-thought-cost">${label}: ${Math.abs(cost)}</small>`;
 }
 function buildingPointsContents(exceeded){
  const label=thoughtUsageLabel+':';
@@ -640,6 +642,7 @@ function handleProfileInput(event){const input=event.target,key=input.dataset?.p
 function profileSummary(){return `<section class="profile-summary">${investigatorCard()}${save.build.completed?'<button type="button" class="profile-exhibit-button" data-action="profile-collection">전시할 수집품 고르기</button>':''}</section>`}
 function collectionUI(){const owned=ownedCollectibles();modal(`<div class="custom-popup-heading"><div><h2>수집품 전시</h2></div><button type="button" class="quiet" data-action="close" aria-label="수집품 전시 닫기">✕</button></div><div class="collection-options">${owned.length?owned.map(item=>`<button type="button" class="collection-choice" data-action="display-collectible" data-id="${esc(item.id)}" aria-pressed="${save.build.profile.collectible===item.id}"><span aria-hidden="true">◇</span><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}</small></button>`).join(''):'<p>아직 획득한 수집품이 없습니다.</p>'}<button type="button" class="quiet" data-action="display-collectible" data-id="">전시하지 않음</button></div>`);$('#modal').setAttribute('aria-label','수집품 전시')}
 const identityLevelNames={negative:'네거티브',neutral:'뉴트럴',positive:'포지티브'};
+const identityLevelSymbols={negative:'-',neutral:'○',positive:'+'};
 function identityEditorUI(){
  return `<div class="identity-traits">${identityTraits.map(({id,name,levels})=>{
   const selected=save.build.traitChoices[id]??'neutral';
@@ -647,7 +650,7 @@ function identityEditorUI(){
   return `<article class="identity-trait" data-tone="${selected}">
    <div class="identity-trait-heading"><h3>${esc(name)}</h3>${choiceThoughtCost(cost)}</div>
    <div class="identity-trait-switch" role="group" aria-label="${esc(name)} 상태">${identityTraitLevels.map(level=>
-    `<button type="button" data-action="identity-trait" data-id="${esc(id)}:${level}" aria-pressed="${selected===level}" aria-describedby="identity-description-${esc(id)}">${identityLevelNames[level]}</button>`
+    `<button type="button" data-action="identity-trait" data-id="${esc(id)}:${level}" aria-label="${identityLevelNames[level]}" aria-pressed="${selected===level}" aria-describedby="identity-description-${esc(id)}">${identityLevelSymbols[level]}</button>`
    ).join('')}</div>
    <p id="identity-description-${esc(id)}">${esc(description)}</p>
   </article>`;

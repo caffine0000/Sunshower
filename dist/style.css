@@ -658,10 +658,12 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  --choice-positive-edge:#286e64;
  --choice-negative:#f3a3ae;
  --choice-negative-edge:#a53f66;
+ --choice-neutral:#bbc2d9;
 }
+:root[data-theme="acrylic-sky"]{--choice-neutral:#765266}
 .identity-traits{display:grid;gap:16px}
 .identity-trait{
- --trait-tone:var(--muted);
+ --trait-tone:var(--choice-neutral);
  padding:clamp(14px,4vw,24px);
  border:1px solid color-mix(in srgb,var(--trait-tone) 45%,transparent);
  border-radius:9px;
@@ -672,16 +674,16 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .identity-trait-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 18px}
 .identity-trait-heading h3{margin:0;color:var(--ink);font-size:19px}
 .choice-thought-cost{color:var(--muted);font-size:11px;white-space:nowrap}
-.identity-trait-heading .choice-thought-cost{color:var(--trait-tone)}
-.identity-trait:is([data-tone="positive"],[data-tone="negative"]) .identity-trait-heading small{
+.identity-trait-heading .choice-thought-cost{
  padding:2px 7px;
  border-radius:4px;
- background:var(--trait-tone);
- color:#242534;
+ background:color-mix(in srgb,var(--choice-neutral) 10%,transparent);
+ color:var(--choice-neutral);
 }
 .identity-trait-switch{
  display:grid;
  grid-template-columns:repeat(3,minmax(0,1fr));
+ width:min(100%,156px);
  gap:3px;
  margin-top:16px;
  padding:3px;
@@ -696,7 +698,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  background:transparent;
  color:var(--ink);
  box-shadow:none;
- font:500 12px 'Noto Sans KR',sans-serif;
+ font:500 16px 'Noto Sans KR',sans-serif;
 }
 .identity-trait-switch button:hover{border-color:var(--line)}
 .identity-trait-switch button[aria-pressed="true"]{

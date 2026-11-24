@@ -149,7 +149,7 @@ vm.runInNewContext(code+`
  project.raceDetails={human:{traits:[{name:'검증 특성 1',description:'1'},{name:'검증 특성 2',description:'2'},{name:'검증 특성 3',description:'3'}],divisions:[{id:'test-lineage',name:'검증 분화',description:'분화 검증'}]}};actions['race-primary']('human');assert.ok($('#modalBody').innerHTML.includes('검증 특성 3'));actions['race-division'](JSON.stringify(['human','test-lineage']));assert.equal(save.build.race.divisions.human,'test-lineage');actions['race-division'](JSON.stringify(['human','not-owned']));assert.equal(save.build.race.divisions.human,'test-lineage');
  assert.ok(!raceEditorUI().includes('>ON<'));assert.ok(!raceEditorUI().includes('>OFF<'));assert.ok(!raceEditorUI().includes('immortal-details'));actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,251);
  const raceHtml=$('#modalBody').innerHTML;
- assert.ok(raceHtml.includes('사고 용량: 251'));
+ assert.ok(raceHtml.includes('사고 요구량: 251'));
  assert.ok(raceHtml.includes('immortal-details immortal-appearing'));
  assert.ok(raceHtml.includes('immortal-symbol'));
  assert.ok(raceHtml.indexOf('race-modifiers')<raceHtml.indexOf('immortal-details'));
@@ -169,14 +169,19 @@ vm.runInNewContext(code+`
  const select=level=>actions['identity-trait']('example:'+level);
  const stageWrites=$('#app').htmlWrites;
  assert.ok(panel().includes('data-tone="neutral"'));
- assert.ok(panel().includes('사고 용량: 0'));
+ assert.ok(!panel().includes('choice-thought-cost'));
+ for(const [level,label,symbol] of [['negative','네거티브','-'],['neutral','뉴트럴','○'],['positive','포지티브','+']]){
+  const button=panel().split('</button>').find(markup=>markup.includes('data-id="example:'+level+'"'));
+  assert.ok(button.includes('aria-label="'+label+'"'));
+  assert.ok(button.endsWith('>'+symbol));
+ }
  assert.equal(select('negative'),'negative');
  assert.ok(panel().includes('data-tone="negative"'));
- assert.ok(panel().includes('사고 용량: −20'));
+ assert.ok(panel().includes('사고 복원량: 20'));
  assert.equal(save.build.thoughtLimit,0);
  assert.equal(select('positive'),'positive');
  assert.ok(panel().includes('이 특성을 포지티브로 선택합니다.'));
- assert.ok(panel().includes('사고 용량: 20'));
+ assert.ok(panel().includes('사고 요구량: 20'));
  assert.equal(save.build.thoughtLimit,20);
  for(const meter of ['.thought-limit-page','.thought-limit-popup'])assert.ok($(meter).innerHTML.includes('<strong>20/'));
  const restored=decodePlayer(project,encodePlayer(project,save));
