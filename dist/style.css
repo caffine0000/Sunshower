@@ -654,11 +654,9 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 
 :root{
  --choice-positive:#79dfca;
+ --choice-positive-edge:#286e64;
  --choice-negative:#f3a3ae;
-}
-:root[data-theme="acrylic-sky"]{
- --choice-positive:#286e64;
- --choice-negative:#a53f66;
+ --choice-negative-edge:#a53f66;
 }
 .identity-traits{display:grid;gap:16px}
 .identity-trait{
@@ -673,6 +671,12 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .identity-trait-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 18px}
 .identity-trait-heading h3{margin:0;color:var(--ink);font-size:19px}
 .identity-trait-heading small{color:var(--trait-tone);font-size:12px;white-space:nowrap}
+.identity-trait:is([data-tone="positive"],[data-tone="negative"]) .identity-trait-heading small{
+ padding:2px 7px;
+ border-radius:4px;
+ background:var(--trait-tone);
+ color:#242534;
+}
 .identity-trait-switch{
  display:grid;
  grid-template-columns:repeat(3,minmax(0,1fr));
@@ -703,8 +707,8 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 
 .choice-impact-host{position:relative;isolation:isolate}
 .touch-impact.choice-impact{position:absolute;z-index:-1;color:var(--choice-ripple)}
-.choice-impact-positive{--choice-ripple:var(--choice-positive)}
-.choice-impact-negative{--choice-ripple:var(--choice-negative)}
+.choice-impact-positive{--choice-ripple:var(--choice-positive);--choice-ripple-edge:var(--choice-positive-edge)}
+.choice-impact-negative{--choice-ripple:var(--choice-negative);--choice-ripple-edge:var(--choice-negative-edge)}
 .choice-impact .touch-drop{
  background:linear-gradient(transparent,currentColor);
  box-shadow:0 2px 5px color-mix(in srgb,currentColor 45%,transparent);
@@ -712,7 +716,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .choice-impact .touch-splash{background:currentColor;box-shadow:0 0 7px 1px currentColor}
 .choice-impact .touch-ring{
  border-color:currentColor;
- box-shadow:0 0 3px color-mix(in srgb,currentColor 45%,transparent);
+ box-shadow:0 0 0 1px var(--choice-ripple-edge);
 }
 .choice-impact .touch-ring-one{--ring-size:230px}
 .choice-impact .touch-ring-two{--ring-size:190px}
