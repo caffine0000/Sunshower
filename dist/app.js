@@ -451,7 +451,10 @@ document.addEventListener('click',syncBgmPlayback,{capture:true,once:true});
 render();
 syncBgmPlayback();
 
-function buildSummary(){return `<div class="player-summary"><strong>${esc(save.build.name||'이름 미설정')}</strong><span class="status-pill">${save.build.completed?'빌딩 완료':'빌딩 진행 중'}</span>${save.build.gender?`<span class="profile-gender">${save.build.gender==='male'?'남성':'여성'}</span>`:''}</div><div class="stat-grid">${identityStatDefinitions.map(({id,name})=>`<div class="stat-tile"><span>${name}</span><b>${save.build.identityStats[id]}단계 · ${identityStatGrade(save.build.identityStats[id])}</b></div>`).join('')}${(project.stats||[]).map(d=>`<div class="stat-tile"><span>${displayText(d.name)}</span><b>${esc(save.build.stats[d.id]??d.initial)}</b></div>`).join('')||'<p class="hint">아직 설정된 스탯 항목이 없어요.</p>'}</div>${profileSummary()}`}
+function buildSummary(){return `<div class="player-summary"><strong>${esc(save.build.name||'이름 미설정')}</strong><span class="status-pill">${save.build.completed?'빌딩 완료':'빌딩 진행 중'}</span>${save.build.gender?`<span class="profile-gender">${save.build.gender==='male'?'남성':'여성'}</span>`:''}</div><div class="stat-grid">${identityStatDefinitions.map(({id,name})=>{
+ const {rank,label}=identityStatGrade(save.build.identityStats[id]);
+ return `<div class="stat-tile"><span>${name}</span><b>${rank} · ${label}</b></div>`;
+ }).join('')}${(project.stats||[]).map(d=>`<div class="stat-tile"><span>${displayText(d.name)}</span><b>${esc(save.build.stats[d.id]??d.initial)}</b></div>`).join('')||'<p class="hint">아직 설정된 스탯 항목이 없어요.</p>'}</div>${profileSummary()}`}
 function loreResults(){const items=(project.lore||[]).filter(i=>save.lore.includes(i.id)&&(!loreQuery||formatPlayerText(i.title+' '+i.body+' '+(i.category||''),save.build).toLowerCase().includes(loreQuery.toLowerCase())));return items.length?items.map(i=>`<article class="info-card"><small>${displayText(i.category||'설정')}</small><h3>${displayText(i.title)}</h3><p class="prose">${displayText(i.body||'')}</p></article>`).join(''):'<div class="empty">'+(loreQuery?'검색 결과가 없어요.':'해금한 정보가 아직 없어요. 스토리에서 발견한 설정이 여기에 모여요.')+'</div>'}
 function renderLoreResults(){const el=$('#loreResults');if(el)el.innerHTML=loreResults()}
 function playerUI(state){const tabs=investigatorTabs.map(tab=>[tab.id,tab.label]);let content='';
@@ -552,7 +555,14 @@ function editableCustomization(section){
   $('#modal').open&&buildingPosition(project,save.build).stage.type==='customization';
 }
 function editableRace(){return editableCustomization('race')}
-const identityStatGrades=['부족','보통','양호','우수','탁월','초월'];
+const identityStatGrades=[
+ {rank:'I',label:'부족'},
+ {rank:'II',label:'보통'},
+ {rank:'III',label:'양호'},
+ {rank:'IV',label:'우수'},
+ {rank:'V',label:'탁월'},
+ {rank:'VI',label:'규격 외'}
+];
 function identityStatGrade(level){
  return identityStatGrades[level-IDENTITY_STAT_MIN];
 }
@@ -569,11 +579,12 @@ function handleIdentityStatInput(input){
   return true;
  }
  save=candidate;
- const grade=identityStatGrade(level);
- input.setAttribute('aria-valuetext',level+'단계 · '+grade);
+ const {rank,label}=identityStatGrade(level);
+ input.setAttribute('aria-valuetext',level+'단계 · '+label);
  input.parentElement.style.setProperty('--identity-stat-level',String(level));
- const output=$('#identity-stat-level-'+id);
- if(output)output.textContent=level+' · '+grade;
+ const rankOutput=$('#identity-stat-rank-'+id),gradeOutput=$('#identity-stat-grade-'+id);
+ if(rankOutput)rankOutput.textContent=rank;
+ if(gradeOutput)gradeOutput.textContent=label;
  refreshBuildingPoints();
  return true;
 }
@@ -836,10 +847,10 @@ function identityStatsUI(){
  return `<section class="identity-stats" aria-labelledby="identity-stats-title">
   <div class="identity-stats-heading">
    <h3 id="identity-stats-title">스테이터스</h3>
-   <small>단계당 사고 요구량: ${IDENTITY_STAT_STEP_COST}</small>
+   <small class="choice-thought-cost">단계당 사고 요구량: ${IDENTITY_STAT_STEP_COST}</small>
   </div>
   <div class="identity-stat-grid">${identityStatDefinitions.map(({id,name,englishName})=>{
-   const current=save.build.identityStats[id],grade=identityStatGrade(current);
+   const current=save.build.identityStats[id],{rank,label}=identityStatGrade(current);
    const glyphs=geometricGlyphs(englishName).replace('<svg ','<svg preserveAspectRatio="xMinYMid meet" ');
    return `<div class="identity-stat">
     <label class="identity-stat-name" for="identity-stat-${id}">
@@ -847,10 +858,10 @@ function identityStatsUI(){
      <span>${name}</span>
     </label>
     <div class="identity-stat-bar" style="--identity-stat-level:${current}">
-     <input type="range" id="identity-stat-${id}" data-identity-stat="${id}" min="${IDENTITY_STAT_MIN}" max="${IDENTITY_STAT_MAX}" step="1" value="${current}" aria-valuetext="${current}단계 · ${grade}">
+     <input type="range" id="identity-stat-${id}" data-identity-stat="${id}" min="${IDENTITY_STAT_MIN}" max="${IDENTITY_STAT_MAX}" step="1" value="${current}" aria-valuetext="${current}단계 · ${label}">
      <span class="identity-stat-segments" aria-hidden="true">${segments}</span>
     </div>
-    <output id="identity-stat-level-${id}" for="identity-stat-${id}">${current} · ${grade}</output>
+    <output for="identity-stat-${id}"><b id="identity-stat-rank-${id}" class="identity-stat-rank">${rank}</b><span id="identity-stat-grade-${id}">${label}</span></output>
    </div>`;
   }).join('')}</div>
  </section>`;

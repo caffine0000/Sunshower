@@ -182,7 +182,6 @@ vm.runInNewContext(code+`
  assert.ok(identityEditorUI().includes('src="assets/example.webp" alt="특성 그림"'));
  delete identityTraits[0].image;
  delete identityTraits[0].imageAlt;
- assert.ok(!panel().includes('choice-thought-cost'));
  assert.ok(panel().includes('<div class="identity-trait-cost-slot"></div>'));
  for(const [level,label,symbol] of [['negative','네거티브','-'],['neutral','뉴트럴','○'],['positive','포지티브','+']]){
   const button=panel().split('</button>').find(markup=>markup.includes('data-id="example:'+level+'"'));
@@ -239,7 +238,9 @@ vm.runInNewContext(code+`
  assert.equal(panel().split('class="identity-stat-segments"').length-1,6);
  assert.equal(panel().split('--identity-stat-step:').length-1,36);
  assert.equal(panel().split('aria-valuetext="1단계 · 부족"').length-1,6);
- assert.equal([1,2,3,4,5,6].map(identityStatGrade).join(','),'부족,보통,양호,우수,탁월,초월');
+ assert.equal([1,2,3,4,5,6].map(level=>identityStatGrade(level).label).join(','),'부족,보통,양호,우수,탁월,규격 외');
+ assert.equal([1,2,3,4,5,6].map(level=>identityStatGrade(level).rank).join(','),'I,II,III,IV,V,VI');
+ assert.equal(panel().split('class="identity-stat-rank">I</b>').length-1,6);
  assert.equal(Object.values(save.build.identityStats).join(','),'1,1,1,1,1,1');
  assert.equal(save.build.thoughtLimit,0);
 
@@ -248,7 +249,8 @@ vm.runInNewContext(code+`
  assert.equal(save.build.thoughtLimit,20);
  assert.equal(strength.parentElement.style['--identity-stat-level'],'2');
  assert.equal(slide('strength',6),strength);
- assert.equal($('#identity-stat-level-strength').textContent,'6 · 초월');
+ assert.equal($('#identity-stat-rank-strength').textContent,'VI');
+ assert.equal($('#identity-stat-grade-strength').textContent,'규격 외');
  assert.equal(save.build.thoughtLimit,100);
  slide('stamina',3);
  assert.equal(save.build.thoughtLimit,140);
@@ -258,8 +260,9 @@ vm.runInNewContext(code+`
  const nextPopupWrites=$('#modalBody').htmlWrites;
  slide('strength',3);
  assert.equal(save.build.thoughtLimit,60);
- assert.equal($('#identity-stat-level-strength').textContent,'3 · 양호');
- assert.ok(buildSummary().includes('<span>근력</span><b>3단계 · 양호</b>'));
+ assert.equal($('#identity-stat-rank-strength').textContent,'III');
+ assert.equal($('#identity-stat-grade-strength').textContent,'양호');
+ assert.ok(buildSummary().includes('<span>근력</span><b>III · 양호</b>'));
  assert.ok($('.thought-limit-popup').innerHTML.includes('<strong>60/'));
  for(const [id,level] of [['strength',7],['strength',0],['unknown',2],['strength',3]])slide(id,level);
  assert.equal(save.build.thoughtLimit,60);
