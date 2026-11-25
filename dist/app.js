@@ -1,4 +1,4 @@
-import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,allowsMultipleRaceDivisions,selectedRaceDivisionIds,normalizeRace,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift,identityTraits,identityTraitLevels,IMMORTAL_THOUGHT_COST} from './engine.mjs';
+import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,allowsMultipleRaceDivisions,selectedRaceDivisionIds,normalizeRace,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift,identityTraits,identityTraitLevels,IMMORTAL_THOUGHT_COST,identityStatDefinitions,IDENTITY_STAT_MIN,IDENTITY_STAT_MAX,IDENTITY_STAT_STEP_COST} from './engine.mjs';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),uid=()=>crypto.randomUUID(),clone=x=>JSON.parse(JSON.stringify(x));
 const displayText=value=>esc(formatPlayerText(value,save?.build));
 const APP_VERSION='0.1.0';
@@ -254,7 +254,7 @@ function acrylicTouchImpact(event){
  effect.style.setProperty('--shrimp-turn',Math.round(Math.random()*32-16)+'deg');
 }
 const inlineRippleActions=new Set([
- 'race-primary','race-option','race-division','identity-trait','card-theme','display-collectible','set-theme'
+ 'race-primary','race-option','race-division','identity-trait','identity-stat','card-theme','display-collectible','set-theme'
 ]);
 const rippleChoiceActions=new Set([
  ...inlineRippleActions,'choose','choose-building-scene','choose-gender','custom-section','menu','player-tab','apply-perk',
@@ -309,6 +309,7 @@ const actions={
  'reset-site-data'(){resetCurrentSiteData()},
  'thought-assist'(){if(busy||screen!=='game'||playerTab!=='building'||!canReceiveThoughtGift())return;try{const candidate=grantThoughtGift(save);if(!put(playerSaveKey(),candidate))return;const dialog=$('#modal'),inPopup=dialog.open&&dialog.classList.contains('customization-dialog');save=candidate;clearTimeout(thoughtGiftTimer);thoughtGiftPresentation={started:Date.now()};const scene=thoughtGiftPresentation;refreshBuildingPoints();if(inPopup)document.querySelector('.custom-popup-heading button')?.focus({preventScroll:true});thoughtGiftTimer=setTimeout(()=>finishThoughtGiftPresentation(scene),3600)}catch(e){toast(e.message)}},
  'identity-trait':changeIdentityTrait,
+ 'identity-stat':changeIdentityStat,
  'race-primary'(id){if(!editableRace()||!raceTypes.some(r=>r.id===id))return;commitRace(selectRace(save.build.race,id))},
  'race-option'(key){if(!editableRace()||!['immortal','mixed'].includes(key))return;commitRace({...save.build.race,[key]:!save.build.race[key]})},
  'race-division'(encoded){
@@ -411,9 +412,10 @@ document.addEventListener('click',e=>{
   if(busy||pendingChoice)return;
   const activate=()=>actions[action]?.(el.dataset.id);
   if(inlineRippleActions.has(action)){
-   const tone=activate();
-   if(action!=='identity-trait')choiceRipple(el,'selection');
-   else if(tone==='positive'||tone==='negative')choiceRipple(el,tone);
+   const result=activate();
+   if(action==='identity-trait'){
+    if(result==='positive'||result==='negative')choiceRipple(el,result);
+   }else if(action!=='identity-stat'||result)choiceRipple(el,'selection');
   }else{
    if(action==='menu')touchButton(el,e);
    else choiceRipple(el,'selection');
@@ -451,7 +453,7 @@ document.addEventListener('click',syncBgmPlayback,{capture:true,once:true});
 render();
 syncBgmPlayback();
 
-function buildSummary(){return `<div class="player-summary"><strong>${esc(save.build.name||'이름 미설정')}</strong><span class="status-pill">${save.build.completed?'빌딩 완료':'빌딩 진행 중'}</span>${save.build.gender?`<span class="profile-gender">${save.build.gender==='male'?'남성':'여성'}</span>`:''}</div><div class="stat-grid">${(project.stats||[]).map(d=>`<div class="stat-tile"><span>${displayText(d.name)}</span><b>${esc(save.build.stats[d.id]??d.initial)}</b></div>`).join('')||'<p class="hint">아직 설정된 스탯 항목이 없어요.</p>'}</div>${profileSummary()}`}
+function buildSummary(){return `<div class="player-summary"><strong>${esc(save.build.name||'이름 미설정')}</strong><span class="status-pill">${save.build.completed?'빌딩 완료':'빌딩 진행 중'}</span>${save.build.gender?`<span class="profile-gender">${save.build.gender==='male'?'남성':'여성'}</span>`:''}</div><div class="stat-grid">${identityStatDefinitions.map(({id,name})=>`<div class="stat-tile"><span>${name}</span><b>${save.build.identityStats[id]}단계</b></div>`).join('')}${(project.stats||[]).map(d=>`<div class="stat-tile"><span>${displayText(d.name)}</span><b>${esc(save.build.stats[d.id]??d.initial)}</b></div>`).join('')||'<p class="hint">아직 설정된 스탯 항목이 없어요.</p>'}</div>${profileSummary()}`}
 function loreResults(){const items=(project.lore||[]).filter(i=>save.lore.includes(i.id)&&(!loreQuery||formatPlayerText(i.title+' '+i.body+' '+(i.category||''),save.build).toLowerCase().includes(loreQuery.toLowerCase())));return items.length?items.map(i=>`<article class="info-card"><small>${displayText(i.category||'설정')}</small><h3>${displayText(i.title)}</h3><p class="prose">${displayText(i.body||'')}</p></article>`).join(''):'<div class="empty">'+(loreQuery?'검색 결과가 없어요.':'해금한 정보가 아직 없어요. 스토리에서 발견한 설정이 여기에 모여요.')+'</div>'}
 function renderLoreResults(){const el=$('#loreResults');if(el)el.innerHTML=loreResults()}
 function playerUI(state){const tabs=investigatorTabs.map(tab=>[tab.id,tab.label]);let content='';
@@ -556,16 +558,29 @@ function changeIdentityTrait(encoded){
  if(!editableCustomization('identity')||typeof encoded!=='string')return;
  const [id,level]=encoded.split(':');
  if(!identityTraits.some(item=>item.id===id)||!identityTraitLevels.includes(level)||(save.build.traitChoices[id]??'neutral')===level)return;
- const candidate=normalizePlayer({...save,build:{...save.build,thoughtLimit:undefined,traitChoices:{...save.build.traitChoices,[id]:level}}});
- if(!put(playerSaveKey(),candidate))return;
+ const traitChoices={...save.build.traitChoices,[id]:level};
+ if(commitIdentityCustomization({traitChoices},'identity-trait',encoded))return level;
+}
+function changeIdentityStat(encoded){
+ if(!editableCustomization('identity')||typeof encoded!=='string')return;
+ const [id,rawLevel]=encoded.split(':');
+ const level=Number(rawLevel);
+ if(!identityStatDefinitions.some(stat=>stat.id===id)||!Number.isInteger(level)||
+  level<IDENTITY_STAT_MIN||level>IDENTITY_STAT_MAX||level===save.build.identityStats[id])return;
+ const identityStats={...save.build.identityStats,[id]:level};
+ return commitIdentityCustomization({identityStats},'identity-stat',encoded);
+}
+function commitIdentityCustomization(changes,action,encoded){
+ const candidate=normalizePlayer({...save,build:{...save.build,...changes,thoughtLimit:undefined}});
+ if(!put(playerSaveKey(),candidate))return false;
  const dialog=$('#modal'),scroll=dialog.scrollTop;
  save=candidate;
  customizationPopup('identity');
  refreshBuildingPoints();
  dialog.scrollTop=scroll;
- Array.from(document.querySelectorAll('#modal [data-action="identity-trait"]'))
+ Array.from(document.querySelectorAll('#modal [data-action="'+action+'"]'))
   .find(button=>button.dataset.id===encoded)?.focus({preventScroll:true});
- return level;
+ return true;
 }
 function commitRace(raw){
  const wasImmortal=save.build.race.immortal;
@@ -803,8 +818,26 @@ function profileSummary(){return `<section class="profile-summary">${investigato
 function collectionUI(){const owned=ownedCollectibles();modal(`<div class="custom-popup-heading"><div><h2>수집품 전시</h2></div><button type="button" class="quiet" data-action="close" aria-label="수집품 전시 닫기">✕</button></div><div class="collection-options">${owned.length?owned.map(item=>`<button type="button" class="collection-choice" data-action="display-collectible" data-id="${esc(item.id)}" aria-pressed="${save.build.profile.collectible===item.id}"><span aria-hidden="true">◇</span><strong>${esc(item.name)}</strong><small>${esc(item.description||'')}</small></button>`).join(''):'<p>아직 획득한 수집품이 없습니다.</p>'}<button type="button" class="quiet" data-action="display-collectible" data-id="">전시하지 않음</button></div>`);$('#modal').setAttribute('aria-label','수집품 전시')}
 const identityLevelNames={negative:'네거티브',neutral:'뉴트럴',positive:'포지티브'};
 const identityLevelSymbols={negative:'-',neutral:'○',positive:'+'};
+function identityStatsUI(){
+ const levels=Array.from({length:IDENTITY_STAT_MAX-IDENTITY_STAT_MIN+1},(_,index)=>IDENTITY_STAT_MIN+index);
+ return `<section class="identity-stats" aria-labelledby="identity-stats-title">
+  <div class="identity-stats-heading">
+   <h3 id="identity-stats-title">스테이터스</h3>
+   <small>단계당 사고 요구량: ${IDENTITY_STAT_STEP_COST}</small>
+  </div>
+  <div class="identity-stat-grid">${identityStatDefinitions.map(({id,name})=>{
+   const current=save.build.identityStats[id];
+   return `<div class="identity-stat">
+    <div class="identity-stat-title"><strong>${name}</strong><span>${current}단계</span></div>
+    <div class="identity-stat-levels" role="group" aria-label="${name} 단계 선택">${levels.map(level=>
+     `<button type="button" data-action="identity-stat" data-id="${id}:${level}" data-reached="${level<=current}" aria-label="${name} ${level}단계" aria-pressed="${level===current}">${level}</button>`
+    ).join('')}</div>
+   </div>`;
+  }).join('')}</div>
+ </section>`;
+}
 function identityEditorUI(){
- return `<div class="identity-traits">${identityTraits.map(({id,name,levels,image,imageAlt=''})=>{
+ return `${identityStatsUI()}<div class="identity-traits">${identityTraits.map(({id,name,levels,image,imageAlt=''})=>{
   const selected=save.build.traitChoices[id]??'neutral';
   const {description,cost}=levels[selected];
   return `<article class="identity-trait" data-tone="${selected}">

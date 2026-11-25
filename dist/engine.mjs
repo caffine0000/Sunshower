@@ -16,6 +16,17 @@ export const THOUGHT_LIMIT_DEFAULT_MAX=250;
 export const THOUGHT_LIMIT_GIFT_BONUS=50;
 export function thoughtLimitMaximum(build){return THOUGHT_LIMIT_DEFAULT_MAX+(build?.thoughtGiftReceived===true?THOUGHT_LIMIT_GIFT_BONUS:0)}
 export const IMMORTAL_THOUGHT_COST=251;
+export const IDENTITY_STAT_MIN=1;
+export const IDENTITY_STAT_MAX=6;
+export const IDENTITY_STAT_STEP_COST=20;
+export const identityStatDefinitions=[
+ {id:'strength',name:'근력'},
+ {id:'stamina',name:'지구력'},
+ {id:'durability',name:'내구력'},
+ {id:'reflexes',name:'순발력'},
+ {id:'regeneration',name:'재생력'},
+ {id:'intellect',name:'지력'}
+];
 export const identityTraitLevels=['negative','neutral','positive'];
 export const identityTraits=[
  {
@@ -234,6 +245,14 @@ function normalizeIdentityTraits(raw={}){
   Object.values(raw).some(level=>!identityTraitLevels.includes(level)))throw Error('특성 선택 기록을 확인해 주세요.');
  return Object.fromEntries(identityTraits.filter(({id})=>Object.hasOwn(raw,id)&&raw[id]!=='neutral').map(({id})=>[id,raw[id]]));
 }
+function normalizeIdentityStats(raw={}){
+ if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('스테이터스 선택 기록을 확인해 주세요.');
+ return Object.fromEntries(identityStatDefinitions.map(({id})=>{
+  const level=Object.hasOwn(raw,id)?raw[id]:IDENTITY_STAT_MIN;
+  if(!Number.isInteger(level)||level<IDENTITY_STAT_MIN||level>IDENTITY_STAT_MAX)throw Error('스테이터스는 1단계에서 6단계 사이로 설정해 주세요.');
+  return [id,level];
+ }));
+}
 
 // Player data is independent of the five-tab interface and scene text.
 export function normalizePlayer(raw={}) {
@@ -253,14 +272,17 @@ export function normalizePlayer(raw={}) {
  const race=normalizeRace(b.race??{primary:raceTypes.find(r=>r.name===profile.race)?.id||''});
  const traitChoices=normalizeIdentityTraits(b.traitChoices);
  const traitCost=identityTraits.reduce((total,{id,levels})=>total+levels[traitChoices[id]??'neutral'].cost,0);
+ const identityStats=normalizeIdentityStats(b.identityStats);
+ const statCost=Object.values(identityStats).reduce((total,level)=>total+(level-IDENTITY_STAT_MIN)*IDENTITY_STAT_STEP_COST,0);
+ const customizationCost=traitCost+statCost;
  const storedThought=b.thoughtLimit??0,thoughtLimitBase=b.thoughtLimitBase??storedThought;
- const maxStoredThought=1000000+IMMORTAL_THOUGHT_COST+Math.max(0,traitCost);
+ const maxStoredThought=1000000+IMMORTAL_THOUGHT_COST+Math.max(0,customizationCost);
  if(!Number.isInteger(storedThought)||storedThought<0||storedThought>maxStoredThought||!Number.isInteger(thoughtLimitBase)||thoughtLimitBase<0||thoughtLimitBase>1000000)throw Error('사고 한계 수치를 확인해 주세요.');
  const thoughtGiftReceived=b.thoughtGiftReceived??false;
  if(typeof thoughtGiftReceived!=='boolean')throw Error('사고 한계 확장 기록을 확인해 주세요.');
- const thoughtLimit=Math.max(0,thoughtLimitBase+(race.immortal?IMMORTAL_THOUGHT_COST:0)+traitCost);
+ const thoughtLimit=Math.max(0,thoughtLimitBase+(race.immortal?IMMORTAL_THOUGHT_COST:0)+customizationCost);
  if(race.primary)profile.race=raceDisplay(race);
- return {v:2,history:history.map(h=>({choice:h.choice})),build:{name:b.name,gender,profile,race,traitChoices,thoughtLimitBase,thoughtLimit,thoughtGiftReceived,stats:{...b.stats},completed:b.completed,cutscene:{scene:cut.scene,choices:{...cutChoices}}},bonds:list('bonds'),lore:list('lore'),events:list('events'),perks:list('perks'),collectibles};
+ return {v:2,history:history.map(h=>({choice:h.choice})),build:{name:b.name,gender,profile,race,traitChoices,identityStats,thoughtLimitBase,thoughtLimit,thoughtGiftReceived,stats:{...b.stats},completed:b.completed,cutscene:{scene:cut.scene,choices:{...cutChoices}}},bonds:list('bonds'),lore:list('lore'),events:list('events'),perks:list('perks'),collectibles};
 }
 export function grantThoughtGift(raw){const next=normalizePlayer(raw);if(next.build.completed||next.build.thoughtGiftReceived||next.build.thoughtLimit<=thoughtLimitMaximum(next.build))throw Error('지금은 사고 한계를 확장할 수 없어요.');next.build.thoughtGiftReceived=true;return next}
 export function encodePlayer(p,raw){const s=normalizePlayer(raw),bytes=new TextEncoder().encode(JSON.stringify({...s,project:p.id}));let binary='';for(const b of bytes)binary+=String.fromCharCode(b);return 'GAL2.'+btoa(binary)}
