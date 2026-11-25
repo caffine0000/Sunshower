@@ -20,12 +20,12 @@ export const IDENTITY_STAT_MIN=1;
 export const IDENTITY_STAT_MAX=6;
 export const IDENTITY_STAT_STEP_COST=20;
 export const identityStatDefinitions=[
- {id:'strength',name:'근력'},
- {id:'stamina',name:'지구력'},
- {id:'durability',name:'내구력'},
- {id:'reflexes',name:'순발력'},
- {id:'regeneration',name:'재생력'},
- {id:'intellect',name:'지력'}
+ {id:'strength',name:'근력',englishName:'Strength'},
+ {id:'stamina',name:'지구력',englishName:'Stamina'},
+ {id:'durability',name:'내구력',englishName:'Durability'},
+ {id:'reflexes',name:'순발력',englishName:'Reflexes'},
+ {id:'regeneration',name:'재생력',englishName:'Regeneration'},
+ {id:'intellect',name:'지력',englishName:'Intellect'}
 ];
 export const identityTraitLevels=['negative','neutral','positive'];
 export const identityTraits=[

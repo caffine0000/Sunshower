@@ -224,6 +224,7 @@ vm.runInNewContext(code+`
  const slide=(id,level)=>{
   const input=$('#identity-stat-'+id);
   input.dataset.identityStat=id;
+  input.parentElement=$('#identity-stat-bar-'+id);
   input.value=String(level);
   dispatch('input',{target:input});
   return input;
@@ -231,15 +232,23 @@ vm.runInNewContext(code+`
  assert.ok(panel().includes('단계당 사고 요구량: 20'));
  assert.equal(panel().split('data-identity-stat="').length-1,6);
  assert.equal(panel().split('min="1" max="6" step="1" value="1"').length-1,6);
- for(const name of ['근력','지구력','내구력','순발력','재생력','지력'])assert.ok(panel().includes('>'+name+'</label>'));
+ for(const {name,englishName} of identityStatDefinitions){
+  assert.ok(panel().includes('<span>'+name+'</span>'));
+  assert.ok(panel().includes('data-english-name="'+englishName+'" aria-hidden="true"><svg'));
+ }
+ assert.equal(panel().split('class="identity-stat-segments"').length-1,6);
+ assert.equal(panel().split('--identity-stat-step:').length-1,36);
+ assert.equal(panel().split('aria-valuetext="1단계 · 부족"').length-1,6);
+ assert.equal([1,2,3,4,5,6].map(identityStatGrade).join(','),'부족,보통,양호,우수,탁월,초월');
  assert.equal(Object.values(save.build.identityStats).join(','),'1,1,1,1,1,1');
  assert.equal(save.build.thoughtLimit,0);
 
  const popupWrites=$('#modalBody').htmlWrites;
  const strength=slide('strength',2);
  assert.equal(save.build.thoughtLimit,20);
- assert.equal(strength.style['--identity-stat-fill'],'20%');
+ assert.equal(strength.parentElement.style['--identity-stat-level'],'2');
  assert.equal(slide('strength',6),strength);
+ assert.equal($('#identity-stat-level-strength').textContent,'6 · 초월');
  assert.equal(save.build.thoughtLimit,100);
  slide('stamina',3);
  assert.equal(save.build.thoughtLimit,140);
@@ -249,8 +258,8 @@ vm.runInNewContext(code+`
  const nextPopupWrites=$('#modalBody').htmlWrites;
  slide('strength',3);
  assert.equal(save.build.thoughtLimit,60);
- assert.equal($('#identity-stat-level-strength').textContent,'3단계');
- assert.ok(buildSummary().includes('<span>근력</span><b>3단계</b>'));
+ assert.equal($('#identity-stat-level-strength').textContent,'3 · 양호');
+ assert.ok(buildSummary().includes('<span>근력</span><b>3단계 · 양호</b>'));
  assert.ok($('.thought-limit-popup').innerHTML.includes('<strong>60/'));
  for(const [id,level] of [['strength',7],['strength',0],['unknown',2],['strength',3]])slide(id,level);
  assert.equal(save.build.thoughtLimit,60);

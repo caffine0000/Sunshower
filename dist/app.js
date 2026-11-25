@@ -175,7 +175,7 @@ function acrylicSkyWeather(){
  return '<div class="weather-world acrylic-sky-world" aria-hidden="true"></div>';
 }
 function rainWeather(){return `<div class="weather-world" aria-hidden="true"><div class="city-view"></div><div class="window-frame frame-one"></div><div class="window-frame frame-two"></div><div class="rain-layer">${Array.from({length:58},(_,i)=>`<i style="--x:${(i*37+3)%100}%;--delay:${-(i%13)*.43}s;--speed:${.9+(i%7)*.17}s;--length:${45+i%6*15}px;--opacity:${.12+i%5*.06}"></i>`).join('')}</div><div class="window-mist"></div><div class="glass-drops">${Array.from({length:25},(_,i)=>`<i style="left:${(i*31+9)%100}%;top:${(i*47+2)%100}%;--drop-size:${3+i%5*2}px;--drift:${14+i%7}s;animation-delay:${-i*1.2}s"></i>`).join('')}</div><div class="weather-shade"></div></div>`}
-function geometricGlyphs(text){const glyphs={K:'M0 0V24M16 0L0 16M6 10L16 24M4 12H12',B:'M0 0V24H12L16 20V16L8 12L16 8V4L12 0ZM0 12H8',M:'M0 24V0L8 12L16 0V24M4 8L8 16L12 8',W:'M0 0L4 24L8 12L12 24L16 0M4 16L8 4L12 16',S:'M16 0H4L0 4V8L16 16V20L12 24H0M4 0L12 8M4 16L12 24',H:'M0 0V24M16 0V24M0 12H16M8 8V16',P:'M0 24V0H12L16 4V8L12 12H0M4 4H12',T:'M0 0H16M8 0V24M4 8L8 12L12 8',Y:'M0 0L8 12L16 0M8 12V24M4 20H12',U:'M0 0V16L8 24L16 16V0M4 16L8 20L12 16',Z:'M0 0H16L0 24H16M4 12H12',V:'M0 0L8 24L16 0M4 4L8 12L12 4',G:'M16 4L12 0H4L0 4V20L4 24H16V12H8M8 16H16',F:'M0 24V0H16L8 8H0M0 12H12L8 16',A:'M0 24L8 0L16 24M4 16H12M8 0V8',I:'M8 0V24M4 4L8 0L12 4M4 20L8 24L12 20M4 12H12',L:'M0 0V24H16L8 16M0 8L8 0',E:'M16 0H0V24H16M0 0L8 8H0M0 12H12L8 16M0 24L8 16',D:'M0 0V24H8L16 16V8L8 0ZM0 8H8V16H0',N:'M0 24V0L16 24V0M0 16L4 12M12 12L16 8',O:'M8 0L16 8V16L8 24L0 16V8ZM4 8L12 16',R:'M0 24V0H12L16 4V8L0 16M8 12L16 24',C:'M16 0H8L0 8V16L8 24H16M0 12H8','^':'M0 12L8 0L16 12','!':'M8 0V16M5 21L8 18L11 21L8 24Z','>':'M0 0L16 12L0 24','&':'M16 24L0 8L8 0L16 8L0 24H16M0 16H16','[':'M16 0H4V24H16M0 8H8','+':'M0 12H16M8 4V20'};let x=0;const paths=[...text.toUpperCase()].map(c=>{if(c===' '){x+=16;return ''}const path='<path d="'+(glyphs[c]||'M0 12L8 0L16 12L8 24Z')+'" transform="translate('+x+' 2)"/>';x+=24;return path}).join('');return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${Math.max(16,x-8)} 30" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter">${paths}</g></svg>`}
+function geometricGlyphs(text){const glyphs={K:'M0 0V24M16 0L0 16M6 10L16 24M4 12H12',B:'M0 0V24H12L16 20V16L8 12L16 8V4L12 0ZM0 12H8',M:'M0 24V0L8 12L16 0V24M4 8L8 16L12 8',W:'M0 0L4 24L8 12L12 24L16 0M4 16L8 4L12 16',S:'M16 0H4L0 4V8L16 16V20L12 24H0M4 0L12 8M4 16L12 24',H:'M0 0V24M16 0V24M0 12H16M8 8V16',P:'M0 24V0H12L16 4V8L12 12H0M4 4H12',T:'M0 0H16M8 0V24M4 8L8 12L12 8',Y:'M0 0L8 12L16 0M8 12V24M4 20H12',U:'M0 0V16L8 24L16 16V0M4 16L8 20L12 16',Z:'M0 0H16L0 24H16M4 12H12',V:'M0 0L8 24L16 0M4 4L8 12L12 4',G:'M16 4L12 0H4L0 4V20L4 24H16V12H8M8 16H16',F:'M0 24V0H16L8 8H0M0 12H12L8 16',A:'M0 24L8 0L16 24M4 16H12M8 0V8',I:'M8 0V24M4 4L8 0L12 4M4 20L8 24L12 20M4 12H12',L:'M0 0V24H16L8 16M0 8L8 0',E:'M16 0H0V24H16M0 0L8 8H0M0 12H12L8 16M0 24L8 16',D:'M0 0V24H8L16 16V8L8 0ZM0 8H8V16H0',N:'M0 24V0L16 24V0M0 16L4 12M12 12L16 8',O:'M8 0L16 8V16L8 24L0 16V8ZM4 8L12 16',R:'M0 24V0H12L16 4V8L0 16M8 12L16 24',C:'M16 0H8L0 8V16L8 24H16M0 12H8',X:'M0 0L16 24M16 0L0 24M4 12H12','^':'M0 12L8 0L16 12','!':'M8 0V16M5 21L8 18L11 21L8 24Z','>':'M0 0L16 12L0 24','&':'M16 24L0 8L8 0L16 8L0 24H16M0 16H16','[':'M16 0H4V24H16M0 8H8','+':'M0 12H16M8 4V20'};let x=0;const paths=[...text.toUpperCase()].map(c=>{if(c===' '){x+=16;return ''}const path='<path d="'+(glyphs[c]||'M0 12L8 0L16 12L8 24Z')+'" transform="translate('+x+' 2)"/>';x+=24;return path}).join('');return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${Math.max(16,x-8)} 30" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter">${paths}</g></svg>`}
 function runeInscription(){return `<div class="rune-ornament" role="img" aria-label="Failed and Find"><span class="rune-rule" aria-hidden="true"></span>${geometricGlyphs('Failed and Find')}<span class="rune-rule" aria-hidden="true"></span></div>`}
 function cipherNote(){const phrase='O r^!>&[+na ne dece arcele le arcadia';return `<div class="cipher-note" role="img" aria-label="${esc(phrase)}">${phrase.split(' ').map((word,i)=>`<span class="cipher-word ${i===1?'corrupted-word':''}">${geometricGlyphs(word)}${i===1?'<span class="glitch-slice">'+geometricGlyphs(word)+'</span>':''}</span>`).join('')}</div>`}
 
@@ -451,7 +451,7 @@ document.addEventListener('click',syncBgmPlayback,{capture:true,once:true});
 render();
 syncBgmPlayback();
 
-function buildSummary(){return `<div class="player-summary"><strong>${esc(save.build.name||'이름 미설정')}</strong><span class="status-pill">${save.build.completed?'빌딩 완료':'빌딩 진행 중'}</span>${save.build.gender?`<span class="profile-gender">${save.build.gender==='male'?'남성':'여성'}</span>`:''}</div><div class="stat-grid">${identityStatDefinitions.map(({id,name})=>`<div class="stat-tile"><span>${name}</span><b>${save.build.identityStats[id]}단계</b></div>`).join('')}${(project.stats||[]).map(d=>`<div class="stat-tile"><span>${displayText(d.name)}</span><b>${esc(save.build.stats[d.id]??d.initial)}</b></div>`).join('')||'<p class="hint">아직 설정된 스탯 항목이 없어요.</p>'}</div>${profileSummary()}`}
+function buildSummary(){return `<div class="player-summary"><strong>${esc(save.build.name||'이름 미설정')}</strong><span class="status-pill">${save.build.completed?'빌딩 완료':'빌딩 진행 중'}</span>${save.build.gender?`<span class="profile-gender">${save.build.gender==='male'?'남성':'여성'}</span>`:''}</div><div class="stat-grid">${identityStatDefinitions.map(({id,name})=>`<div class="stat-tile"><span>${name}</span><b>${save.build.identityStats[id]}단계 · ${identityStatGrade(save.build.identityStats[id])}</b></div>`).join('')}${(project.stats||[]).map(d=>`<div class="stat-tile"><span>${displayText(d.name)}</span><b>${esc(save.build.stats[d.id]??d.initial)}</b></div>`).join('')||'<p class="hint">아직 설정된 스탯 항목이 없어요.</p>'}</div>${profileSummary()}`}
 function loreResults(){const items=(project.lore||[]).filter(i=>save.lore.includes(i.id)&&(!loreQuery||formatPlayerText(i.title+' '+i.body+' '+(i.category||''),save.build).toLowerCase().includes(loreQuery.toLowerCase())));return items.length?items.map(i=>`<article class="info-card"><small>${displayText(i.category||'설정')}</small><h3>${displayText(i.title)}</h3><p class="prose">${displayText(i.body||'')}</p></article>`).join(''):'<div class="empty">'+(loreQuery?'검색 결과가 없어요.':'해금한 정보가 아직 없어요. 스토리에서 발견한 설정이 여기에 모여요.')+'</div>'}
 function renderLoreResults(){const el=$('#loreResults');if(el)el.innerHTML=loreResults()}
 function playerUI(state){const tabs=investigatorTabs.map(tab=>[tab.id,tab.label]);let content='';
@@ -552,8 +552,9 @@ function editableCustomization(section){
   $('#modal').open&&buildingPosition(project,save.build).stage.type==='customization';
 }
 function editableRace(){return editableCustomization('race')}
-function identityStatFill(level){
- return (level-IDENTITY_STAT_MIN)/(IDENTITY_STAT_MAX-IDENTITY_STAT_MIN)*100+'%';
+const identityStatGrades=['부족','보통','양호','우수','탁월','초월'];
+function identityStatGrade(level){
+ return identityStatGrades[level-IDENTITY_STAT_MIN];
 }
 function handleIdentityStatInput(input){
  const id=input.dataset?.identityStat;
@@ -568,11 +569,11 @@ function handleIdentityStatInput(input){
   return true;
  }
  save=candidate;
- const label=level+'단계';
- input.setAttribute('aria-valuetext',label);
- input.style.setProperty('--identity-stat-fill',identityStatFill(level));
+ const grade=identityStatGrade(level);
+ input.setAttribute('aria-valuetext',level+'단계 · '+grade);
+ input.parentElement.style.setProperty('--identity-stat-level',String(level));
  const output=$('#identity-stat-level-'+id);
- if(output)output.textContent=label;
+ if(output)output.textContent=level+' · '+grade;
  refreshBuildingPoints();
  return true;
 }
@@ -829,17 +830,27 @@ function collectionUI(){const owned=ownedCollectibles();modal(`<div class="custo
 const identityLevelNames={negative:'네거티브',neutral:'뉴트럴',positive:'포지티브'};
 const identityLevelSymbols={negative:'-',neutral:'○',positive:'+'};
 function identityStatsUI(){
+ const segments=Array.from({length:IDENTITY_STAT_MAX-IDENTITY_STAT_MIN+1},(_,index)=>
+  `<i style="--identity-stat-step:${index+IDENTITY_STAT_MIN}"></i>`
+ ).join('');
  return `<section class="identity-stats" aria-labelledby="identity-stats-title">
   <div class="identity-stats-heading">
    <h3 id="identity-stats-title">스테이터스</h3>
    <small>단계당 사고 요구량: ${IDENTITY_STAT_STEP_COST}</small>
   </div>
-  <div class="identity-stat-grid">${identityStatDefinitions.map(({id,name})=>{
-   const current=save.build.identityStats[id];
+  <div class="identity-stat-grid">${identityStatDefinitions.map(({id,name,englishName})=>{
+   const current=save.build.identityStats[id],grade=identityStatGrade(current);
+   const glyphs=geometricGlyphs(englishName).replace('<svg ','<svg preserveAspectRatio="xMinYMid meet" ');
    return `<div class="identity-stat">
-    <label for="identity-stat-${id}">${name}</label>
-    <input type="range" id="identity-stat-${id}" data-identity-stat="${id}" min="${IDENTITY_STAT_MIN}" max="${IDENTITY_STAT_MAX}" step="1" value="${current}" aria-valuetext="${current}단계" style="--identity-stat-fill:${identityStatFill(current)}">
-    <output id="identity-stat-level-${id}" for="identity-stat-${id}">${current}단계</output>
+    <label class="identity-stat-name" for="identity-stat-${id}">
+     <span class="identity-stat-echo" data-english-name="${englishName}" aria-hidden="true">${glyphs}</span>
+     <span>${name}</span>
+    </label>
+    <div class="identity-stat-bar" style="--identity-stat-level:${current}">
+     <input type="range" id="identity-stat-${id}" data-identity-stat="${id}" min="${IDENTITY_STAT_MIN}" max="${IDENTITY_STAT_MAX}" step="1" value="${current}" aria-valuetext="${current}단계 · ${grade}">
+     <span class="identity-stat-segments" aria-hidden="true">${segments}</span>
+    </div>
+    <output id="identity-stat-level-${id}" for="identity-stat-${id}">${current} · ${grade}</output>
    </div>`;
   }).join('')}</div>
  </section>`;
