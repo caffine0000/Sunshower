@@ -59,14 +59,100 @@ dialog::backdrop{background:#061c273b;backdrop-filter:blur(2px);-webkit-backdrop
 .touch-impact.in-dialog{position:absolute}
 .touch-impact *{position:absolute;display:block;pointer-events:none}
 .touch-drop{width:2px;height:16px;left:-1px;top:-60px;border-radius:70%;background:linear-gradient(transparent,#9cf7e899);box-shadow:0 2px 5px #45e8d53d;animation:touch-drop-fall .17s cubic-bezier(.5,0,.85,.45) forwards}
-.touch-ring{--ring-size:88px;left:0;top:0;width:2px;height:2px;border:.6px solid #85f4dfb3;border-radius:50%;opacity:0;transform:translate(-50%,-50%);box-shadow:0 0 3px #59e8d44d,inset 0 0 2px #56e4d02e;animation:touch-ring-spread .84s .12s cubic-bezier(.16,.65,.3,1) forwards}
-.touch-ring-two{--ring-size:72px;border-color:#5bdacb91;border-width:.5px;animation-delay:.2s;animation-duration:.76s}
-.touch-ring-three{--ring-size:54px;border-color:#b1fff09c;border-width:.45px;animation-delay:.28s;animation-duration:.68s}
-.touch-micro{--ring-size:19px;border-width:.45px;border-color:#a0f7e8a6;box-shadow:0 0 2px #5ce7d43b;animation-duration:.62s}
+@property --ring-stroke{
+ syntax:"<length>";
+ inherits:false;
+ initial-value:1px;
+}
+.touch-ring{
+ --ring-size:94px;
+ --ring-ink:#85f4df;
+ --ring-duration:.98s;
+ --ring-delay:.1s;
+ left:0;
+ top:0;
+ width:2px;
+ height:2px;
+ border-radius:50%;
+ opacity:0;
+ transform:translate(-50%,-50%);
+ background:radial-gradient(circle farthest-side,transparent calc(100% - var(--ring-stroke)),var(--ring-ink) calc(100% - var(--ring-stroke) * .55),transparent 100%);
+ animation:touch-ring-spread var(--ring-duration) var(--ring-delay) cubic-bezier(.15,.66,.27,1) both,
+  touch-ring-fade var(--ring-duration) var(--ring-delay) linear both;
+}
+.touch-ring-two{--ring-size:72px;--ring-ink:#5bdacb;--ring-duration:.85s;--ring-delay:.19s}
+.touch-ring-three{--ring-size:54px;--ring-ink:#b1fff0;--ring-duration:.72s;--ring-delay:.26s}
+.touch-micro{--ring-size:19px;--ring-ink:#a0f7e8;--ring-duration:.62s}
 .touch-splash{left:0;top:0;width:3px;height:3px;border-radius:50%;background:#acfff0;opacity:0;transform:translate(-50%,-50%);box-shadow:0 0 7px 1px #53daca40;animation:touch-splash .26s .12s ease-out forwards}
 @keyframes touch-drop-fall{0%{opacity:0;transform:translateY(-12px) scaleY(1.2)}25%{opacity:.7}85%{opacity:.6}100%{opacity:0;transform:translateY(60px) scaleY(.15)}}
-@keyframes touch-ring-spread{0%{opacity:0;width:2px;height:2px}12%{opacity:.64}55%{opacity:.32}100%{opacity:0;width:var(--ring-size);height:var(--ring-size)}}
+@keyframes touch-ring-spread{
+ from{width:2px;height:2px}
+ to{width:var(--ring-size);height:var(--ring-size)}
+}
+@keyframes touch-ring-fade{
+ 0%{opacity:0;--ring-stroke:1.35px}
+ 12%{opacity:.94}
+ 48%{opacity:.68;--ring-stroke:1.1px}
+ 78%{opacity:.29;--ring-stroke:.56px}
+ 100%{opacity:0;--ring-stroke:.1px}
+}
 @keyframes touch-splash{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}15%{opacity:.55}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+.acrylic-touch{--stamp-turn:0deg}
+.acrylic-shrimp-stamp{
+ width:66px;
+ height:60px;
+ left:-33px;
+ top:-30px;
+ filter:drop-shadow(0 0 6px #fff5a9) drop-shadow(0 1px 1px #be6d63);
+ animation:acrylic-stamp .94s ease-out both;
+}
+.acrylic-shrimp-body{
+ inset:0;
+ background:
+  repeating-linear-gradient(115deg,transparent 0 8px,#fff5d85c 8px 10px,transparent 10px 12px),
+  linear-gradient(135deg,#fffab0 16%,#ffcf55 33%,#ff9e9a 49%,#ffd8ef 59%,#a9d8f6 72%,#b4ecc9 86%,#fff7a1);
+ clip-path:path("M 7 20 L 13 18 C 17 11 28 8 39 11 C 54 14 62 24 59 36 C 57 47 47 53 34 51 L 28 49 Q 23 58 13 56 L 17 48 Q 11 50 7 44 L 17 39 Q 21 40 27 43 C 38 46 47 41 47 33 C 47 26 39 20 31 23 C 24 28 15 28 7 20 Z");
+}
+.acrylic-shrimp-eye{left:18px;top:17px;width:3px;height:3px;border-radius:50%;background:#6c453b}
+.acrylic-shrimp-antenna{
+ left:2px;top:11px;width:18px;height:10px;
+ border-top:1px solid #ffe075;border-radius:100%;transform:rotate(21deg);
+}
+.acrylic-shrimp-antenna::after{
+ content:"";position:absolute;left:0;top:2px;width:16px;height:7px;
+ border-top:1px solid #fff8be;border-radius:100%;transform:rotate(-17deg);
+}
+.acrylic-touch-held .acrylic-shrimp-stamp{animation-name:acrylic-held-stamp}
+.acrylic-spark{
+ --spark-color:#ffe473;
+ width:7px;height:7px;left:-3.5px;top:-3.5px;
+ border-radius:50%;
+ background:radial-gradient(circle,#fffef0 8%,var(--spark-color) 52%,transparent 72%);
+ box-shadow:0 0 7px 1px var(--spark-color);
+ opacity:0;
+ animation:acrylic-spark-float .85s var(--spark-delay) ease-out both;
+}
+.acrylic-spark:nth-child(3n){--spark-color:#ffb6bc}
+.acrylic-spark:nth-child(5n){--spark-color:#9de5e1}
+.acrylic-spark:nth-child(7n){--spark-color:#c9baff}
+@keyframes acrylic-stamp{
+ 0%{opacity:0;transform:rotate(var(--stamp-turn)) scale(1.19)}
+ 13%{opacity:1;transform:rotate(var(--stamp-turn)) scale(.91)}
+ 30%{transform:rotate(var(--stamp-turn)) scale(1)}
+ 57%{opacity:.84}
+ 100%{opacity:0;transform:translateY(-9px) rotate(var(--stamp-turn)) scale(.97)}
+}
+@keyframes acrylic-held-stamp{
+ 0%{opacity:0;transform:rotate(var(--stamp-turn)) scale(.55)}
+ 18%{opacity:.74}
+ 100%{opacity:0;transform:translateY(-20px) rotate(var(--stamp-turn)) scale(.82)}
+}
+@keyframes acrylic-spark-float{
+ 0%{opacity:0;transform:scale(.45)}
+ 23%{opacity:1}
+ 72%{transform:translate(var(--spark-x),var(--spark-y)) scale(.9)}
+ 100%{opacity:0;transform:translate(var(--spark-x),calc(var(--spark-y) + 8px)) scale(.15)}
+}
 @media(prefers-reduced-motion:reduce){.touch-impact{display:none}}
 
 /* Investigator's suitcase: five peers, with reserved artwork slots. */
@@ -655,6 +741,8 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 
 :root{
  --choice-positive:#79dfca;
+ --selection-ripple:#79dfca;
+ --selection-ripple-edge:#286e64;
  --choice-positive-edge:#286e64;
  --choice-negative:#f3a3ae;
  --choice-negative-edge:#a53f66;
@@ -719,15 +807,17 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .choice-impact-anchor{position:relative}
 .choice-impact-layer{isolation:isolate}
 .touch-impact.choice-impact{position:absolute;z-index:-1;color:var(--choice-ripple)}
+[data-theme="acrylic-sky"]{
+ --selection-ripple:#edaf60;
+ --selection-ripple-edge:#8a513e;
+}
+.choice-impact-selection{--choice-ripple:var(--selection-ripple);--choice-ripple-edge:var(--selection-ripple-edge)}
 .choice-impact-positive{--choice-ripple:var(--choice-positive);--choice-ripple-edge:var(--choice-positive-edge)}
 .choice-impact-negative{--choice-ripple:var(--choice-negative);--choice-ripple-edge:var(--choice-negative-edge)}
-.choice-impact .touch-ring{
- border:1px solid color-mix(in srgb,currentColor 72%,var(--choice-ripple-edge));
- box-shadow:none;
-}
-.choice-impact .touch-ring-one{--ring-size:var(--choice-ring-size,230px);animation-delay:0s}
-.choice-impact .touch-ring-two{--ring-size:calc(var(--choice-ring-size,230px) * .89);animation-delay:.09s}
-.choice-impact .touch-ring-three{--ring-size:calc(var(--choice-ring-size,230px) * .78);animation-delay:.18s}
+.choice-impact .touch-ring{--ring-ink:color-mix(in srgb,currentColor 61%,var(--choice-ripple-edge))}
+.choice-impact .touch-ring-one{--ring-size:var(--choice-ring-size,230px);--ring-delay:0s}
+.choice-impact .touch-ring-two{--ring-size:calc(var(--choice-ring-size,230px) * .89);--ring-delay:.09s}
+.choice-impact .touch-ring-three{--ring-size:calc(var(--choice-ring-size,230px) * .78);--ring-delay:.18s}
 
 .immortal-details{
  position:relative;

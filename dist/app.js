@@ -35,7 +35,7 @@ const themeChoices=[{id:'rain',name:'수사관 사무실의 유리창',englishNa
  note:'꿈을 꾸는 새우.',
  preview:'acrylic-sky',
  unlock:player=>player.perks.includes('acrylic-sky'),
- presentation:{symbolTone:'black',background:acrylicSkyWeather,touch:rainImpact,transition:prismTransition}
+ presentation:{symbolTone:'black',background:acrylicSkyWeather,touch:acrylicTouchImpact,transition:prismTransition}
 }];
 function themeUnlocked(theme){
  return !!theme&&(testThemesEnabled()||!theme.unlock||theme.unlock(save,project)===true);
@@ -116,25 +116,49 @@ function fractureMesh(viewport,pieces){return '<svg class="fracture-mesh" viewBo
 function observerPresence(){return '<div class="observer-presence"><img class="observer-silhouette" src="assets/observer-silhouette-b5df547157.webp" alt=""><div class="observer-glass"></div></div>'}
 function prismMagicLayer(){return crystalFlowerMarkup().replaceAll('<path ','<path pathLength="1" ').replaceAll('<circle ','<circle pathLength="1" ')}
 function crystalFlowerMarkup(){const petals=Array.from({length:8},(_,i)=>'<g class="crystal-petal" transform="rotate('+(i*45)+' 150 150)"><path d="M150 146L129 107L150 40L171 107Z" fill="url(#crystal-petal-light)" stroke="#dec7ff" stroke-width=".85"/><path d="M150 40V146M129 107L150 117L171 107M150 117L138 91M150 117L162 91" fill="none" stroke="#f1e2ff" stroke-opacity=".65" stroke-width=".55"/><path d="M150 40L129 107L150 117Z" fill="#7846b8" fill-opacity=".16"/></g>').join('');const inner=Array.from({length:8},(_,i)=>'<g transform="rotate('+(i*45+22.5)+' 150 150)"><path d="M150 149L140 123L150 83L160 123Z" fill="url(#crystal-petal-inner)" stroke="#d6b4f9" stroke-width=".55"/><path d="M150 83V149M140 123L150 130L160 123" fill="none" stroke="#ead2ff" stroke-opacity=".65" stroke-width=".45"/></g>').join('');const orbit=Array.from({length:12},(_,i)=>'<g transform="rotate('+(i*30)+' 150 150)"><path d="M150 13L154 23L150 33L146 23Z" fill="#b589e9" fill-opacity=".24" stroke="#dcc3ff" stroke-width=".55"/><path d="M150 13V33" stroke="#ead8ff" stroke-width=".4"/></g>').join('');return '<svg class="prism-sigil crystal-flower" viewBox="0 0 300 300" aria-hidden="true"><defs><linearGradient id="crystal-petal-light" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efd8ff" stop-opacity=".5"/><stop offset=".46" stop-color="#b184e4" stop-opacity=".18"/><stop offset="1" stop-color="#60359c" stop-opacity=".38"/></linearGradient><linearGradient id="crystal-petal-inner" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dfc5ff" stop-opacity=".42"/><stop offset="1" stop-color="#8f5ccc" stop-opacity=".22"/></linearGradient><radialGradient id="crystal-flower-heart"><stop stop-color="#f3deff" stop-opacity=".75"/><stop offset="1" stop-color="#8450bf" stop-opacity=".38"/></radialGradient></defs><g fill="none" stroke="currentColor"><circle cx="150" cy="150" r="138" stroke-width=".45" opacity=".65"/><circle cx="150" cy="150" r="122" stroke-width=".5" stroke-dasharray="1 10" opacity=".7"/><circle cx="150" cy="150" r="116" stroke-width=".35" opacity=".3"/></g>'+orbit+petals+inner+'<g class="crystal-heart"><path d="M150 129L168 140V160L150 171L132 160V140Z" fill="url(#crystal-flower-heart)" stroke="#f1ddff" stroke-width="1"/><path d="M150 129V171M132 140L150 150L168 140M132 160L150 150L168 160" fill="none" stroke="#ead3ff" stroke-width=".6"/><path d="M150 141L156 150L150 159L144 150Z" fill="#f8e9ff" fill-opacity=".7"/></g></svg><div class="prism-magic">'+Array.from({length:18},(_,i)=>'<i class="prism-mote" style="--mote-x:'+((i*37+8)%100)+'%;--mote-y:'+((i*23+12)%100)+'%;--mote-dx:'+((i%2?1:-1)*(18+i%5*12))+'px;--mote-dy:'+(-20-i%7*9)+'px;--mote-delay:'+((i%6)*.017).toFixed(3)+'s"></i>').join('')+'</div>'}
-function microRipples(random=Math.random){const count=2+Math.floor(random()*5);return Array.from({length:count},()=>{const angle=random()*Math.PI*2,radius=8+random()*16,size=10+random()*14,delay=.12+random()*.22,duration=.45+random()*.24;return `<i class="touch-ring touch-micro" style="left:${(Math.cos(angle)*radius).toFixed(1)}px;top:${(Math.sin(angle)*radius).toFixed(1)}px;--ring-size:${size.toFixed(1)}px;animation-delay:${delay.toFixed(3)}s;animation-duration:${duration.toFixed(3)}s"></i>`}).join('')}
-function spawnRainImpact(host,x,y,tone=''){
+function microRipples(random=Math.random){const count=2+Math.floor(random()*5);return Array.from({length:count},()=>{const angle=random()*Math.PI*2,radius=8+random()*16,size=10+random()*14,delay=.12+random()*.22,duration=.45+random()*.24;return `<i class="touch-ring touch-micro" style="left:${(Math.cos(angle)*radius).toFixed(1)}px;top:${(Math.sin(angle)*radius).toFixed(1)}px;--ring-size:${size.toFixed(1)}px;--ring-delay:${delay.toFixed(3)}s;--ring-duration:${duration.toFixed(3)}s"></i>`}).join('')}
+function appendTouchImpact(host,x,y,variant,markup){
  const fx=document.createElement('span');
- fx.className='touch-impact'+(tone?' choice-impact choice-impact-'+tone:host!==document.body?' in-dialog':'');
+ fx.className=`touch-impact ${variant}${host.closest?.('dialog')===host?' in-dialog':''}`;
  fx.setAttribute('aria-hidden','true');
  fx.style.left=x+'px';
  fx.style.top=y+'px';
- const rings='<i class="touch-ring touch-ring-one"></i><i class="touch-ring touch-ring-two"></i><i class="touch-ring touch-ring-three"></i>';
- fx.innerHTML=tone?rings:'<i class="touch-drop"></i><i class="touch-splash"></i>'+rings+microRipples();
+ fx.innerHTML=markup;
  const existing=document.querySelectorAll('.touch-impact');
  if(existing.length>=12)existing[0].remove();
  host.appendChild(fx);
  setTimeout(()=>fx.remove(),1150);
  return fx;
 }
+function spawnRainImpact(host,x,y,tone=''){
+ const rings='<i class="touch-ring touch-ring-one"></i><i class="touch-ring touch-ring-two"></i><i class="touch-ring touch-ring-three"></i>';
+ const markup=tone?rings:'<i class="touch-drop"></i><i class="touch-splash"></i>'+rings+microRipples();
+ return appendTouchImpact(host,x,y,tone?'choice-impact choice-impact-'+tone:'',markup);
+}
+function touchImpactOrigin(event){
+ const dialog=event.target?.closest?.('dialog[open]'),rect=dialog?.getBoundingClientRect();
+ return [
+  dialog||document.body,
+  event.clientX-(rect?.left||0)+(dialog?.scrollLeft||0),
+  event.clientY-(rect?.top||0)+(dialog?.scrollTop||0)
+ ];
+}
 function rainImpact(event){
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
- const dialog=event.target?.closest?.('dialog[open]'),rect=dialog?.getBoundingClientRect();
- spawnRainImpact(dialog||document.body,event.clientX-(rect?.left||0)+(dialog?.scrollLeft||0),event.clientY-(rect?.top||0)+(dialog?.scrollTop||0));
+ spawnRainImpact(...touchImpactOrigin(event));
+}
+function acrylicTouchImpact(event){
+ if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+ const sparkles=Array.from({length:event.held?8:6},(_,index)=>{
+  const angle=event.held?Math.PI+Math.random()*Math.PI:index*Math.PI/3+Math.random()*.35;
+  const distance=event.held?28+Math.random()*48:16+Math.random()*25;
+  const dx=Math.round(Math.cos(angle)*distance),dy=Math.round(Math.sin(angle)*distance);
+  const delay=index*22+Math.round(Math.random()*45);
+  return `<i class="acrylic-spark" style="--spark-x:${dx}px;--spark-y:${dy}px;--spark-delay:${delay}ms"></i>`;
+ }).join('');
+ const stamp='<i class="acrylic-shrimp-stamp"><b class="acrylic-shrimp-body"></b><b class="acrylic-shrimp-eye"></b><b class="acrylic-shrimp-antenna"></b></i>';
+ const effect=appendTouchImpact(...touchImpactOrigin(event),'acrylic-touch'+(event.held?' acrylic-touch-held':''),stamp+sparkles);
+ effect.style.setProperty('--stamp-turn',Math.round(Math.random()*32-16)+'deg');
 }
 const inlineRippleActions=new Set([
  'race-primary','race-option','race-division','identity-trait','card-theme','display-collectible','set-theme'
@@ -162,7 +186,7 @@ function choiceRipple(button,tone){
 const rippleHolds=new Map();
 function endRippleHold(id){const hold=rippleHolds.get(id);if(!hold)return;clearTimeout(hold.timer);rippleHolds.delete(id)}
 function endAllRippleHolds(){for(const id of rippleHolds.keys())endRippleHold(id)}
-function beginRippleHold(e){if(e.button!==0||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;endRippleHold(e.pointerId);if(rippleChoiceActions.has(e.target?.closest?.('button[data-action]')?.dataset.action))return;themeTouchImpact(e);if(rippleHolds.size>=4)return;const hold={target:e.target,clientX:e.clientX,clientY:e.clientY,timer:null};rippleHolds.set(e.pointerId,hold);const repeat=()=>{if(rippleHolds.get(e.pointerId)!==hold)return;themeTouchImpact(hold);hold.timer=setTimeout(repeat,360)};hold.timer=setTimeout(repeat,300)}
+function beginRippleHold(e){if(e.button!==0||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;endRippleHold(e.pointerId);if(rippleChoiceActions.has(e.target?.closest?.('button[data-action]')?.dataset.action))return;themeTouchImpact(e);if(rippleHolds.size>=4)return;const hold={target:e.target,clientX:e.clientX,clientY:e.clientY,timer:null};rippleHolds.set(e.pointerId,hold);const repeat=()=>{if(rippleHolds.get(e.pointerId)!==hold)return;hold.held=true;themeTouchImpact(hold);hold.timer=setTimeout(repeat,360)};hold.timer=setTimeout(repeat,300)}
 function moveRippleHold(e){const hold=rippleHolds.get(e.pointerId);if(!hold)return;if(e.pointerType==='mouse'&&e.buttons===0){endRippleHold(e.pointerId);return}hold.clientX=e.clientX;hold.clientY=e.clientY;hold.target=e.target}
 
 const actions={
@@ -255,9 +279,10 @@ document.addEventListener('click',e=>{
   const activate=()=>actions[action]?.(el.dataset.id);
   if(inlineRippleActions.has(action)){
    const tone=activate();
-   if(action!=='identity-trait'||tone==='positive'||tone==='negative')choiceRipple(el,tone==='negative'?'negative':'positive');
+   if(action!=='identity-trait')choiceRipple(el,'selection');
+   else if(tone==='positive'||tone==='negative')choiceRipple(el,tone);
   }else{
-   choiceRipple(el,'positive');
+   choiceRipple(el,'selection');
    if(action==='choose'||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)activate();
    else{
     pendingChoice=true;
