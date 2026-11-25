@@ -1,6 +1,6 @@
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
 const nodes=new Map(),storage=new Map(),listeners=new Map();
-function node(s){if(!nodes.has(s))nodes.set(s,{html:'',htmlWrites:0,get innerHTML(){return this.html},set innerHTML(value){this.html=value;this.htmlWrites++},textContent:'',value:'',classList:{values:new Set(),add(...names){names.forEach(n=>this.values.add(n))},remove(...names){names.forEach(n=>this.values.delete(n))},contains(n){return this.values.has(n)},toggle(n,on){if(on)this.add(n);else this.remove(n)}},addEventListener(){},setAttribute(){},appendChild(child){child.parentNode=this;child.isConnected=true},matches(selector){return selector===':popover-open'&&this.popoverOpen===true},showPopover(){this.popoverOpen=true;this.popoverShows=(this.popoverShows||0)+1},hidePopover(){this.popoverOpen=false},focus(){},showModal(){this.open=true;this.openCount=(this.openCount||0)+1},close(){this.open=false}});return nodes.get(s)}
+function node(s){if(!nodes.has(s))nodes.set(s,{html:'',htmlWrites:0,get innerHTML(){return this.html},set innerHTML(value){this.html=value;this.htmlWrites++},textContent:'',value:'',dataset:{},style:{setProperty(key,value){this[key]=value}},classList:{values:new Set(),add(...names){names.forEach(n=>this.values.add(n))},remove(...names){names.forEach(n=>this.values.delete(n))},contains(n){return this.values.has(n)},toggle(n,on){if(on)this.add(n);else this.remove(n)}},addEventListener(){},setAttribute(){},appendChild(child){child.parentNode=this;child.isConnected=true},matches(selector){return selector===':popover-open'&&this.popoverOpen===true},showPopover(){this.popoverOpen=true;this.popoverShows=(this.popoverShows||0)+1},hidePopover(){this.popoverOpen=false},focus(){},showModal(){this.open=true;this.openCount=(this.openCount||0)+1},close(){this.open=false}});return nodes.get(s)}
 const dispatch=(type,event)=>{for(const listener of listeners.get(type)||[])listener(event)};
 const rootAttributes=new Map(),audio={
  src:'assets/sunshower-bgm.m4a',volume:1,muted:false,paused:true,duration:NaN,currentTime:0,loadCount:0,
@@ -279,17 +279,20 @@ vm.runInNewContext(code+`
  assert.ok(startUI().includes('<h1 class="start-title"><img src="assets/sunshower-umbrella-vine.webp" alt="여우비와 커튼월"'));
  assert.equal(rootAttributes.get('data-symbol-tone'),'white');assert.ok($('#app').innerHTML.includes('rain-layer'));themeChoices.pop();actions['set-theme']('invalid');assert.equal(preferences.theme,'rain');
  dispatch('input',{target:{id:'bgmVolume',value:'27'}});assert.equal(audio.volume,.27);assert.equal(readPreferences().volume,27);actions['toggle-bgm']();assert.equal(audio.muted,true);assert.equal(readPreferences().muted,true);setBgmVolume('999');assert.equal(audio.volume,1);setBgmVolume('NaN');assert.equal(preferences.volume,100);
- actions['toggle-bgm-playback']();assert.equal(audio.paused,true);assert.equal(readPreferences().bgmPaused,true);assert.equal($('#bgmPlaybackIcon').textContent,'▶');
+ actions['toggle-bgm-playback']();assert.equal(audio.paused,true);assert.equal(readPreferences().bgmPaused,true);assert.equal($('#bgmPlayback').dataset.playing,'false');
  syncBgmPlayback();assert.equal(audio.paused,true);
- actions['toggle-bgm-playback']();assert.equal(audio.paused,false);assert.equal(readPreferences().bgmPaused,false);assert.equal($('#bgmPlaybackIcon').textContent,'❚❚');
+ actions['toggle-bgm-playback']();assert.equal(audio.paused,false);assert.equal(readPreferences().bgmPaused,false);assert.equal($('#bgmPlayback').dataset.playing,'true');
  const fallbackLoads=audio.loadCount;
  audio.duration=164;audio.currentTime=25;
  save.perks.push('acrylic-sky');actions['set-theme']('acrylic-sky');
  assert.equal(themeBgm().title,'Sunshower');
  assert.equal(audio.loadCount,fallbackLoads);assert.equal(audio.currentTime,25);
  assert.ok($('#modalBody').innerHTML.includes('>Sunshower</strong>'));
+ assert.ok(bgmSettingsUI().includes('data-bgm-theme="rain"'));
+ assert.ok(bgmSettingsUI().includes('>수사관 사무실의 유리창</span>'));
+ assert.ok(!bgmSettingsUI().includes('<img'));
  dispatch('input',{target:{id:'bgmSeek',value:'62.5'}});
- assert.equal(audio.currentTime,62.5);assert.equal($('#bgmElapsed').textContent,'1:02');assert.equal($('#bgmDuration').textContent,'2:44');
+ assert.equal(audio.currentTime,62.5);assert.equal($('#bgmElapsed').textContent,'1:02');assert.equal($('#bgmDuration').textContent,'2:44');assert.ok(parseFloat($('#bgmSeek').style['--bgm-fill'])>38);
  const acrylic=themeChoices.find(theme=>theme.id==='acrylic-sky');
  acrylic.presentation.bgm={title:'Test track',src:'assets/test-track.m4a'};
  actions['toggle-bgm-playback']();
@@ -297,6 +300,8 @@ vm.runInNewContext(code+`
  assert.equal(audio.src,'assets/test-track.m4a');assert.equal(audio.loadCount,fallbackLoads+1);
  assert.equal(audio.currentTime,0);assert.equal(audio.paused,true);
  assert.ok($('#modalBody').innerHTML.includes('>Test track</strong>'));
+ assert.ok(bgmSettingsUI().includes('data-bgm-theme="acrylic-sky"'));
+ assert.ok(bgmSettingsUI().includes('>아크릴 하늘</span>'));
  delete acrylic.presentation.bgm;
  actions['set-theme']('rain');
  assert.equal(audio.src,defaultBgm.src);assert.equal(audio.loadCount,fallbackLoads+2);

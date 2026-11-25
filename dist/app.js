@@ -29,7 +29,7 @@ const settingsKey=storagePrefix+'sunshower.preferences.v1';
 const defaultBgm={
  title:'Sunshower',
  src:'assets/sunshower-bgm.m4a',
- artwork:'assets/sunshower-umbrella-vine.webp'
+ themeId:'rain'
 };
 // Theme IDs are stable save keys; unlock predicates read player progress, not preferences.
 const themeChoices=[{id:'rain',name:'수사관 사무실의 유리창',englishName:"Curtain Wall of Investigator's Room",unlockLabel:'기본 해금',note:'수사관은 내려다본다. 그 눈은 비정한 여우비와 달리 따뜻하다.',preview:'office-window',unlock:()=>true,presentation:{symbolTone:'white',background:rainWeather,touch:rainImpact,transition:prismTransition}},{
@@ -65,7 +65,8 @@ let preferences=readPreferences();
 const bgmAudio=$('audio[data-bgm][src]');
 function themeBgm(theme=activeTheme()){
  const track=theme.presentation.bgm;
- return track?.src&&track.title?track:defaultBgm;
+ if(!track?.src||!track.title||track.src===defaultBgm.src)return defaultBgm;
+ return {...track,themeId:track.themeId??theme.id};
 }
 function syncBgmTrack(theme){
  const {src}=themeBgm(theme);
@@ -89,6 +90,7 @@ function updateBgmTimeline(){
  seek.disabled=duration===0;
  seek.max=String(duration||1);
  seek.value=String(elapsed);
+ seek.style.setProperty('--bgm-fill',duration?100*elapsed/duration+'%':'0%');
  seek.setAttribute('aria-valuetext',bgmTime(elapsed)+(duration?' / '+bgmTime(duration):''));
  $('#bgmElapsed').textContent=bgmTime(elapsed);
  $('#bgmDuration').textContent=duration?bgmTime(duration):'–:––';
@@ -105,14 +107,11 @@ function isBgmPlaying(){
 function bgmPlaybackLabel(){
  return isBgmPlaying()?'배경음악 중단':'배경음악 재생';
 }
-function bgmPlaybackIcon(){
- return isBgmPlaying()?'❚❚':'▶';
-}
 function updateBgmPlaybackButton(){
  const button=$('#bgmPlayback');
  if(!button)return;
  button.setAttribute('aria-label',bgmPlaybackLabel());
- $('#bgmPlaybackIcon').textContent=bgmPlaybackIcon();
+ button.dataset.playing=String(isBgmPlaying());
 }
 function syncBgmPlayback(){
  if(!bgmAudio)return;
@@ -131,25 +130,28 @@ function toggleBgmPlayback(){
 }
 function applyPreferences(){const theme=activeTheme();if(preferences.theme!==theme.id){preferences.theme=theme.id;put(settingsKey,preferences)}document.documentElement?.setAttribute?.('data-theme',preferences.theme);document.documentElement?.setAttribute?.('data-symbol-tone',theme.presentation.symbolTone==='black'?'black':'white');document.querySelectorAll('audio[data-bgm]').forEach(audio=>{audio.volume=preferences.volume/100;audio.muted=preferences.muted});syncBgmTrack(theme)}
 function savePreferences(){put(settingsKey,preferences);applyPreferences()}
-function setBgmVolume(value){if(String(value).trim()===''||!Number.isFinite(Number(value)))return;preferences.volume=Math.max(0,Math.min(100,Math.round(Number(value))));savePreferences();const output=$('#bgmVolumeValue');if(output)output.textContent=preferences.volume+'%'}
+function setBgmVolume(value){if(String(value).trim()===''||!Number.isFinite(Number(value)))return;preferences.volume=Math.max(0,Math.min(100,Math.round(Number(value))));savePreferences();const output=$('#bgmVolumeValue');if(output)output.textContent=preferences.volume+'%';$('#bgmVolume')?.style.setProperty('--bgm-fill',preferences.volume+'%')}
 function settingsButton(extra=''){return `<button class="settings-toggle ${extra}" data-action="settings" aria-label="설정 열기" aria-haspopup="dialog"><span aria-hidden="true">⚙</span><span>설정</span></button>`}
 // Static preview only: never call live background/effect renderers inside a namecard.
 function themeNamecard(theme){const selected=preferences.theme===theme.id,unlocked=themeUnlocked(theme);return `<button data-action="set-theme" data-id="${esc(theme.id)}" data-preview="${esc(theme.preview||'default')}" class="theme-option theme-namecard ${selected?'selected':''}" ${unlocked?'':'disabled aria-disabled="true"'} aria-pressed="${selected}"><span class="theme-card-art" aria-hidden="true"><span class="theme-card-city"></span><span class="theme-card-glass"></span><span class="theme-card-frame"></span><span class="theme-card-ornament">◇</span></span><span class="theme-card-copy"><small class="theme-card-kicker">${esc(theme.englishName||theme.name)}</small><strong>${esc(theme.name)}</strong><small class="theme-card-condition">${esc(theme.unlockLabel||'해금 조건 미정')}</small><small class="theme-card-note">${esc(theme.note)}</small></span><span class="theme-card-status">${selected?'<span aria-hidden="true">✓</span> 적용 중':unlocked?'선택':'잠김'}</span></button>`}
 function bgmSettingsUI(){
  if(!bgmAudio)return '';
  const track=themeBgm(),duration=bgmDuration(),elapsed=Math.min(bgmAudio.currentTime,duration);
+ const themeName=themeChoices.find(theme=>theme.id===track.themeId)?.name;
  return `<section class="settings-section bgm-section"><h3>배경음악</h3>
-  <div class="bgm-player">
+  <div class="bgm-player" data-bgm-theme="${esc(track.themeId)}">
    <div class="bgm-player-track">
-    <span class="bgm-player-art" aria-hidden="true">${track.artwork?`<img src="${esc(track.artwork)}" alt="" width="54" height="54">`:'♪'}</span>
-    <strong>${esc(track.title)}</strong>
-    <button type="button" id="bgmPlayback" class="bgm-player-play" data-action="toggle-bgm-playback" aria-label="${bgmPlaybackLabel()}"><span id="bgmPlaybackIcon" aria-hidden="true">${bgmPlaybackIcon()}</span></button>
+    <div class="bgm-player-details">
+     <strong>${esc(track.title)}</strong>
+     ${themeName?`<span class="bgm-player-theme">${esc(themeName)}</span>`:''}
+    </div>
+    <button type="button" id="bgmPlayback" class="bgm-player-play" data-action="toggle-bgm-playback" data-playing="${isBgmPlaying()}" aria-label="${bgmPlaybackLabel()}"><span class="bgm-play-icon" aria-hidden="true"></span></button>
    </div>
-   <input id="bgmSeek" type="range" min="0" max="${duration||1}" step="0.1" value="${elapsed}" aria-label="배경음악 재생 위치" aria-valuetext="${bgmTime(elapsed)}${duration?' / '+bgmTime(duration):''}" ${duration?'':'disabled'}>
+   <input id="bgmSeek" type="range" min="0" max="${duration||1}" step="0.1" value="${elapsed}" style="--bgm-fill:${duration?100*elapsed/duration:0}%" aria-label="배경음악 재생 위치" aria-valuetext="${bgmTime(elapsed)}${duration?' / '+bgmTime(duration):''}" ${duration?'':'disabled'}>
    <div class="bgm-player-times"><span id="bgmElapsed">${bgmTime(elapsed)}</span><span id="bgmDuration">${duration?bgmTime(duration):'–:––'}</span></div>
    <div class="bgm-player-volume">
     <button type="button" id="bgmMute" class="mute-button" data-action="toggle-bgm" aria-pressed="${preferences.muted}">${preferences.muted?'음소거 해제':'음소거'}</button>
-    <input id="bgmVolume" type="range" min="0" max="100" step="1" value="${preferences.volume}" aria-label="배경음악 볼륨">
+    <input id="bgmVolume" type="range" min="0" max="100" step="1" value="${preferences.volume}" style="--bgm-fill:${preferences.volume}%" aria-label="배경음악 볼륨">
     <output id="bgmVolumeValue" for="bgmVolume">${preferences.volume}%</output>
    </div>
   </div>
