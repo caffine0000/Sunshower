@@ -2,7 +2,14 @@ const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/st
 const nodes=new Map(),storage=new Map(),listeners=new Map();
 function node(s){if(!nodes.has(s))nodes.set(s,{html:'',htmlWrites:0,get innerHTML(){return this.html},set innerHTML(value){this.html=value;this.htmlWrites++},textContent:'',value:'',classList:{values:new Set(),add(...names){names.forEach(n=>this.values.add(n))},remove(...names){names.forEach(n=>this.values.delete(n))},contains(n){return this.values.has(n)},toggle(n,on){if(on)this.add(n);else this.remove(n)}},addEventListener(){},setAttribute(){},appendChild(child){child.parentNode=this;child.isConnected=true},matches(selector){return selector===':popover-open'&&this.popoverOpen===true},showPopover(){this.popoverOpen=true;this.popoverShows=(this.popoverShows||0)+1},hidePopover(){this.popoverOpen=false},focus(){},showModal(){this.open=true;this.openCount=(this.openCount||0)+1},close(){this.open=false}});return nodes.get(s)}
 const dispatch=(type,event)=>{for(const listener of listeners.get(type)||[])listener(event)};
-const rootAttributes=new Map(),audio={volume:1,muted:false,paused:true,play(){this.paused=false;return Promise.resolve()},pause(){this.paused=true},addEventListener(){}},giftTimers=[],session=new Map(),cookieJar=new Map(),cookieWrites=[],confirmState={answer:true,calls:0};
+const rootAttributes=new Map(),audio={
+ src:'assets/sunshower-bgm.m4a',volume:1,muted:false,paused:true,duration:NaN,currentTime:0,loadCount:0,
+ getAttribute(name){return name==='src'?this.src:null},
+ load(){this.paused=true;this.duration=NaN;this.currentTime=0;this.loadCount++},
+ play(){this.paused=false;return Promise.resolve()},
+ pause(){this.paused=true},
+ addEventListener(){}
+},giftTimers=[],session=new Map(),cookieJar=new Map(),cookieWrites=[],confirmState={answer:true,calls:0};
 const imageTest={data:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/nS8AAAAASUVORK5CYII=',width:1600,height:800,closed:0,frames:[],large:0,failStorage:false};
 const ctx={console,assert,process,dispatch,storage,audio,rootAttributes,imageTest,giftTimers,session,cookieJar,cookieWrites,confirmState,createImageBitmap:async()=>({width:imageTest.width,height:imageTest.height,close(){imageTest.closed++}}),window:{location:{pathname:'/Sunshower/',hostname:'caffine0000.github.io',protocol:'https:'},sessionStorage:{removeItem:k=>session.delete(k)},matchMedia:()=>({matches:true})},document:{body:node('body'),createElement(tag){if(tag==='div')return node('#created-thought-helper');if(tag!=='canvas')throw Error('unexpected element');return {width:0,height:0,getContext(){return {drawImage(){}}},toDataURL(){imageTest.frames.push([this.width,this.height]);return imageTest.large-->0?'data:image/png;base64,'+'A'.repeat(400001):imageTest.data}}},documentElement:{getAttribute:k=>rootAttributes.get(k)??null,setAttribute:(k,v)=>rootAttributes.set(k,v)},querySelector:selector=>selector==='audio[data-bgm][src]'?audio:node(selector),addEventListener(type,fn){if(!listeners.has(type))listeners.set(type,[]);listeners.get(type).push(fn)},querySelectorAll(selector){return selector==='audio[data-bgm]'?[audio]:selector==='.thought-limit-page,.thought-limit-popup'?[node('.thought-limit-page'),node('.thought-limit-popup')]:[]}},localStorage:{removeItem:k=>storage.delete(k),getItem:k=>storage.get(k)||null,setItem:(k,v)=>{if(imageTest.failStorage)throw Error('quota');storage.set(k,v)}},crypto:require('node:crypto').webcrypto,TextEncoder,TextDecoder,btoa,atob,setTimeout(fn,ms){if(ms===3600){giftTimers.push(fn);return 5000+giftTimers.length}fn()},clearTimeout(){},confirm:()=>{confirmState.calls++;return confirmState.answer}};
 Object.defineProperty(ctx.document,'cookie',{get:()=>[...cookieJar].map(([k,v])=>k+'='+v).join('; '),set:value=>{cookieWrites.push(value);const name=value.split('=')[0];if(value.includes('Max-Age=0'))cookieJar.delete(name)}});
@@ -169,6 +176,12 @@ vm.runInNewContext(code+`
  const select=level=>actions['identity-trait']('example:'+level);
  const stageWrites=$('#app').htmlWrites;
  assert.ok(panel().includes('data-tone="neutral"'));
+ assert.ok(panel().includes('<div class="identity-trait-art"></div>'));
+ identityTraits[0].image='assets/example.webp';
+ identityTraits[0].imageAlt='특성 그림';
+ assert.ok(identityEditorUI().includes('src="assets/example.webp" alt="특성 그림"'));
+ delete identityTraits[0].image;
+ delete identityTraits[0].imageAlt;
  assert.ok(!panel().includes('choice-thought-cost'));
  for(const [level,label,symbol] of [['negative','네거티브','-'],['neutral','뉴트럴','○'],['positive','포지티브','+']]){
   const button=panel().split('</button>').find(markup=>markup.includes('data-id="example:'+level+'"'));
@@ -266,9 +279,30 @@ vm.runInNewContext(code+`
  assert.ok(startUI().includes('<h1 class="start-title"><img src="assets/sunshower-umbrella-vine.webp" alt="여우비와 커튼월"'));
  assert.equal(rootAttributes.get('data-symbol-tone'),'white');assert.ok($('#app').innerHTML.includes('rain-layer'));themeChoices.pop();actions['set-theme']('invalid');assert.equal(preferences.theme,'rain');
  dispatch('input',{target:{id:'bgmVolume',value:'27'}});assert.equal(audio.volume,.27);assert.equal(readPreferences().volume,27);actions['toggle-bgm']();assert.equal(audio.muted,true);assert.equal(readPreferences().muted,true);setBgmVolume('999');assert.equal(audio.volume,1);setBgmVolume('NaN');assert.equal(preferences.volume,100);
- actions['toggle-bgm-playback']();assert.equal(audio.paused,true);assert.equal(readPreferences().bgmPaused,true);assert.equal($('#bgmPlayback').textContent,'배경음악 재생');
+ actions['toggle-bgm-playback']();assert.equal(audio.paused,true);assert.equal(readPreferences().bgmPaused,true);assert.equal($('#bgmPlaybackIcon').textContent,'▶');
  syncBgmPlayback();assert.equal(audio.paused,true);
- actions['toggle-bgm-playback']();assert.equal(audio.paused,false);assert.equal(readPreferences().bgmPaused,false);assert.equal($('#bgmPlayback').textContent,'배경음악 중단');
+ actions['toggle-bgm-playback']();assert.equal(audio.paused,false);assert.equal(readPreferences().bgmPaused,false);assert.equal($('#bgmPlaybackIcon').textContent,'❚❚');
+ const fallbackLoads=audio.loadCount;
+ audio.duration=164;audio.currentTime=25;
+ save.perks.push('acrylic-sky');actions['set-theme']('acrylic-sky');
+ assert.equal(themeBgm().title,'Sunshower');
+ assert.equal(audio.loadCount,fallbackLoads);assert.equal(audio.currentTime,25);
+ assert.ok($('#modalBody').innerHTML.includes('>Sunshower</strong>'));
+ dispatch('input',{target:{id:'bgmSeek',value:'62.5'}});
+ assert.equal(audio.currentTime,62.5);assert.equal($('#bgmElapsed').textContent,'1:02');assert.equal($('#bgmDuration').textContent,'2:44');
+ const acrylic=themeChoices.find(theme=>theme.id==='acrylic-sky');
+ acrylic.presentation.bgm={title:'Test track',src:'assets/test-track.m4a'};
+ actions['toggle-bgm-playback']();
+ actions['set-theme']('acrylic-sky');
+ assert.equal(audio.src,'assets/test-track.m4a');assert.equal(audio.loadCount,fallbackLoads+1);
+ assert.equal(audio.currentTime,0);assert.equal(audio.paused,true);
+ assert.ok($('#modalBody').innerHTML.includes('>Test track</strong>'));
+ delete acrylic.presentation.bgm;
+ actions['set-theme']('rain');
+ assert.equal(audio.src,defaultBgm.src);assert.equal(audio.loadCount,fallbackLoads+2);
+ assert.equal(audio.paused,true);
+ actions['toggle-bgm-playback']();assert.equal(audio.paused,false);
+ save.perks=save.perks.filter(id=>id!=='acrylic-sky');
  assert.equal(normalizePreferences({theme:'x',volume:-5}).volume,0);assert.equal(normalizePreferences({volume:'20'}).volume,60);assert.equal(normalizePreferences({muted:'true'}).muted,false);actions['set-theme']('rain');close();
  actions['build-next']();assert.ok($('#app').innerHTML.includes('의문의 여자아이'));assert.ok($('#app').innerHTML.includes('꼬마에게 이름을 묻는다'));assert.ok(!$('#app').innerHTML.includes('id="buildName"'));actions['build-next']();assert.ok($('#app').innerHTML.includes('id="buildName"'));assert.ok($('#app').innerHTML.includes('내 이름은 알려줄 수 없어.'));assert.ok($('#app').innerHTML.includes('data-action="speak-name"'));assert.ok($('#app').innerHTML.includes('이름을 말한다'));assert.ok(!$('#app').innerHTML.includes('data-action="build-next"'));
  $('#buildName').value='   ';actions['speak-name']();assert.equal(save.build.cutscene.scene,'profile-name');

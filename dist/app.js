@@ -26,6 +26,11 @@ function toast(t){$('#toast').textContent=formatPlayerText(t,save?.build);$('#to
 function put(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch{storageOK=false;toast('브라우저 저장 공간이 부족해요. 파일이나 세이브 코드로 보관해 주세요.');return false}}
 function loadSave(){try{save=JSON.parse(localStorage.getItem(playerSaveKey()))||fresh();const r=replay(project,save);save={...normalizePlayer(save),history:r.history};if(r.warning)toast(r.warning)}catch{save=normalizePlayer()}}loadSave();save=normalizePlayer(save);
 const settingsKey=storagePrefix+'sunshower.preferences.v1';
+const defaultBgm={
+ title:'Sunshower',
+ src:'assets/sunshower-bgm.m4a',
+ artwork:'assets/sunshower-umbrella-vine.webp'
+};
 // Theme IDs are stable save keys; unlock predicates read player progress, not preferences.
 const themeChoices=[{id:'rain',name:'수사관 사무실의 유리창',englishName:"Curtain Wall of Investigator's Room",unlockLabel:'기본 해금',note:'수사관은 내려다본다. 그 눈은 비정한 여우비와 달리 따뜻하다.',preview:'office-window',unlock:()=>true,presentation:{symbolTone:'white',background:rainWeather,touch:rainImpact,transition:prismTransition}},{
  id:'acrylic-sky',
@@ -58,12 +63,56 @@ function normalizePreferences(value){return {theme:themeChoices.some(t=>t.id===v
 function readPreferences(){try{return normalizePreferences(JSON.parse(localStorage.getItem(settingsKey)))}catch{return normalizePreferences()}}
 let preferences=readPreferences();
 const bgmAudio=$('audio[data-bgm][src]');
+function themeBgm(theme=activeTheme()){
+ const track=theme.presentation.bgm;
+ return track?.src&&track.title?track:defaultBgm;
+}
+function syncBgmTrack(theme){
+ const {src}=themeBgm(theme);
+ if(!bgmAudio||bgmAudio.getAttribute('src')===src)return;
+ bgmAudio.src=src;
+ bgmAudio.load();
+ syncBgmPlayback();
+}
+function bgmDuration(){
+ const duration=bgmAudio?.duration;
+ return Number.isFinite(duration)&&duration>0?duration:0;
+}
+function bgmTime(seconds){
+ const elapsed=Math.floor(Math.max(0,seconds));
+ return Math.floor(elapsed/60)+':'+String(elapsed%60).padStart(2,'0');
+}
+function updateBgmTimeline(){
+ const seek=$('#bgmSeek');
+ if(!seek||!bgmAudio)return;
+ const duration=bgmDuration(),elapsed=Math.min(bgmAudio.currentTime,duration);
+ seek.disabled=duration===0;
+ seek.max=String(duration||1);
+ seek.value=String(elapsed);
+ seek.setAttribute('aria-valuetext',bgmTime(elapsed)+(duration?' / '+bgmTime(duration):''));
+ $('#bgmElapsed').textContent=bgmTime(elapsed);
+ $('#bgmDuration').textContent=duration?bgmTime(duration):'–:––';
+}
+function seekBgm(value){
+ const duration=bgmDuration(),seconds=Number(value);
+ if(!duration||!Number.isFinite(seconds))return;
+ bgmAudio.currentTime=Math.max(0,Math.min(duration,seconds));
+ updateBgmTimeline();
+}
+function isBgmPlaying(){
+ return !!bgmAudio&&!bgmAudio.paused&&!preferences.bgmPaused;
+}
 function bgmPlaybackLabel(){
- return bgmAudio?.paused||preferences.bgmPaused?'배경음악 재생':'배경음악 중단';
+ return isBgmPlaying()?'배경음악 중단':'배경음악 재생';
+}
+function bgmPlaybackIcon(){
+ return isBgmPlaying()?'❚❚':'▶';
 }
 function updateBgmPlaybackButton(){
  const button=$('#bgmPlayback');
- if(button)button.textContent=bgmPlaybackLabel();
+ if(!button)return;
+ button.setAttribute('aria-label',bgmPlaybackLabel());
+ $('#bgmPlaybackIcon').textContent=bgmPlaybackIcon();
 }
 function syncBgmPlayback(){
  if(!bgmAudio)return;
@@ -75,26 +124,36 @@ function syncBgmPlayback(){
 }
 function toggleBgmPlayback(){
  if(!bgmAudio)return;
- preferences.bgmPaused=!bgmAudio.paused&&!preferences.bgmPaused;
+ preferences.bgmPaused=isBgmPlaying();
  savePreferences();
  syncBgmPlayback();
  updateBgmPlaybackButton();
 }
-function applyPreferences(){const theme=activeTheme();if(preferences.theme!==theme.id){preferences.theme=theme.id;put(settingsKey,preferences)}document.documentElement?.setAttribute?.('data-theme',preferences.theme);document.documentElement?.setAttribute?.('data-symbol-tone',theme.presentation.symbolTone==='black'?'black':'white');document.querySelectorAll('audio[data-bgm]').forEach(audio=>{audio.volume=preferences.volume/100;audio.muted=preferences.muted})}
+function applyPreferences(){const theme=activeTheme();if(preferences.theme!==theme.id){preferences.theme=theme.id;put(settingsKey,preferences)}document.documentElement?.setAttribute?.('data-theme',preferences.theme);document.documentElement?.setAttribute?.('data-symbol-tone',theme.presentation.symbolTone==='black'?'black':'white');document.querySelectorAll('audio[data-bgm]').forEach(audio=>{audio.volume=preferences.volume/100;audio.muted=preferences.muted});syncBgmTrack(theme)}
 function savePreferences(){put(settingsKey,preferences);applyPreferences()}
 function setBgmVolume(value){if(String(value).trim()===''||!Number.isFinite(Number(value)))return;preferences.volume=Math.max(0,Math.min(100,Math.round(Number(value))));savePreferences();const output=$('#bgmVolumeValue');if(output)output.textContent=preferences.volume+'%'}
 function settingsButton(extra=''){return `<button class="settings-toggle ${extra}" data-action="settings" aria-label="설정 열기" aria-haspopup="dialog"><span aria-hidden="true">⚙</span><span>설정</span></button>`}
 // Static preview only: never call live background/effect renderers inside a namecard.
 function themeNamecard(theme){const selected=preferences.theme===theme.id,unlocked=themeUnlocked(theme);return `<button data-action="set-theme" data-id="${esc(theme.id)}" data-preview="${esc(theme.preview||'default')}" class="theme-option theme-namecard ${selected?'selected':''}" ${unlocked?'':'disabled aria-disabled="true"'} aria-pressed="${selected}"><span class="theme-card-art" aria-hidden="true"><span class="theme-card-city"></span><span class="theme-card-glass"></span><span class="theme-card-frame"></span><span class="theme-card-ornament">◇</span></span><span class="theme-card-copy"><small class="theme-card-kicker">${esc(theme.englishName||theme.name)}</small><strong>${esc(theme.name)}</strong><small class="theme-card-condition">${esc(theme.unlockLabel||'해금 조건 미정')}</small><small class="theme-card-note">${esc(theme.note)}</small></span><span class="theme-card-status">${selected?'<span aria-hidden="true">✓</span> 적용 중':unlocked?'선택':'잠김'}</span></button>`}
 function bgmSettingsUI(){
- return `<section class="settings-section"><h3>BGM</h3>${bgmAudio?`
-  <p class="hint">Sunshower</p>
-  <label class="volume-label" for="bgmVolume">배경음악 볼륨 <output id="bgmVolumeValue" for="bgmVolume">${preferences.volume}%</output></label>
-  <input id="bgmVolume" type="range" min="0" max="100" step="1" value="${preferences.volume}" aria-label="배경음악 볼륨">
-  <div class="actions">
-   <button type="button" id="bgmPlayback" class="mute-button" data-action="toggle-bgm-playback">${bgmPlaybackLabel()}</button>
-   <button type="button" class="mute-button" data-action="toggle-bgm" aria-pressed="${preferences.muted}">${preferences.muted?'음소거 해제':'음소거'}</button>
-  </div>`:'<p class="hint">현재 등록된 BGM이 없습니다.</p>'}</section>`;
+ if(!bgmAudio)return '';
+ const track=themeBgm(),duration=bgmDuration(),elapsed=Math.min(bgmAudio.currentTime,duration);
+ return `<section class="settings-section bgm-section"><h3>배경음악</h3>
+  <div class="bgm-player">
+   <div class="bgm-player-track">
+    <span class="bgm-player-art" aria-hidden="true">${track.artwork?`<img src="${esc(track.artwork)}" alt="" width="54" height="54">`:'♪'}</span>
+    <strong>${esc(track.title)}</strong>
+    <button type="button" id="bgmPlayback" class="bgm-player-play" data-action="toggle-bgm-playback" aria-label="${bgmPlaybackLabel()}"><span id="bgmPlaybackIcon" aria-hidden="true">${bgmPlaybackIcon()}</span></button>
+   </div>
+   <input id="bgmSeek" type="range" min="0" max="${duration||1}" step="0.1" value="${elapsed}" aria-label="배경음악 재생 위치" aria-valuetext="${bgmTime(elapsed)}${duration?' / '+bgmTime(duration):''}" ${duration?'':'disabled'}>
+   <div class="bgm-player-times"><span id="bgmElapsed">${bgmTime(elapsed)}</span><span id="bgmDuration">${duration?bgmTime(duration):'–:––'}</span></div>
+   <div class="bgm-player-volume">
+    <button type="button" id="bgmMute" class="mute-button" data-action="toggle-bgm" aria-pressed="${preferences.muted}">${preferences.muted?'음소거 해제':'음소거'}</button>
+    <input id="bgmVolume" type="range" min="0" max="100" step="1" value="${preferences.volume}" aria-label="배경음악 볼륨">
+    <output id="bgmVolumeValue" for="bgmVolume">${preferences.volume}%</output>
+   </div>
+  </div>
+ </section>`;
 }
 function settingsUI(){modal(`<div class="settings-heading"><div><span class="eyebrow">PREFERENCES</span><h2>설정</h2></div><button class="quiet" data-action="close" aria-label="설정 닫기">✕</button></div><section class="settings-section"><h3>테마</h3><div class="theme-options" role="group" aria-label="화면 테마">${themeChoices.map(themeNamecard).join('')}</div></section>${bgmSettingsUI()}<section class="settings-section credits-section"><h3>크레딧</h3><p class="credit-title">여우비와 커튼월<small>Sunshower & Curtain Wall</small></p><dl><div><dt>기획 · 이야기 · 이미지 제공</dt><dd>아크릴새우(AcrylicShrimp)</dd></div><div><dt>개발 지원</dt><dd>OpenAI Codex</dd></div></dl><details><summary>사용 서체</summary><p>Cormorant Garamond · Gowun Batang · Hahmlet · Noto Sans KR · Song Myung<br>Google Fonts · SIL Open Font License</p></details></section><section class="settings-section settings-reset-section"><h3>사이트 데이터</h3><p>현재 작품의 프로필·사진·플레이 기록·수집품·특전·설정과 쿠키를 삭제합니다. 필요한 기록은 먼저 세이브 코드로 보관해 주세요.</p><button type="button" class="settings-reset-button" data-action="reset-site-data">쿠키 및 플레이 데이터 삭제</button></section>`);$('#modal').classList.add('settings-dialog')}
 function clearVisibleSiteCookies(){const names=(document.cookie||'').split(';').map(cookie=>cookie.split('=')[0].trim()).filter(Boolean),location=window.location,paths=new Set(['/']),parts=(location?.pathname||'/').split('/').filter(Boolean);let path='';for(const part of parts){path+='/'+part;paths.add(path);paths.add(path+'/')}const host=location?.hostname,domains=host?['',host,'.'+host]:[''];for(const name of names)for(const cookiePath of paths)for(const domain of domains){document.cookie=name+'=; Max-Age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; path='+cookiePath+(domain?'; domain='+domain:'')+(location?.protocol==='https:'?'; Secure':'')}}
@@ -279,7 +338,15 @@ const actions={
  settings(){if(!busy)settingsUI()},
  'set-theme'(id){if(!themeUnlocked(themeChoices.find(theme=>theme.id===id)))return;preferences.theme=id;savePreferences();render();settingsUI()},
  'toggle-bgm-playback':toggleBgmPlayback,
- 'toggle-bgm'(){preferences.muted=!preferences.muted;savePreferences();settingsUI()},
+ 'toggle-bgm'(){
+  preferences.muted=!preferences.muted;
+  savePreferences();
+  const button=$('#bgmMute');
+  if(button){
+   button.setAttribute('aria-pressed',String(preferences.muted));
+   button.textContent=preferences.muted?'음소거 해제':'음소거';
+  }
+ },
  'player-tab'(id){if(busy||!investigatorTabs.some(tab=>tab.id===id))return;if(!canOpenPlayerTab(id))return toast('프로필을 먼저 완성해 주세요.');playerTab=id;close();render();$('.menu-toggle')?.focus()},
  menu(){if(!busy)menuUI()},enter(){screen='game';playerTab=save.build.completed?'story':'building';render()},'open-transfer'(){if(busy)return;restoreUI()},'title-screen'(){if(busy)return;screen='start';render()},
  'choose-building-scene'(id){if(busy||save.build.completed||buildingPosition(project,save.build).stage.type!=='branch')return;try{save.build=chooseBuildingBranch(project,save.build,id);persist();render()}catch(e){toast(e.message)}},
@@ -365,7 +432,7 @@ document.addEventListener('click',e=>{
 $('#modal').addEventListener('close',syncThoughtHelperLayer);
 $('#modal').addEventListener('cancel',e=>{if($('#modal').classList.contains('navigation-dialog')||$('#modal').classList.contains('customization-dialog')){e.preventDefault();close()}});
 $('#modal').addEventListener('click',e=>{const dialog=$('#modal');if(e.target!==dialog||(!dialog.classList.contains('navigation-dialog')&&!dialog.classList.contains('customization-dialog')))return;const rect=dialog.getBoundingClientRect();if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)close()});
-document.addEventListener('input',e=>{if(handleProfileInput(e))return;if(e.target.id==='bgmVolume'){setBgmVolume(e.target.value);return}if(e.target.id==='buildName'){if(save.build.completed)return;save.build.name=e.target.value.slice(0,100);persist();return}if(e.target.dataset.stat){if(save.build.completed)return;const d=(project.stats||[]).find(d=>d.id===e.target.dataset.stat),n=Number(e.target.value);if(d&&Number.isFinite(n)&&n>=d.min&&n<=d.max){save.build.stats[d.id]=n;persist()}return}if(e.target.id==='loreSearch'){loreQuery=e.target.value;renderLoreResults();return}const k=e.target.dataset.field;if(!k)return;const s=sget(),c=s.choices.find(c=>c.id===selectedChoice);let v=e.target.value;if(['delta','min'].includes(k)){v=Number(v);if(!Number.isFinite(v))return;v=Math.max(k==='min'?0:-9999,Math.min(9999,v));}if(k==='projectTitle')project.title=v;else(c||s)[k]=v;persist();$('#storyMount').innerHTML=story(s);if(k==='title')document.querySelectorAll('.scenebtn').forEach(b=>{if(b.dataset.id===s.id)b.querySelector('strong').textContent=s.title});});
+document.addEventListener('input',e=>{if(handleProfileInput(e))return;if(e.target.id==='bgmSeek'){seekBgm(e.target.value);return}if(e.target.id==='bgmVolume'){setBgmVolume(e.target.value);return}if(e.target.id==='buildName'){if(save.build.completed)return;save.build.name=e.target.value.slice(0,100);persist();return}if(e.target.dataset.stat){if(save.build.completed)return;const d=(project.stats||[]).find(d=>d.id===e.target.dataset.stat),n=Number(e.target.value);if(d&&Number.isFinite(n)&&n>=d.min&&n<=d.max){save.build.stats[d.id]=n;persist()}return}if(e.target.id==='loreSearch'){loreQuery=e.target.value;renderLoreResults();return}const k=e.target.dataset.field;if(!k)return;const s=sget(),c=s.choices.find(c=>c.id===selectedChoice);let v=e.target.value;if(['delta','min'].includes(k)){v=Number(v);if(!Number.isFinite(v))return;v=Math.max(k==='min'?0:-9999,Math.min(9999,v));}if(k==='projectTitle')project.title=v;else(c||s)[k]=v;persist();$('#storyMount').innerHTML=story(s);if(k==='title')document.querySelectorAll('.scenebtn').forEach(b=>{if(b.dataset.id===s.id)b.querySelector('strong').textContent=s.title});});
 function submitBuildName(){if(nameCompositionActive||busy||save.build.completed||screen!=='game'||playerTab!=='building'||buildingPosition(project,save.build).stage.type!=='identity')return;const input=$('#buildName'),value=input.value.slice(0,100);if(!value.trim()){toast('떠오르는 이름을 적어 주세요.');input.focus();return}save.build.name=value;actions['build-next']()}
 document.addEventListener('compositionstart',e=>{if(e.target.id==='buildName')nameCompositionActive=true});
 document.addEventListener('compositionend',e=>{if(e.target.id==='buildName')nameCompositionActive=false});
@@ -377,6 +444,7 @@ $('#imageFile').addEventListener('change',async e=>{const f=e.target.files[0],sc
 async function exportPNG(){try{await document.fonts.ready;const r=replay(project,save),pages=Math.max(1,Math.ceil(r.history.length/24));for(let page=0;page<pages;page++){const rows=r.history.slice(page*24,(page+1)*24),canvas=document.createElement('canvas');canvas.width=1200;canvas.height=490+rows.length*140;const ctx=canvas.getContext('2d');ctx.fillStyle='#e2e9e5';ctx.fillRect(0,0,1200,canvas.height);ctx.fillStyle='#304f5a';ctx.fillRect(65,65,55,55);ctx.fillStyle='white';ctx.font='35px sans-serif';ctx.fillText('⑂',75,105);ctx.fillStyle='#74836b';ctx.font='20px sans-serif';ctx.fillText('SUNSHOWER / MY JOURNEY',145,103);ctx.fillStyle='#243e49';ctx.font='bold 46px "Hahmlet",serif';wrap(ctx,formatPlayerText(project.title,save.build),70,195,1050,58,2);ctx.font='22px "Gowun Batang",serif';ctx.fillStyle='#7b896e';ctx.fillText(`${save.build.name||'이름 미설정'} · ${save.build.completed?'빌딩 완료':'빌딩 중'} · 선택 ${r.history.length} · ${page+1}/${pages}`,70,295);ctx.font='18px sans-serif';wrap(ctx,[...(save.build.gender?['성별 '+(save.build.gender==='male'?'남성':'여성')]:[]),...(project.stats||[]).map(d=>formatPlayerText(d.name,save.build)+' '+(save.build.stats[d.id]??d.initial))].join(' / ')+` · 인연 ${save.bonds.length} · 정보 ${save.lore.length} · 특전 ${save.perks.length}`,70,335,1050,24,1);rows.forEach((h,i)=>{const y=390+i*140;ctx.strokeStyle='#d9e0ce';ctx.beginPath();ctx.moveTo(70,y-22);ctx.lineTo(1130,y-22);ctx.stroke();ctx.fillStyle='#899779';ctx.font='19px "Gowun Batang",serif';wrap(ctx,`${page*24+i+1}. ${formatPlayerText(h.title,save.build)}`,70,y+10,1040,26,1);ctx.fillStyle='#345363';ctx.font='26px "Gowun Batang",serif';wrap(ctx,formatPlayerText(h.label,save.build),70,y+58,1040,34,2)});ctx.fillStyle='#9aa58e';ctx.font='17px sans-serif';ctx.fillText('모든 선택에는 이야기가 있어요.  ·  '+new Date().toLocaleDateString('ko-KR'),70,canvas.height-48);const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw Error();download(blob,`${project.title}-여정-${page+1}.png`,'image/png')}toast(pages>1?`${pages}장의 이미지를 저장했어요. 브라우저에서 여러 파일 다운로드를 허용해 주세요.`:'여정 이미지를 저장했어요.')}catch{toast('이미지 생성에 실패했어요. 다시 시도해 주세요.')}}
 function wrap(ctx,text,x,y,width,lineHeight,maxLines){let line='',lines=[];for(const char of text){if(ctx.measureText(line+char).width>width&&line){lines.push(line);line=char}else line+=char}if(line)lines.push(line);lines.slice(0,maxLines).forEach((l,i)=>ctx.fillText(l+(i===maxLines-1&&lines.length>maxLines?'…':''),x,y+i*lineHeight))}
 for(const event of ['play','pause','error'])bgmAudio?.addEventListener(event,updateBgmPlaybackButton);
+for(const event of ['loadedmetadata','durationchange','timeupdate','emptied'])bgmAudio?.addEventListener(event,updateBgmTimeline);
 document.addEventListener('click',syncBgmPlayback,{capture:true,once:true});
 render();
 syncBgmPlayback();
@@ -734,10 +802,11 @@ function collectionUI(){const owned=ownedCollectibles();modal(`<div class="custo
 const identityLevelNames={negative:'네거티브',neutral:'뉴트럴',positive:'포지티브'};
 const identityLevelSymbols={negative:'-',neutral:'○',positive:'+'};
 function identityEditorUI(){
- return `<div class="identity-traits">${identityTraits.map(({id,name,levels})=>{
+ return `<div class="identity-traits">${identityTraits.map(({id,name,levels,image,imageAlt=''})=>{
   const selected=save.build.traitChoices[id]??'neutral';
   const {description,cost}=levels[selected];
   return `<article class="identity-trait" data-tone="${selected}">
+   <div class="identity-trait-art">${image?`<img src="${esc(image)}" alt="${esc(imageAlt)}" loading="lazy" decoding="async">`:''}</div>
    <div class="identity-trait-heading"><h3>${esc(name)}</h3>${choiceThoughtCost(cost)}</div>
    <div class="identity-trait-switch" role="group" aria-label="${esc(name)} 상태">${identityTraitLevels.map(level=>
     `<button type="button" data-action="identity-trait" data-id="${esc(id)}:${level}" aria-label="${identityLevelNames[level]}" aria-pressed="${selected===level}" aria-describedby="identity-description-${esc(id)}">${identityLevelSymbols[level]}</button>`
