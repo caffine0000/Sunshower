@@ -660,7 +660,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  --choice-negative-edge:#a53f66;
  --choice-neutral:#bbc2d9;
 }
-:root[data-theme="acrylic-sky"]{--choice-neutral:#765266}
+:root[data-theme="acrylic-sky"]{--choice-neutral:#45496f}
 .identity-traits{display:grid;gap:16px}
 .identity-trait{
  --trait-tone:var(--choice-neutral);
