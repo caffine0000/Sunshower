@@ -93,78 +93,89 @@ dialog::backdrop{background:#061c273b;backdrop-filter:blur(2px);-webkit-backdrop
  78%{opacity:.29;--ring-stroke:.56px}
  100%{opacity:0;--ring-stroke:.1px}
 }
-.acrylic-touch{--stamp-turn:0deg}
-.acrylic-shrimp-stamp{
+.acrylic-touch{--shrimp-turn:0deg}
+.acrylic-touch::before{
+ content:"";
+ position:absolute;
+ inset:-36px;
+ border-radius:50%;
+ background:radial-gradient(circle,#fffffff0, #fff9db70 24%, #f5ddff36 43%, transparent 70%);
+ animation:acrylic-burst-flash .38s ease-out both;
+}
+.acrylic-shrimp-burst{
  width:66px;
  height:60px;
  left:-33px;
  top:-30px;
- filter:drop-shadow(0 0 2px #fffef0bd) drop-shadow(0 0 10px #ffe4719e);
- animation:acrylic-stamp .94s ease-out both;
+ filter:drop-shadow(0 0 3px #ffffffe0) drop-shadow(0 0 9px #ebd8ff8c);
+ animation:acrylic-shrimp-burst .78s cubic-bezier(.18,.66,.28,1) both;
 }
 .acrylic-shrimp-body{
  inset:0;
  background:
-  radial-gradient(ellipse at 35% 28%,#fffff1b0,transparent 44%),
-  repeating-linear-gradient(115deg,transparent 0 8px,#fff9df5e 8px 9px,transparent 9px 12px),
-  linear-gradient(135deg,#fffab089 16%,#ffd35080 33%,#ff9e9a69 49%,#ffd8ef76 59%,#a9d8f675 72%,#b4ecc97a 86%,#fff7a18c);
- clip-path:path("M 7 20 L 13 18 C 17 11 28 8 39 11 C 54 14 62 24 59 36 C 57 47 47 53 34 51 L 28 49 Q 23 58 13 56 L 17 48 Q 11 50 7 44 L 17 39 Q 21 40 27 43 C 38 46 47 41 47 33 C 47 26 39 20 31 23 C 24 28 15 28 7 20 Z");
+  radial-gradient(ellipse at 38% 28%,#ffffffb5,transparent 51%),
+  repeating-linear-gradient(115deg,transparent 0 9px,#ffffff57 9px 10px,transparent 10px 13px),
+  linear-gradient(138deg,#ffffff82 14%,#fff3bb9c 31%,#ffdaec82 47%,#fffafec4 60%,#cfebff9c 74%,#d5ffe18a 88%,#ffffff8a);
+ /* The second subpath cuts the eye out of the silhouette. */
+ clip-path:path(evenodd,"M 9 20 C 9 13 18 9 28 9 C 44 7 59 16 61 30 C 64 44 52 55 36 54 C 32 54 29 53 26 51 C 23 56 16 58 12 55 C 10 52 14 49 16 48 C 11 48 8 45 9 42 C 10 38 17 38 23 41 C 30 45 37 46 43 42 C 49 38 49 31 44 27 C 40 23 34 23 30 26 C 24 31 12 30 9 24 C 8 23 8 21 9 20 Z M 23 19 A 3 3 0 1 0 17 19 A 3 3 0 1 0 23 19 Z");
 }
-.acrylic-shrimp-stamp::after{
+.acrylic-shrimp-burst::after{
  content:"";
  position:absolute;
- left:28px;
- top:9px;
- width:17px;
- height:17px;
- background:#fffef5;
+ left:34px;
+ top:8px;
+ width:16px;
+ height:16px;
+ background:#fff;
  clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);
- animation:acrylic-stamp-glint .7s .05s ease-out both;
+ animation:acrylic-burst-glint .57s ease-out both;
 }
-@keyframes acrylic-stamp-glint{
- 0%,100%{opacity:0;transform:scale(.35)}
- 26%{opacity:1;transform:scale(1)}
- 64%{opacity:.55;transform:scale(.72)}
-}
-.acrylic-shrimp-eye{left:18px;top:17px;width:3px;height:3px;border-radius:50%;background:#6c453b}
 .acrylic-shrimp-antenna{
- left:2px;top:11px;width:18px;height:10px;
- border-top:1px solid #ffe075;border-radius:100%;transform:rotate(21deg);
+ left:3px;top:11px;width:18px;height:10px;
+ border-top:1px solid #ffffffe0;border-radius:100%;transform:rotate(21deg);
 }
 .acrylic-shrimp-antenna::after{
  content:"";position:absolute;left:0;top:2px;width:16px;height:7px;
- border-top:1px solid #fff8be;border-radius:100%;transform:rotate(-17deg);
+ border-top:1px solid #ffecf6cf;border-radius:100%;transform:rotate(-17deg);
 }
-.acrylic-touch-held .acrylic-shrimp-stamp{animation-name:acrylic-held-stamp}
+.acrylic-touch-held .acrylic-shrimp-burst{animation-name:acrylic-shrimp-rise}
 .acrylic-spark{
- --spark-color:#ffe473;
+ --spark-color:#fff0a3;
  width:7px;height:7px;left:-3.5px;top:-3.5px;
  border-radius:50%;
- background:radial-gradient(circle,#fffef0 8%,var(--spark-color) 52%,transparent 72%);
- box-shadow:0 0 7px 1px var(--spark-color);
+ background:radial-gradient(circle,#fff 11%,var(--spark-color) 51%,transparent 72%);
+ box-shadow:0 0 8px 1px var(--spark-color);
  opacity:0;
- animation:acrylic-spark-float .85s var(--spark-delay) ease-out both;
+ animation:acrylic-spark-float .72s var(--spark-delay) cubic-bezier(.17,.62,.27,1) both;
 }
-.acrylic-spark:nth-child(3n){--spark-color:#ffb6bc}
-.acrylic-spark:nth-child(5n){--spark-color:#9de5e1}
-.acrylic-spark:nth-child(7n){--spark-color:#c9baff}
-@keyframes acrylic-stamp{
- 0%{opacity:0;transform:rotate(var(--stamp-turn)) scale(1.19)}
- 13%{opacity:1;transform:rotate(var(--stamp-turn)) scale(.91)}
- 30%{transform:rotate(var(--stamp-turn)) scale(1)}
- 57%{opacity:.84}
- 100%{opacity:0;transform:translateY(-9px) rotate(var(--stamp-turn)) scale(.97)}
+.acrylic-spark:nth-child(3n){--spark-color:#ffd4e0}
+.acrylic-spark:nth-child(5n){--spark-color:#b7f4ef}
+.acrylic-spark:nth-child(7n){--spark-color:#d7c8ff}
+@keyframes acrylic-burst-flash{
+ 0%{opacity:0;transform:scale(.15)}
+ 20%{opacity:.86}
+ 100%{opacity:0;transform:scale(1.65)}
 }
-@keyframes acrylic-held-stamp{
- 0%{opacity:0;transform:rotate(var(--stamp-turn)) scale(.55)}
- 18%{opacity:.74}
- 100%{opacity:0;transform:translateY(-20px) rotate(var(--stamp-turn)) scale(.82)}
+@keyframes acrylic-burst-glint{
+ 0%,100%{opacity:0;transform:scale(.2)}
+ 30%{opacity:.97;transform:scale(1)}
+}
+@keyframes acrylic-shrimp-burst{
+ 0%{opacity:0;transform:rotate(var(--shrimp-turn)) scale(.16)}
+ 18%{opacity:.98;transform:rotate(var(--shrimp-turn)) scale(.92)}
+ 52%{opacity:.7;transform:translateY(-5px) rotate(var(--shrimp-turn)) scale(1.13)}
+ 100%{opacity:0;transform:translateY(-11px) rotate(var(--shrimp-turn)) scale(1.3)}
+}
+@keyframes acrylic-shrimp-rise{
+ 0%{opacity:0;transform:rotate(var(--shrimp-turn)) scale(.2)}
+ 24%{opacity:.75;transform:rotate(var(--shrimp-turn)) scale(.67)}
+ 100%{opacity:0;transform:translateY(-24px) rotate(var(--shrimp-turn)) scale(1)}
 }
 @keyframes acrylic-spark-float{
- 0%{opacity:0;transform:scale(.45)}
- 23%{opacity:1}
- 72%{transform:translate(var(--spark-x),var(--spark-y)) scale(.9)}
- 100%{opacity:0;transform:translate(var(--spark-x),calc(var(--spark-y) + 8px)) scale(.15)}
+ 0%{opacity:0;transform:scale(.25)}
+ 16%{opacity:1}
+ 70%{transform:translate(var(--spark-x),var(--spark-y)) scale(.83)}
+ 100%{opacity:0;transform:translate(var(--spark-x),calc(var(--spark-y) + 10px)) scale(.12)}
 }
 @media(prefers-reduced-motion:reduce){.touch-impact{display:none}}
 

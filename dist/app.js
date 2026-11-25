@@ -148,16 +148,16 @@ function rainImpact(event){
 }
 function acrylicTouchImpact(event){
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
- const sparkles=Array.from({length:event.held?8:6},(_,index)=>{
-  const angle=event.held?Math.PI+Math.random()*Math.PI:index*Math.PI/3+Math.random()*.35;
-  const distance=event.held?28+Math.random()*48:16+Math.random()*25;
+ const sparkles=Array.from({length:event.held?8:9},(_,index)=>{
+  const angle=event.held?Math.PI+Math.random()*Math.PI:index*2*Math.PI/9+Math.random()*.26;
+  const distance=event.held?28+Math.random()*48:29+Math.random()*38;
   const dx=Math.round(Math.cos(angle)*distance),dy=Math.round(Math.sin(angle)*distance);
-  const delay=index*22+Math.round(Math.random()*45);
+  const delay=event.held?index*22+Math.round(Math.random()*45):Math.round(Math.random()*55);
   return `<i class="acrylic-spark" style="--spark-x:${dx}px;--spark-y:${dy}px;--spark-delay:${delay}ms"></i>`;
  }).join('');
- const stamp='<i class="acrylic-shrimp-stamp"><b class="acrylic-shrimp-body"></b><b class="acrylic-shrimp-eye"></b><b class="acrylic-shrimp-antenna"></b></i>';
- const effect=appendTouchImpact(...touchImpactOrigin(event),'acrylic-touch'+(event.held?' acrylic-touch-held':''),stamp+sparkles);
- effect.style.setProperty('--stamp-turn',Math.round(Math.random()*32-16)+'deg');
+ const shrimp='<i class="acrylic-shrimp-burst"><b class="acrylic-shrimp-body"></b><b class="acrylic-shrimp-antenna"></b></i>';
+ const effect=appendTouchImpact(...touchImpactOrigin(event),'acrylic-touch'+(event.held?' acrylic-touch-held':''),shrimp+sparkles);
+ effect.style.setProperty('--shrimp-turn',Math.round(Math.random()*32-16)+'deg');
 }
 const inlineRippleActions=new Set([
  'race-primary','race-option','race-division','identity-trait','card-theme','display-collectible','set-theme'
