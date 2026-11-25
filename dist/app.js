@@ -254,7 +254,7 @@ function acrylicTouchImpact(event){
  effect.style.setProperty('--shrimp-turn',Math.round(Math.random()*32-16)+'deg');
 }
 const inlineRippleActions=new Set([
- 'race-primary','race-option','race-division','identity-trait','identity-stat','card-theme','display-collectible','set-theme'
+ 'race-primary','race-option','race-division','identity-trait','card-theme','display-collectible','set-theme'
 ]);
 const rippleChoiceActions=new Set([
  ...inlineRippleActions,'choose','choose-building-scene','choose-gender','custom-section','menu','player-tab','apply-perk',
@@ -309,7 +309,6 @@ const actions={
  'reset-site-data'(){resetCurrentSiteData()},
  'thought-assist'(){if(busy||screen!=='game'||playerTab!=='building'||!canReceiveThoughtGift())return;try{const candidate=grantThoughtGift(save);if(!put(playerSaveKey(),candidate))return;const dialog=$('#modal'),inPopup=dialog.open&&dialog.classList.contains('customization-dialog');save=candidate;clearTimeout(thoughtGiftTimer);thoughtGiftPresentation={started:Date.now()};const scene=thoughtGiftPresentation;refreshBuildingPoints();if(inPopup)document.querySelector('.custom-popup-heading button')?.focus({preventScroll:true});thoughtGiftTimer=setTimeout(()=>finishThoughtGiftPresentation(scene),3600)}catch(e){toast(e.message)}},
  'identity-trait':changeIdentityTrait,
- 'identity-stat':changeIdentityStat,
  'race-primary'(id){if(!editableRace()||!raceTypes.some(r=>r.id===id))return;commitRace(selectRace(save.build.race,id))},
  'race-option'(key){if(!editableRace()||!['immortal','mixed'].includes(key))return;commitRace({...save.build.race,[key]:!save.build.race[key]})},
  'race-division'(encoded){
@@ -412,10 +411,9 @@ document.addEventListener('click',e=>{
   if(busy||pendingChoice)return;
   const activate=()=>actions[action]?.(el.dataset.id);
   if(inlineRippleActions.has(action)){
-   const result=activate();
-   if(action==='identity-trait'){
-    if(result==='positive'||result==='negative')choiceRipple(el,result);
-   }else if(action!=='identity-stat'||result)choiceRipple(el,'selection');
+   const tone=activate();
+   if(action!=='identity-trait')choiceRipple(el,'selection');
+   else if(tone==='positive'||tone==='negative')choiceRipple(el,tone);
   }else{
    if(action==='menu')touchButton(el,e);
    else choiceRipple(el,'selection');
@@ -436,7 +434,7 @@ document.addEventListener('click',e=>{
 $('#modal').addEventListener('close',syncThoughtHelperLayer);
 $('#modal').addEventListener('cancel',e=>{if($('#modal').classList.contains('navigation-dialog')||$('#modal').classList.contains('customization-dialog')){e.preventDefault();close()}});
 $('#modal').addEventListener('click',e=>{const dialog=$('#modal');if(e.target!==dialog||(!dialog.classList.contains('navigation-dialog')&&!dialog.classList.contains('customization-dialog')))return;const rect=dialog.getBoundingClientRect();if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)close()});
-document.addEventListener('input',e=>{if(handleProfileInput(e))return;if(e.target.id==='bgmSeek'){seekBgm(e.target.value);return}if(e.target.id==='bgmVolume'){setBgmVolume(e.target.value);return}if(e.target.id==='buildName'){if(save.build.completed)return;save.build.name=e.target.value.slice(0,100);persist();return}if(e.target.dataset.stat){if(save.build.completed)return;const d=(project.stats||[]).find(d=>d.id===e.target.dataset.stat),n=Number(e.target.value);if(d&&Number.isFinite(n)&&n>=d.min&&n<=d.max){save.build.stats[d.id]=n;persist()}return}if(e.target.id==='loreSearch'){loreQuery=e.target.value;renderLoreResults();return}const k=e.target.dataset.field;if(!k)return;const s=sget(),c=s.choices.find(c=>c.id===selectedChoice);let v=e.target.value;if(['delta','min'].includes(k)){v=Number(v);if(!Number.isFinite(v))return;v=Math.max(k==='min'?0:-9999,Math.min(9999,v));}if(k==='projectTitle')project.title=v;else(c||s)[k]=v;persist();$('#storyMount').innerHTML=story(s);if(k==='title')document.querySelectorAll('.scenebtn').forEach(b=>{if(b.dataset.id===s.id)b.querySelector('strong').textContent=s.title});});
+document.addEventListener('input',e=>{if(handleProfileInput(e)||handleIdentityStatInput(e.target))return;if(e.target.id==='bgmSeek'){seekBgm(e.target.value);return}if(e.target.id==='bgmVolume'){setBgmVolume(e.target.value);return}if(e.target.id==='buildName'){if(save.build.completed)return;save.build.name=e.target.value.slice(0,100);persist();return}if(e.target.dataset.stat){if(save.build.completed)return;const d=(project.stats||[]).find(d=>d.id===e.target.dataset.stat),n=Number(e.target.value);if(d&&Number.isFinite(n)&&n>=d.min&&n<=d.max){save.build.stats[d.id]=n;persist()}return}if(e.target.id==='loreSearch'){loreQuery=e.target.value;renderLoreResults();return}const k=e.target.dataset.field;if(!k)return;const s=sget(),c=s.choices.find(c=>c.id===selectedChoice);let v=e.target.value;if(['delta','min'].includes(k)){v=Number(v);if(!Number.isFinite(v))return;v=Math.max(k==='min'?0:-9999,Math.min(9999,v));}if(k==='projectTitle')project.title=v;else(c||s)[k]=v;persist();$('#storyMount').innerHTML=story(s);if(k==='title')document.querySelectorAll('.scenebtn').forEach(b=>{if(b.dataset.id===s.id)b.querySelector('strong').textContent=s.title});});
 function submitBuildName(){if(nameCompositionActive||busy||save.build.completed||screen!=='game'||playerTab!=='building'||buildingPosition(project,save.build).stage.type!=='identity')return;const input=$('#buildName'),value=input.value.slice(0,100);if(!value.trim()){toast('떠오르는 이름을 적어 주세요.');input.focus();return}save.build.name=value;actions['build-next']()}
 document.addEventListener('compositionstart',e=>{if(e.target.id==='buildName')nameCompositionActive=true});
 document.addEventListener('compositionend',e=>{if(e.target.id==='buildName')nameCompositionActive=false});
@@ -554,33 +552,45 @@ function editableCustomization(section){
   $('#modal').open&&buildingPosition(project,save.build).stage.type==='customization';
 }
 function editableRace(){return editableCustomization('race')}
+function identityStatFill(level){
+ return (level-IDENTITY_STAT_MIN)/(IDENTITY_STAT_MAX-IDENTITY_STAT_MIN)*100+'%';
+}
+function handleIdentityStatInput(input){
+ const id=input.dataset?.identityStat;
+ if(!id)return false;
+ if(!editableCustomization('identity')||!identityStatDefinitions.some(stat=>stat.id===id))return true;
+ const level=Number(input.value),previous=save.build.identityStats[id];
+ if(!Number.isInteger(level)||level<IDENTITY_STAT_MIN||level>IDENTITY_STAT_MAX||level===previous)return true;
+ const identityStats={...save.build.identityStats,[id]:level};
+ const candidate=normalizePlayer({...save,build:{...save.build,identityStats,thoughtLimit:undefined}});
+ if(!put(playerSaveKey(),candidate)){
+  input.value=String(previous);
+  return true;
+ }
+ save=candidate;
+ const label=level+'단계';
+ input.setAttribute('aria-valuetext',label);
+ input.style.setProperty('--identity-stat-fill',identityStatFill(level));
+ const output=$('#identity-stat-level-'+id);
+ if(output)output.textContent=label;
+ refreshBuildingPoints();
+ return true;
+}
 function changeIdentityTrait(encoded){
  if(!editableCustomization('identity')||typeof encoded!=='string')return;
  const [id,level]=encoded.split(':');
  if(!identityTraits.some(item=>item.id===id)||!identityTraitLevels.includes(level)||(save.build.traitChoices[id]??'neutral')===level)return;
  const traitChoices={...save.build.traitChoices,[id]:level};
- if(commitIdentityCustomization({traitChoices},'identity-trait',encoded))return level;
-}
-function changeIdentityStat(encoded){
- if(!editableCustomization('identity')||typeof encoded!=='string')return;
- const [id,rawLevel]=encoded.split(':');
- const level=Number(rawLevel);
- if(!identityStatDefinitions.some(stat=>stat.id===id)||!Number.isInteger(level)||
-  level<IDENTITY_STAT_MIN||level>IDENTITY_STAT_MAX||level===save.build.identityStats[id])return;
- const identityStats={...save.build.identityStats,[id]:level};
- return commitIdentityCustomization({identityStats},'identity-stat',encoded);
-}
-function commitIdentityCustomization(changes,action,encoded){
- const candidate=normalizePlayer({...save,build:{...save.build,...changes,thoughtLimit:undefined}});
- if(!put(playerSaveKey(),candidate))return false;
+ const candidate=normalizePlayer({...save,build:{...save.build,traitChoices,thoughtLimit:undefined}});
+ if(!put(playerSaveKey(),candidate))return;
  const dialog=$('#modal'),scroll=dialog.scrollTop;
  save=candidate;
  customizationPopup('identity');
  refreshBuildingPoints();
  dialog.scrollTop=scroll;
- Array.from(document.querySelectorAll('#modal [data-action="'+action+'"]'))
+ Array.from(document.querySelectorAll('#modal [data-action="identity-trait"]'))
   .find(button=>button.dataset.id===encoded)?.focus({preventScroll:true});
- return true;
+ return level;
 }
 function commitRace(raw){
  const wasImmortal=save.build.race.immortal;
@@ -819,7 +829,6 @@ function collectionUI(){const owned=ownedCollectibles();modal(`<div class="custo
 const identityLevelNames={negative:'네거티브',neutral:'뉴트럴',positive:'포지티브'};
 const identityLevelSymbols={negative:'-',neutral:'○',positive:'+'};
 function identityStatsUI(){
- const levels=Array.from({length:IDENTITY_STAT_MAX-IDENTITY_STAT_MIN+1},(_,index)=>IDENTITY_STAT_MIN+index);
  return `<section class="identity-stats" aria-labelledby="identity-stats-title">
   <div class="identity-stats-heading">
    <h3 id="identity-stats-title">스테이터스</h3>
@@ -828,10 +837,9 @@ function identityStatsUI(){
   <div class="identity-stat-grid">${identityStatDefinitions.map(({id,name})=>{
    const current=save.build.identityStats[id];
    return `<div class="identity-stat">
-    <div class="identity-stat-title"><strong>${name}</strong><span>${current}단계</span></div>
-    <div class="identity-stat-levels" role="group" aria-label="${name} 단계 선택">${levels.map(level=>
-     `<button type="button" data-action="identity-stat" data-id="${id}:${level}" data-reached="${level<=current}" aria-label="${name} ${level}단계" aria-pressed="${level===current}">${level}</button>`
-    ).join('')}</div>
+    <label for="identity-stat-${id}">${name}</label>
+    <input type="range" id="identity-stat-${id}" data-identity-stat="${id}" min="${IDENTITY_STAT_MIN}" max="${IDENTITY_STAT_MAX}" step="1" value="${current}" aria-valuetext="${current}단계" style="--identity-stat-fill:${identityStatFill(current)}">
+    <output id="identity-stat-level-${id}" for="identity-stat-${id}">${current}단계</output>
    </div>`;
   }).join('')}</div>
  </section>`;
