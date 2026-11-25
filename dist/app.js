@@ -144,7 +144,7 @@ function touchImpactOrigin(event){
 }
 function rainImpact(event){
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
- spawnRainImpact(...touchImpactOrigin(event),'rain-touch',event.held?microRipples():'');
+ spawnRainImpact(...touchImpactOrigin(event),'rain-touch',microRipples());
 }
 function acrylicTouchImpact(event){
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
