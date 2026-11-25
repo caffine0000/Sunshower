@@ -809,7 +809,10 @@ function identityEditorUI(){
   const {description,cost}=levels[selected];
   return `<article class="identity-trait" data-tone="${selected}">
    <div class="identity-trait-art">${image?`<img src="${esc(image)}" alt="${esc(imageAlt)}" loading="lazy" decoding="async">`:''}</div>
-   <div class="identity-trait-heading"><h3>${esc(name)}</h3>${choiceThoughtCost(cost)}</div>
+   <div class="identity-trait-heading">
+    <h3>${esc(name)}</h3>
+    <div class="identity-trait-cost-slot">${choiceThoughtCost(cost)}</div>
+   </div>
    <div class="identity-trait-switch" role="group" aria-label="${esc(name)} 상태">${identityTraitLevels.map(level=>
     `<button type="button" data-action="identity-trait" data-id="${esc(id)}:${level}" aria-label="${identityLevelNames[level]}" aria-pressed="${selected===level}" aria-describedby="identity-description-${esc(id)}">${identityLevelSymbols[level]}</button>`
    ).join('')}</div>

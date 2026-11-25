@@ -183,6 +183,7 @@ vm.runInNewContext(code+`
  delete identityTraits[0].image;
  delete identityTraits[0].imageAlt;
  assert.ok(!panel().includes('choice-thought-cost'));
+ assert.ok(panel().includes('<div class="identity-trait-cost-slot"></div>'));
  for(const [level,label,symbol] of [['negative','네거티브','-'],['neutral','뉴트럴','○'],['positive','포지티브','+']]){
   const button=panel().split('</button>').find(markup=>markup.includes('data-id="example:'+level+'"'));
   assert.ok(button.includes('aria-label="'+label+'"'));
@@ -190,11 +191,11 @@ vm.runInNewContext(code+`
  }
  assert.equal(select('negative'),'negative');
  assert.ok(panel().includes('data-tone="negative"'));
- assert.ok(panel().includes('사고 복원량: 20'));
+ assert.ok(panel().includes('<div class="identity-trait-cost-slot"><small class="choice-thought-cost">사고 복원량: 20</small></div>'));
  assert.equal(save.build.thoughtLimit,0);
  assert.equal(select('positive'),'positive');
  assert.ok(panel().includes('이 특성을 포지티브로 선택합니다.'));
- assert.ok(panel().includes('사고 요구량: 20'));
+ assert.ok(panel().includes('<div class="identity-trait-cost-slot"><small class="choice-thought-cost">사고 요구량: 20</small></div>'));
  assert.equal(save.build.thoughtLimit,20);
  for(const meter of ['.thought-limit-page','.thought-limit-popup'])assert.ok($(meter).innerHTML.includes('<strong>20/'));
  const restored=decodePlayer(project,encodePlayer(project,save));

@@ -800,9 +800,11 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .identity-trait-art img{display:block;width:100%;height:100%;object-fit:cover}
 .identity-trait-heading{display:grid;justify-items:center;gap:6px;text-align:center}
 .identity-trait-heading h3{margin:0;color:var(--ink);font-size:16px;overflow-wrap:anywhere}
+.identity-trait-cost-slot{display:grid;place-items:center;min-block-size:20px}
 .choice-thought-cost{color:var(--muted);font-size:11px;white-space:nowrap}
 .identity-trait-heading .choice-thought-cost{
  padding:2px 7px;
+ line-height:16px;
  border-radius:4px;
  background:var(--choice-neutral-chip);
  color:var(--choice-neutral-ink);
