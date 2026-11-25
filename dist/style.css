@@ -658,35 +658,42 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  --choice-positive-edge:#286e64;
  --choice-negative:#f3a3ae;
  --choice-negative-edge:#a53f66;
- --choice-neutral:#bbc2d9;
+ --choice-neutral:#958773;
+ --choice-neutral-chip:#eee6d8;
+ --choice-neutral-ink:#4d4336;
 }
-:root[data-theme="acrylic-sky"]{--choice-neutral:#45496f}
-.identity-traits{display:grid;gap:16px}
+.identity-traits{
+ display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(min(100%,max(132px,30%)),1fr));
+ gap:10px;
+}
 .identity-trait{
  --trait-tone:var(--choice-neutral);
- padding:clamp(14px,4vw,24px);
+ min-width:0;
+ padding:clamp(9px,2.5vw,14px);
  border:1px solid color-mix(in srgb,var(--trait-tone) 45%,transparent);
  border-radius:9px;
  background:color-mix(in srgb,var(--trait-tone) 9%,transparent);
 }
 .identity-trait[data-tone="positive"]{--trait-tone:var(--choice-positive)}
 .identity-trait[data-tone="negative"]{--trait-tone:var(--choice-negative)}
-.identity-trait-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 18px}
-.identity-trait-heading h3{margin:0;color:var(--ink);font-size:19px}
+.identity-trait-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px 10px}
+.identity-trait-heading h3{margin:0;color:var(--ink);font-size:16px;overflow-wrap:anywhere}
 .choice-thought-cost{color:var(--muted);font-size:11px;white-space:nowrap}
 .identity-trait-heading .choice-thought-cost{
  padding:2px 7px;
  border-radius:4px;
- background:color-mix(in srgb,var(--choice-neutral) 10%,transparent);
- color:var(--choice-neutral);
+ background:var(--choice-neutral-chip);
+ color:var(--choice-neutral-ink);
+ white-space:normal;
 }
 .identity-trait-switch{
  display:grid;
  grid-template-columns:repeat(3,minmax(0,1fr));
- width:min(100%,156px);
- gap:3px;
- margin-top:16px;
- padding:3px;
+ width:min(100%,132px);
+ gap:2px;
+ margin-top:10px;
+ padding:2px;
  border:1px solid var(--line);
  border-radius:8px;
 }
@@ -707,7 +714,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  color:var(--ink);
  font-weight:700;
 }
-.identity-trait p{margin:14px 0 0;line-height:1.75;white-space:pre-line}
+.identity-trait p{margin:10px 0 0;line-height:1.65;white-space:pre-line;overflow-wrap:anywhere}
 
 .choice-impact-anchor{position:relative}
 .choice-impact-layer{isolation:isolate}
