@@ -58,7 +58,6 @@ dialog::backdrop{background:#061c273b;backdrop-filter:blur(2px);-webkit-backdrop
 .touch-impact{position:fixed;width:0;height:0;z-index:2147483000;pointer-events:none;color:#58efdb;isolation:isolate}
 .touch-impact.in-dialog{position:absolute}
 .touch-impact *{position:absolute;display:block;pointer-events:none}
-.touch-drop{width:2px;height:16px;left:-1px;top:-60px;border-radius:70%;background:linear-gradient(transparent,#9cf7e899);box-shadow:0 2px 5px #45e8d53d;animation:touch-drop-fall .17s cubic-bezier(.5,0,.85,.45) forwards}
 @property --ring-stroke{
  syntax:"<length>";
  inherits:false;
@@ -83,8 +82,6 @@ dialog::backdrop{background:#061c273b;backdrop-filter:blur(2px);-webkit-backdrop
 .touch-ring-two{--ring-size:72px;--ring-ink:#5bdacb;--ring-duration:.85s;--ring-delay:.19s}
 .touch-ring-three{--ring-size:54px;--ring-ink:#b1fff0;--ring-duration:.72s;--ring-delay:.26s}
 .touch-micro{--ring-size:19px;--ring-ink:#a0f7e8;--ring-duration:.62s}
-.touch-splash{left:0;top:0;width:3px;height:3px;border-radius:50%;background:#acfff0;opacity:0;transform:translate(-50%,-50%);box-shadow:0 0 7px 1px #53daca40;animation:touch-splash .26s .12s ease-out forwards}
-@keyframes touch-drop-fall{0%{opacity:0;transform:translateY(-12px) scaleY(1.2)}25%{opacity:.7}85%{opacity:.6}100%{opacity:0;transform:translateY(60px) scaleY(.15)}}
 @keyframes touch-ring-spread{
  from{width:2px;height:2px}
  to{width:var(--ring-size);height:var(--ring-size)}
@@ -96,22 +93,38 @@ dialog::backdrop{background:#061c273b;backdrop-filter:blur(2px);-webkit-backdrop
  78%{opacity:.29;--ring-stroke:.56px}
  100%{opacity:0;--ring-stroke:.1px}
 }
-@keyframes touch-splash{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}15%{opacity:.55}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
 .acrylic-touch{--stamp-turn:0deg}
 .acrylic-shrimp-stamp{
  width:66px;
  height:60px;
  left:-33px;
  top:-30px;
- filter:drop-shadow(0 0 6px #fff5a9) drop-shadow(0 1px 1px #be6d63);
+ filter:drop-shadow(0 0 2px #fffef0bd) drop-shadow(0 0 10px #ffe4719e);
  animation:acrylic-stamp .94s ease-out both;
 }
 .acrylic-shrimp-body{
  inset:0;
  background:
-  repeating-linear-gradient(115deg,transparent 0 8px,#fff5d85c 8px 10px,transparent 10px 12px),
-  linear-gradient(135deg,#fffab0 16%,#ffcf55 33%,#ff9e9a 49%,#ffd8ef 59%,#a9d8f6 72%,#b4ecc9 86%,#fff7a1);
+  radial-gradient(ellipse at 35% 28%,#fffff1b0,transparent 44%),
+  repeating-linear-gradient(115deg,transparent 0 8px,#fff9df5e 8px 9px,transparent 9px 12px),
+  linear-gradient(135deg,#fffab089 16%,#ffd35080 33%,#ff9e9a69 49%,#ffd8ef76 59%,#a9d8f675 72%,#b4ecc97a 86%,#fff7a18c);
  clip-path:path("M 7 20 L 13 18 C 17 11 28 8 39 11 C 54 14 62 24 59 36 C 57 47 47 53 34 51 L 28 49 Q 23 58 13 56 L 17 48 Q 11 50 7 44 L 17 39 Q 21 40 27 43 C 38 46 47 41 47 33 C 47 26 39 20 31 23 C 24 28 15 28 7 20 Z");
+}
+.acrylic-shrimp-stamp::after{
+ content:"";
+ position:absolute;
+ left:28px;
+ top:9px;
+ width:17px;
+ height:17px;
+ background:#fffef5;
+ clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);
+ animation:acrylic-stamp-glint .7s .05s ease-out both;
+}
+@keyframes acrylic-stamp-glint{
+ 0%,100%{opacity:0;transform:scale(.35)}
+ 26%{opacity:1;transform:scale(1)}
+ 64%{opacity:.55;transform:scale(.72)}
 }
 .acrylic-shrimp-eye{left:18px;top:17px;width:3px;height:3px;border-radius:50%;background:#6c453b}
 .acrylic-shrimp-antenna{
@@ -815,9 +828,10 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .choice-impact-positive{--choice-ripple:var(--choice-positive);--choice-ripple-edge:var(--choice-positive-edge)}
 .choice-impact-negative{--choice-ripple:var(--choice-negative);--choice-ripple-edge:var(--choice-negative-edge)}
 .choice-impact .touch-ring{--ring-ink:color-mix(in srgb,currentColor 61%,var(--choice-ripple-edge))}
-.choice-impact .touch-ring-one{--ring-size:var(--choice-ring-size,230px);--ring-delay:0s}
-.choice-impact .touch-ring-two{--ring-size:calc(var(--choice-ring-size,230px) * .89);--ring-delay:.09s}
-.choice-impact .touch-ring-three{--ring-size:calc(var(--choice-ring-size,230px) * .78);--ring-delay:.18s}
+.rain-touch{--impact-ring-size:126px}
+:is(.choice-impact,.rain-touch) .touch-ring-one{--ring-size:var(--impact-ring-size,230px);--ring-delay:0s}
+:is(.choice-impact,.rain-touch) .touch-ring-two{--ring-size:calc(var(--impact-ring-size,230px) * .89);--ring-delay:.09s}
+:is(.choice-impact,.rain-touch) .touch-ring-three{--ring-size:calc(var(--impact-ring-size,230px) * .78);--ring-delay:.18s}
 
 .immortal-details{
  position:relative;

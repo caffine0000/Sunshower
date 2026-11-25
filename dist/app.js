@@ -130,10 +130,9 @@ function appendTouchImpact(host,x,y,variant,markup){
  setTimeout(()=>fx.remove(),1150);
  return fx;
 }
-function spawnRainImpact(host,x,y,tone=''){
+function spawnRainImpact(host,x,y,variant,details=''){
  const rings='<i class="touch-ring touch-ring-one"></i><i class="touch-ring touch-ring-two"></i><i class="touch-ring touch-ring-three"></i>';
- const markup=tone?rings:'<i class="touch-drop"></i><i class="touch-splash"></i>'+rings+microRipples();
- return appendTouchImpact(host,x,y,tone?'choice-impact choice-impact-'+tone:'',markup);
+ return appendTouchImpact(host,x,y,variant,rings+details);
 }
 function touchImpactOrigin(event){
  const dialog=event.target?.closest?.('dialog[open]'),rect=dialog?.getBoundingClientRect();
@@ -145,7 +144,7 @@ function touchImpactOrigin(event){
 }
 function rainImpact(event){
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
- spawnRainImpact(...touchImpactOrigin(event));
+ spawnRainImpact(...touchImpactOrigin(event),'rain-touch',event.held?microRipples():'');
 }
 function acrylicTouchImpact(event){
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
@@ -180,8 +179,8 @@ function choiceRipple(button,tone){
  const bounds=choice.getBoundingClientRect(),origin=layer.getBoundingClientRect();
  const x=bounds.left+bounds.width/2-origin.left-layer.clientLeft+layer.scrollLeft;
  const y=bounds.top+bounds.height/2-origin.top-layer.clientTop+layer.scrollTop;
- const effect=spawnRainImpact(layer,x,y,tone);
- effect.style.setProperty('--choice-ring-size',Math.max(230,Math.hypot(bounds.width,bounds.height)+108)+'px');
+ const effect=spawnRainImpact(layer,x,y,'choice-impact choice-impact-'+tone);
+ effect.style.setProperty('--impact-ring-size',Math.max(230,Math.hypot(bounds.width,bounds.height)+108)+'px');
 }
 const rippleHolds=new Map();
 function endRippleHold(id){const hold=rippleHolds.get(id);if(!hold)return;clearTimeout(hold.timer);rippleHolds.delete(id)}
