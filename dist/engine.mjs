@@ -39,6 +39,7 @@ export const identityTraitLevels=['negative','neutral','positive'];
 export const identityTraits=[
  {
   id:'hair',
+  image:'assets/trait-hair.webp',
   levels:{
    negative:{name:'퍼석한 머릿결',description:'머릿결과 두피 등의 상태가 악화되어, 관리에 힘을 써야한다.',cost:-20},
    neutral:{name:'머릿결',description:'"[오빠/언니]! 머리카락 만져봐도 돼?"',cost:0},
@@ -47,6 +48,7 @@ export const identityTraits=[
  },
  {
   id:'vision',
+  image:'assets/trait-vision.webp',
   levels:{
    negative:{name:'굴절 이상',description:'시각 수용체에 이상이 발생해 맺히는 상이 왜곡되거나 줄어든다.',cost:-30},
    neutral:{name:'시각',description:'"[오빠/언니] 눈 엄청 이쁘다!"',cost:0},
@@ -55,6 +57,7 @@ export const identityTraits=[
  },
  {
   id:'hearing',
+  image:'assets/trait-hearing.webp',
   levels:{
    negative:{name:'음소거',description:'청각 수용체에 이상이 생겨, 소리를 듣고 감지함에 어려움이 생겼다.',cost:-30},
    neutral:{name:'청각',description:'"[오빠/언니]? 후읍... [플레이어 이름] [오빠/언니]!"',cost:0},
@@ -63,6 +66,7 @@ export const identityTraits=[
  },
  {
   id:'flexibility',
+  image:'assets/trait-flexibility.webp',
   levels:{
    negative:{name:'제한된 기동',description:'관절 가동 범위와 근육 가동 한계가 감소해 다양한 동작에 어려움이 생겼다.',cost:-50},
    neutral:{name:'유연성',description:'"[오빠/언니]! 나 이것도 할 수 있다? 짠!"',cost:0},
@@ -71,6 +75,7 @@ export const identityTraits=[
  },
  {
   id:'empathy',
+  image:'assets/trait-empathy.webp',
   levels:{
    negative:{name:'공감 둔화',description:'상대의 표정을 읽고 감정을 도출하는 것에 능하지 않아 공감력의 종합적 하락을 일으킨다.',cost:-20},
    neutral:{name:'감정 이해',description:'"웃는 건 좋은 거래. 그리고 억지로 할 필요는 없대!"',cost:0},
@@ -79,6 +84,7 @@ export const identityTraits=[
  },
  {
   id:'memory',
+  image:'assets/trait-memory.webp',
   levels:{
    negative:{name:'휘발성 기억',description:'기억의 이전 과정에 이상이 생겨 변질과 소실이 다발적으로 일어난다.',cost:-40},
    neutral:{name:'기억력',description:'"내 이름은 \'미래\'! [오빠/언니] 이름은 [플레이어 이름]!"',cost:0},
@@ -87,6 +93,7 @@ export const identityTraits=[
  },
  {
   id:'reason',
+  image:'assets/trait-reason.webp',
   levels:{
    negative:{name:'광기',description:'충동과 생각을 제어하는 전두엽의 기능이 저하되어 점점 비이성적인 행동이 표출된다.',cost:-50},
    neutral:{name:'이성',description:'"[오빠/언니]는 화나는 거 잘 참아? 나는..."',cost:0},
@@ -95,6 +102,7 @@ export const identityTraits=[
  },
  {
   id:'self-image',
+  image:'assets/trait-self-image.webp',
   levels:{
    negative:{name:'인격 분열',description:'자아의 확립이 악화되어 점차 당신의 일면들이 하나의 인격으로 승화된다.',cost:-50},
    neutral:{name:'자아상',description:'"... 나는 뭘까?"',cost:0},
@@ -103,6 +111,7 @@ export const identityTraits=[
  },
  {
   id:'imagination',
+  image:'assets/trait-imagination.webp',
   levels:{
    negative:{name:'빈곤한 상상',description:'통상적 사고 외의 것을 생각하는 힘이 낮아져 자신의 상식 밖의 일을 받아들이는 것에 약하다.',cost:-20},
    neutral:{name:'상상력',description:'"세계를 오가는 열차는 어떨까?"',cost:0},
@@ -111,6 +120,7 @@ export const identityTraits=[
  },
  {
   id:'social',
+  image:'assets/trait-social.webp',
   levels:{
    negative:{name:'공황',description:'타인의 시선속에서 평정을 유지하는데 서툴러 필연적으로 타인과의 시간을 피하기 시작했다.',cost:-30},
    neutral:{name:'대인력',description:'"[플레이어 이름] [오빠/언니]! 우리는 무슨 사이야?"',cost:0},

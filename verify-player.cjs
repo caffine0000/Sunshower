@@ -199,12 +199,9 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  assert.ok(identityEditorUI().includes('&quot;오빠! 머리카락 만져봐도 돼?&quot;'));
  save.build.gender='female';
  assert.ok(!panel().includes('특성 예시'));
- assert.ok(panel().includes('<div class="identity-trait-art"></div>'));
- identityTraits[0].image='assets/example.webp';
- identityTraits[0].imageAlt='특성 그림';
- assert.ok(identityEditorUI().includes('src="assets/example.webp" alt="특성 그림"'));
- delete identityTraits[0].image;
- delete identityTraits[0].imageAlt;
+ for(const {id} of identityTraits){
+  assert.ok(panel().includes('src="assets/trait-'+id+'.webp" alt=""'));
+ }
  assert.ok(panel().includes('<div class="identity-trait-cost-slot"></div>'));
  for(const [level,label,symbol] of [['negative','네거티브','-'],['neutral','뉴트럴','○'],['positive','포지티브','+']]){
   const button=panel().split('</button>').find(markup=>markup.includes('data-id="hair:'+level+'"'));
