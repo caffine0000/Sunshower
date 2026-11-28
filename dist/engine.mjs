@@ -44,6 +44,30 @@ export const identityTraits=[
    neutral:{name:'머릿결',description:'"[오빠/언니]! 머리카락 만져봐도 돼?"',cost:0},
    positive:{name:'부드러운 머릿결',description:'머릿결과 두피가 좋아져, 관리를 하지 않아도 충분히 부드럽다.',cost:20}
   }
+ },
+ {
+  id:'vision',
+  levels:{
+   negative:{name:'굴절 이상',description:'시각 수용체에 이상이 발생해 맺히는 상이 왜곡되거나 줄어든다.',cost:-30},
+   neutral:{name:'시각',description:'"[오빠/언니] 눈 엄청 이쁘다!"',cost:0},
+   positive:{name:'매의 눈',description:'시각 수용체가 강화되어 정확한 현상 인지가 가능해졌다.',cost:30}
+  }
+ },
+ {
+  id:'hearing',
+  levels:{
+   negative:{name:'음소거',description:'청각 수용체에 이상이 생겨, 소리를 듣고 감지함에 어려움이 생겼다.',cost:-30},
+   neutral:{name:'청각',description:'"[오빠/언니]? 후읍... [플레이어 이름] [오빠/언니]!"',cost:0},
+   positive:{name:'반향정위',description:'청각 수용체가 발달하여 소리를 듣고 그 방향과 거리까지 가늠한다.',cost:30}
+  }
+ },
+ {
+  id:'flexibility',
+  levels:{
+   negative:{name:'제한된 기동',description:'관절 가동 범위와 근육 가동 한계가 감소해 다양한 동작에 어려움이 생겼다.',cost:-50},
+   neutral:{name:'유연성',description:'"[오빠/언니]! 나 이것도 할 수 있다? 짠!"',cost:0},
+   positive:{name:'자유 기동',description:'관절 가동 범위와 근육 가동 한계가 뛰어나 수많은 동작들 취할 수 있고 유지할 수 있다.',cost:50}
+  }
  }
 ];
 export const raceTypes=[{id:'human',name:'휴먼'},{id:'elf',name:'엘프'},{id:'dwarf',name:'드워프'},{id:'beastkin',name:'수인'},{id:'celestial',name:'천족'},{id:'demon',name:'마족'},{id:'spirit',name:'정령'},{id:'automaton',name:'오토마타'}];
