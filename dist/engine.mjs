@@ -108,6 +108,14 @@ export const identityTraits=[
    neutral:{name:'상상력',description:'"세계를 오가는 열차는 어떨까?"',cost:0},
    positive:{name:'풍부한 상상',description:'생각해보지 못한 것을 떠올리는 것에 익숙해져 상식 밖의 일을 받아들이는 것에 능해진다.',cost:20}
   }
+ },
+ {
+  id:'social',
+  levels:{
+   negative:{name:'공황',description:'타인의 시선속에서 평정을 유지하는데 서툴러 필연적으로 타인과의 시간을 피하기 시작했다.',cost:-30},
+   neutral:{name:'대인력',description:'"[플레이어 이름] [오빠/언니]! 우리는 무슨 사이야?"',cost:0},
+   positive:{name:'친밀함',description:'타인의 시선을 꺼리지 않아 타인과의 시간에도 평정을 유지하고 관계를 진전시킬 수 있었다.',cost:30}
+  }
  }
 ];
 export const raceTypes=[{id:'human',name:'휴먼'},{id:'elf',name:'엘프'},{id:'dwarf',name:'드워프'},{id:'beastkin',name:'수인'},{id:'celestial',name:'천족'},{id:'demon',name:'마족'},{id:'spirit',name:'정령'},{id:'automaton',name:'오토마타'}];
