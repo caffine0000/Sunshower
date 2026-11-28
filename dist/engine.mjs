@@ -12,7 +12,7 @@ export function decode(p,code){if(!code.startsWith('GAL1.')||code.length>2000000
 export const cardThemeIds=['glass','archive','noir'];
 export function normalizeProfile(raw={}){if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('프로필 데이터 형식을 확인해 주세요.');const p={portrait:raw.portrait??'',race:raw.race??'',intro:raw.intro??'',height:raw.height??170,weight:raw.weight??60,themeColor:raw.themeColor??'#8fc8b9',cardTheme:raw.cardTheme??'glass',collectible:raw.collectible??''};if(typeof p.portrait!=='string'||p.portrait.length>400000||(p.portrait!==''&&!/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(p.portrait)))throw Error('프로필 이미지 형식을 확인해 주세요.');if(typeof p.race!=='string'||p.race.length>60||typeof p.intro!=='string'||p.intro.length>400||typeof p.collectible!=='string'||p.collectible.length>300)throw Error('프로필 문구 형식을 확인해 주세요.');if(!Number.isInteger(p.height)||p.height<120||p.height>220||typeof p.weight!=='number'||!Number.isFinite(p.weight)||p.weight<20||p.weight>250)throw Error('키와 몸무게의 설정 범위를 확인해 주세요.');if(typeof p.themeColor!=='string'||!/^#[0-9a-f]{6}$/i.test(p.themeColor)||!cardThemeIds.includes(p.cardTheme))throw Error('명함 테마 형식을 확인해 주세요.');p.themeColor=p.themeColor.toLowerCase();return p}
 
-export const THOUGHT_LIMIT_DEFAULT_MAX=250;
+export const THOUGHT_LIMIT_DEFAULT_MAX=600;
 export const THOUGHT_LIMIT_GIFT_BONUS=50;
 export function thoughtLimitMaximum(build){return THOUGHT_LIMIT_DEFAULT_MAX+(build?.thoughtGiftReceived===true?THOUGHT_LIMIT_GIFT_BONUS:0)}
 export const IMMORTAL_THOUGHT_COST=100;
