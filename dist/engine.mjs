@@ -68,6 +68,22 @@ export const identityTraits=[
    neutral:{name:'유연성',description:'"[오빠/언니]! 나 이것도 할 수 있다? 짠!"',cost:0},
    positive:{name:'자유 기동',description:'관절 가동 범위와 근육 가동 한계가 뛰어나 수많은 동작들 취할 수 있고 유지할 수 있다.',cost:50}
   }
+ },
+ {
+  id:'empathy',
+  levels:{
+   negative:{name:'공감 둔화',description:'상대의 표정을 읽고 감정을 도출하는 것에 능하지 않아 공감력의 종합적 하락을 일으킨다.',cost:-20},
+   neutral:{name:'감정 이해',description:'"웃는 건 좋은 거래. 그리고 억지로 할 필요는 없대!"',cost:0},
+   positive:{name:'이입',description:'상대의 표정을 읽음으로써 감정을 도출하고 그것을 느끼는 공감력이 종합적으로 상승했다.',cost:20}
+  }
+ },
+ {
+  id:'memory',
+  levels:{
+   negative:{name:'휘발성 기억',description:'기억의 이전 과정에 이상이 생겨 변질과 소실이 다발적으로 일어난다.',cost:-40},
+   neutral:{name:'기억력',description:'"내 이름은 \'미래\'! [오빠/언니] 이름은 [플레이어 이름]!"',cost:0},
+   positive:{name:'연결된 기억',description:'기억의 이전과 연결, 그리고 재생 과정이 최적화되어 결과적으로 기억의 정확도가 상승했다.',cost:40}
+  }
  }
 ];
 export const raceTypes=[{id:'human',name:'휴먼'},{id:'elf',name:'엘프'},{id:'dwarf',name:'드워프'},{id:'beastkin',name:'수인'},{id:'celestial',name:'천족'},{id:'demon',name:'마족'},{id:'spirit',name:'정령'},{id:'automaton',name:'오토마타'}];
