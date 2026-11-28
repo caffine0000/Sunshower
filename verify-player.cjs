@@ -404,7 +404,12 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  actions['player-tab']('transfer');assert.equal(playerTab,'transfer');render();assert.equal(playerTab,'transfer');assert.ok($('#app').innerHTML.includes('id="perkInput"'));actions['player-tab']('building');
  actions['open-transfer']();assert.equal(playerTab,'building');assert.ok($('#modalBody').innerHTML.includes('id="playerInput"'));close();
  actions.settings();assert.ok($('#modalBody').innerHTML.includes('크레딧'));assert.ok($('#modalBody').innerHTML.includes('아크릴새우(AcrylicShrimp)'));assert.ok($('#modalBody').innerHTML.includes('배경음악 중단'));assert.equal(audio.volume,.6);
- assert.equal(themeChoices.length,4);
+ assert.equal(themeChoices.length,5);
+ const radioTheme=themeChoices.find(theme=>theme.id==='last-radio');
+ const radioCard=themeNamecard(radioTheme);
+ for(const text of ['종말이 오는 그날까지도','Till the Our End Arrives','오늘도 마지막 날까지.','인연 컴플리트: 나비'])assert.ok(radioCard.includes(text));
+ assert.ok(!radioCard.includes('radio-window-rain'));
+ actions['set-theme']('last-radio');assert.equal(preferences.theme,'rain');
  const childhoodTheme=themeChoices.find(theme=>theme.id==='childhood-abyss');
  const childhoodCard=themeNamecard(childhoodTheme);
  for(const text of ['유년기의 깊은 웅덩이','The Abyss of Childhood','겪는 법을 배워나가는 과정이다.','인연 컴플리트:','미래','루티아나','이름 판독 불가'])assert.ok(childhoodCard.includes(text));
@@ -453,6 +458,14 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  actions['event-complete']('mirae-first');assert.equal(themeUnlocked(childhoodTheme),false);
  actions['event-complete']('mirae-last');assert.equal(themeUnlocked(childhoodTheme),true);
  actions['set-theme']('childhood-abyss');assert.equal(rootAttributes.get('data-theme'),'childhood-abyss');
+ const nabi={id:'nabi',name:'나비',events:[{id:'nabi-first'},{id:'nabi-last'}]};
+ project.bonds.push(nabi);save.bonds.push('nabi');
+ actions['event-complete']('nabi-first');assert.equal(themeUnlocked(radioTheme),false);
+ actions['event-complete']('nabi-last');assert.equal(themeUnlocked(radioTheme),true);
+ actions['set-theme']('last-radio');assert.equal(rootAttributes.get('data-theme'),'last-radio');
+ assert.ok($('#app').innerHTML.includes('radio-window-rain'));
+ assert.ok($('#app').innerHTML.includes('radio-wave-trace'));
+ assert.equal(themeBgm().title,'Sunshower');
  project.bonds=originalBonds;save=originalSave;persist();render();assert.equal(preferences.theme,'rain');
  const testTheme={id:'test-theme',name:'test',note:'test',unlock:player=>player.perks.includes('test-theme-code'),presentation:{symbolTone:'black',background:()=>'<div>test background</div>',touch:()=>{window.themeTouchTest=true},transition:commit=>{window.themeTransitionTest=true;commit();return Promise.resolve()}}};themeChoices.push(testTheme);actions['set-theme']('test-theme');assert.equal(preferences.theme,'rain');save.perks.push('test-theme-code');actions['set-theme']('test-theme');assert.equal(rootAttributes.get('data-theme'),'test-theme');assert.equal(rootAttributes.get('data-symbol-tone'),'black');assert.ok($('#app').innerHTML.includes('test background'));themeTouchImpact({});assert.equal(window.themeTouchTest,true);let themeCommitted=false;themeTransition(()=>{themeCommitted=true});assert.equal(themeCommitted,true);assert.equal(window.themeTransitionTest,true);assert.equal(readPreferences().theme,'test-theme');save.perks=[];render();assert.equal(preferences.theme,'rain');assert.equal(rootAttributes.get('data-theme'),'rain');
  assert.ok(startUI().includes('<h1 class="start-title"><img src="assets/sunshower-umbrella-vine.webp" alt="여우비와 커튼월"'));

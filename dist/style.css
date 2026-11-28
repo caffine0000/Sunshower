@@ -1595,3 +1595,222 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  71%{opacity:.65}
  100%{opacity:0;transform:scale(1.09)}
 }
+
+/* Till the Our End Arrives */
+:root{
+ --radio-art:url('assets/last-radio.webp');
+ --radio-paw-shape:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cellipse cx='9' cy='19' rx='4.5' ry='6' transform='rotate(-24 9 19)'/%3E%3Cellipse cx='18.5' cy='12' rx='4.8' ry='6.5' transform='rotate(-12 18.5 12)'/%3E%3Cellipse cx='29.5' cy='12' rx='4.8' ry='6.5' transform='rotate(12 29.5 12)'/%3E%3Cellipse cx='39' cy='19' rx='4.5' ry='6' transform='rotate(24 39 19)'/%3E%3Cpath d='M24 23C29 23 30 28 34 31C41 37 35 43 29 41C25 39 23 39 19 41C13 43 7 37 14 31C18 28 19 23 24 23Z'/%3E%3C/svg%3E");
+}
+:root[data-theme="last-radio"]{
+ --paper:#222840;
+ --ink:#f6f3ff;
+ --muted:#c5c9e4;
+ --green:#cddfff;
+ --mint:#444b6d;
+ --amber:#ffe2ae;
+ --line:#c4d0ff54;
+ --theme-accent:#a9c8ff;
+ --settings-bg:#313854;
+ --menu-symbol-shadow:#171b36c2;
+ --menu-symbol-active-shadow:#c5d8ff91;
+ --choice-cost-bg:#354262;
+ --choice-cost-ink:#e7efff;
+ --choice-cost-edge:#a8c6f994;
+ --identity-stat-rank:#c7dcff;
+ --selection-ripple:#a9ceff;
+ --selection-ripple-edge:#4c659b;
+ --race-trait-surface:#28334deb;
+ --race-trait-edge:#aec3ec5e;
+ --race-trait-caption:#ced8f1;
+ --race-trait-special-surface:linear-gradient(130deg,#56446e,#463d66);
+ --race-trait-special-edge:#e8bde4ac;
+ --race-trait-special-label:#ffdcf5;
+ --radio-panel:linear-gradient(145deg,#303950f5,#222942f7 68%,#302d48f3);
+}
+.last-radio-world{
+ background:linear-gradient(90deg,#12182be6,#1a233a85 43%,#1d22432a 70%),var(--radio-art) 61% center/cover no-repeat,#242b42;
+}
+.last-radio-world::after{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:linear-gradient(0deg,#18203494,transparent 39%,transparent 84%,#20264080);
+}
+.radio-window-rain{clip-path:polygon(0 0,52% 0,49% 74%,0 83%);opacity:.64}
+.radio-broadcast{
+ position:absolute;
+ left:37%;
+ top:25%;
+ width:clamp(130px,21vw,380px);
+ aspect-ratio:1;
+ transform:translate(-50%,-50%);
+}
+.radio-broadcast i{
+ position:absolute;
+ inset:0;
+ border:1px solid #cddcff;
+ border-radius:50%;
+ box-shadow:0 0 12px #a8caff80,inset 0 0 8px #ffdeae30;
+ animation:radio-broadcast 6s cubic-bezier(.2,.64,.31,1) infinite;
+}
+.radio-broadcast i:nth-child(2){animation-delay:-2s}
+.radio-broadcast i:nth-child(3){animation-delay:-4s}
+@keyframes radio-broadcast{
+ 0%{transform:scale(.12);opacity:0}
+ 15%{opacity:.5}
+ 75%,100%{transform:scale(1);opacity:0}
+}
+.radio-dial{
+ position:absolute;
+ z-index:1;
+ right:5vw;
+ bottom:7vh;
+ width:min(42vw,270px);
+ color:#b9d4ff;
+ opacity:.72;
+}
+.radio-dial::after{
+ content:"";
+ display:block;
+ height:5px;
+ background:repeating-linear-gradient(90deg,currentColor 0 1px,transparent 1px 9px);
+ opacity:.35;
+}
+.radio-dial .radio-paw{position:absolute;width:20px;right:0;top:0;color:#ffe0ad}
+.radio-paw{
+ display:block;
+ aspect-ratio:1;
+ background:currentColor;
+ mask:var(--radio-paw-shape) center/contain no-repeat;
+}
+.radio-wave{
+ display:block;
+ width:100%;
+ height:auto;
+ overflow:visible;
+ stroke:currentColor;
+ stroke-linecap:round;
+ stroke-linejoin:round;
+}
+.radio-wave-baseline{stroke-width:.6;opacity:.45}
+.radio-wave-trace{
+ stroke-width:1.5;
+ transform-origin:center;
+ transform-box:view-box;
+}
+.radio-dial .radio-wave-trace{animation:radio-signal 4.6s infinite}
+@keyframes radio-signal{
+ 0%,100%{transform:scaleY(.47);opacity:.6}
+ 16%{transform:scaleY(.9);opacity:1}
+ 31%{transform:scaleY(.58);opacity:.74}
+ 49%{transform:scaleY(1.24);opacity:1}
+ 67%{transform:scaleY(.75);opacity:.86}
+ 84%{transform:scaleY(1.08);opacity:1}
+}
+[data-theme="last-radio"] .title-rule{
+ width:100px;
+ height:7px;
+ background:repeating-linear-gradient(90deg,#c5dbfb 0 1px,transparent 1px 8px);
+ border-bottom:1px solid #c5dbfb99;
+}
+[data-theme="last-radio"] :is(.start-kicker,.start-description,.start-import,.continue-note){color:var(--ink)}
+[data-theme="last-radio"] :is(.player-panel,.player-panel.cutscene-panel,dialog,.game-header,.customization-dialog .custom-popup-heading){
+ background:var(--radio-panel);
+ color:var(--ink);
+ border-color:var(--line);
+}
+[data-theme="last-radio"] dialog::backdrop{background:#11162bbb}
+[data-theme="last-radio"] :is(.race-choice,.race-modifiers button,.race-division-options button,.custom-category,.identity-stat,.player .choice){
+ background-color:#374362b0;
+ border-color:var(--line);
+}
+[data-theme="last-radio"] :is(.player .primary,dialog .primary,.start-button){
+ background:linear-gradient(105deg,#354971,#4b4166);
+ border-color:#c1d4fb8f;
+ color:var(--ink);
+}
+[data-theme="last-radio"] :is(.start-button span:last-child,.custom-category-mark,.nav-arrow){color:var(--amber)}
+[data-theme="last-radio"] :is(.tab-heading,.identity-trait,.race-reveal){position:relative}
+[data-theme="last-radio"] :is(.tab-heading,.identity-trait,.race-reveal)::after,
+.theme-namecard[data-preview="last-radio"] .theme-card-art::after{
+ content:"";
+ position:absolute;
+ right:9px;
+ bottom:8px;
+ width:15px;
+ aspect-ratio:1;
+ mask:var(--radio-paw-shape) center/contain no-repeat;
+ background:#ffe2ae;
+ opacity:.55;
+ pointer-events:none;
+}
+[data-theme="last-radio"] .identity-trait::after{top:7px;bottom:auto}
+.theme-namecard[data-preview="last-radio"]{color:#faf4ff;border-color:#b6ceff70}
+.theme-namecard[data-preview="last-radio"] .theme-card-art{background:#313958}
+.theme-namecard[data-preview="last-radio"] .theme-card-city{
+ opacity:1;
+ background:linear-gradient(90deg,#202742fa,#28314ce8 42%,#32345237 85%),var(--radio-art) 65% 49%/cover no-repeat;
+}
+.theme-namecard[data-preview="last-radio"] .theme-card-glass{
+ background:repeating-linear-gradient(90deg,#c2d8ff75 0 1px,transparent 1px 7px) left bottom/100% 5px no-repeat;
+}
+.theme-namecard[data-preview="last-radio"] .theme-card-frame{display:none}
+.theme-namecard[data-preview="last-radio"] :is(.theme-card-kicker,.theme-card-condition,.theme-card-note){color:#e3e5fa}
+.theme-namecard[data-preview="last-radio"] .theme-card-status{background:#292f4bea;border-color:#c3cffc80;color:#fff3df}
+.theme-namecard[data-preview="last-radio"] .theme-card-art::after{width:23px;bottom:13px;right:14px;opacity:.8}
+
+.radio-touch{--impact-ring-size:114px;color:#c6e0ff}
+.radio-touch .touch-ring-one{--ring-ink:#bddaff}
+.radio-touch .touch-ring-two{--ring-ink:#ffe3b1}
+.radio-touch .touch-ring-three{--ring-ink:#d6c8ff}
+.radio-touch-paw{
+ left:-16px;
+ top:-17px;
+ width:32px;
+ color:#ffe1b0;
+ filter:drop-shadow(0 0 6px #ffe2b9);
+ animation:radio-paw-stamp .75s cubic-bezier(.16,.62,.3,1) both;
+}
+.radio-touch-signal{
+ width:min(148px,33vw);
+ left:0;
+ top:0;
+ transform:translate(-50%,-50%);
+ filter:drop-shadow(0 0 5px #9dbdff) drop-shadow(0 0 10px #6864f2);
+ animation:radio-tap-signal .8s .04s ease-out both;
+}
+.radio-touch-signal .radio-wave{position:relative}
+.radio-touch:not(.radio-touch-held):not(.radio-touch-released) .radio-touch-signal{top:19px}
+.radio-touch-held .radio-touch-signal,.radio-touch-released .radio-touch-signal{animation:none}
+.radio-touch-held .radio-wave-trace{animation:radio-signal .96s linear infinite}
+.radio-touch-released .radio-touch-signal{animation:radio-release .22s ease-out both}
+@keyframes radio-paw-stamp{
+ 0%{opacity:0;transform:scale(.45) rotate(-21deg)}
+ 20%{opacity:1;transform:scale(1) rotate(-13deg)}
+ 100%{opacity:0;transform:translateY(-11px) scale(1.16) rotate(-9deg)}
+}
+@keyframes radio-tap-signal{
+ 0%{opacity:0;clip-path:inset(0 100% 0 0)}
+ 25%{opacity:1;clip-path:inset(0)}
+ 100%{opacity:0;clip-path:inset(0)}
+}
+@keyframes radio-release{to{opacity:0}}
+
+@media(max-width:600px) and (orientation:portrait){
+ .last-radio-world{
+  background-image:linear-gradient(0deg,#1a2037 39%,#1a203790 53%,#242a4910 72%,#20294155 100%),var(--radio-art);
+  background-position:center,68% top;
+  background-size:cover,auto 61%;
+ }
+ .radio-window-rain{clip-path:polygon(0 0,27% 0,23% 39%,0 42%)}
+ .radio-broadcast{left:12%;top:14%}
+ .radio-dial{right:6vw;bottom:6vh;opacity:.5}
+ [data-theme="last-radio"] .start-card{margin:auto 0 0;padding-top:28px;padding-bottom:26px}
+ [data-theme="last-radio"] .start-title img{width:min(68vw,34svh)}
+}
+@media(prefers-reduced-motion:reduce){
+ .radio-dial .radio-wave-trace,.radio-broadcast i{animation:none}
+ .radio-broadcast i{opacity:.18;transform:scale(.55)}
+ .radio-broadcast i:nth-child(2){transform:scale(.75)}
+ .radio-broadcast i:nth-child(3){transform:scale(.95)}
+}

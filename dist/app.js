@@ -60,6 +60,15 @@ const themeChoices=[{id:'rain',name:'수사관 사무실의 유리창',englishNa
  preview:'childhood-abyss',
  unlock:(player,work)=>characterBondComplete(player,work,'mirae','미래'),
  presentation:{symbolTone:'white',background:childhoodAbyssWeather,touch:abyssTouchImpact,transition:prismTransition}
+},{
+ id:'last-radio',
+ name:'종말이 오는 그날까지도',
+ englishName:'Till the Our End Arrives',
+ unlockLabel:'인연 컴플리트: 나비',
+ note:'오늘도 마지막 날까지.',
+ preview:'last-radio',
+ unlock:(player,work)=>characterBondComplete(player,work,'nabi','나비'),
+ presentation:{symbolTone:'white',background:lastRadioWeather,touch:lastRadioTouchImpact,transition:prismTransition}
 }];
 function characterBondComplete(player,work,id,name){
  const bonds=Array.isArray(work.bonds)?work.bonds:[];
@@ -217,6 +226,15 @@ function childhoodAbyssWeather(){
  ).join('');
  return `<div class="weather-world childhood-abyss-world" aria-hidden="true"><div class="abyss-ambient-particles">${stars+rings}</div></div>`;
 }
+function radioWave(){
+ return '<svg class="radio-wave" viewBox="0 0 160 44" fill="none"><path class="radio-wave-baseline" d="M0 22H160"/><path class="radio-wave-trace" d="M0 22H20L25 20L31 25L36 17L42 28L47 13L52 34L57 7L63 38L69 16L75 28L81 19L86 24H91L97 17L103 29L108 11L114 33L120 16L126 26L132 20L138 23L144 22H160"/></svg>';
+}
+function lastRadioWeather(){
+ const drops=Array.from({length:26},(_,i)=>
+  `<i style="--x:${(i*37+3)%100}%;--delay:${-(i%13)*.38}s;--speed:${1.1+(i%7)*.2}s;--length:${36+i%6*10}px;--opacity:${.13+i%4*.06}"></i>`
+ ).join('');
+ return `<div class="weather-world last-radio-world" aria-hidden="true"><div class="rain-layer radio-window-rain">${drops}</div><div class="radio-broadcast"><i></i><i></i><i></i></div><div class="radio-dial">${radioWave()}<i class="radio-paw"></i></div></div>`;
+}
 function rainWeather(){return `<div class="weather-world" aria-hidden="true"><div class="city-view"></div><div class="window-frame frame-one"></div><div class="window-frame frame-two"></div><div class="rain-layer">${Array.from({length:58},(_,i)=>`<i style="--x:${(i*37+3)%100}%;--delay:${-(i%13)*.43}s;--speed:${.9+(i%7)*.17}s;--length:${45+i%6*15}px;--opacity:${.12+i%5*.06}"></i>`).join('')}</div><div class="window-mist"></div><div class="glass-drops">${Array.from({length:25},(_,i)=>`<i style="left:${(i*31+9)%100}%;top:${(i*47+2)%100}%;--drop-size:${3+i%5*2}px;--drift:${14+i%7}s;animation-delay:${-i*1.2}s"></i>`).join('')}</div><div class="weather-shade"></div></div>`}
 function geometricGlyphs(text){const glyphs={K:'M0 0V24M16 0L0 16M6 10L16 24M4 12H12',B:'M0 0V24H12L16 20V16L8 12L16 8V4L12 0ZM0 12H8',M:'M0 24V0L8 12L16 0V24M4 8L8 16L12 8',W:'M0 0L4 24L8 12L12 24L16 0M4 16L8 4L12 16',S:'M16 0H4L0 4V8L16 16V20L12 24H0M4 0L12 8M4 16L12 24',H:'M0 0V24M16 0V24M0 12H16M8 8V16',P:'M0 24V0H12L16 4V8L12 12H0M4 4H12',T:'M0 0H16M8 0V24M4 8L8 12L12 8',Y:'M0 0L8 12L16 0M8 12V24M4 20H12',U:'M0 0V16L8 24L16 16V0M4 16L8 20L12 16',Z:'M0 0H16L0 24H16M4 12H12',V:'M0 0L8 24L16 0M4 4L8 12L12 4',G:'M16 4L12 0H4L0 4V20L4 24H16V12H8M8 16H16',F:'M0 24V0H16L8 8H0M0 12H12L8 16',A:'M0 24L8 0L16 24M4 16H12M8 0V8',I:'M8 0V24M4 4L8 0L12 4M4 20L8 24L12 20M4 12H12',L:'M0 0V24H16L8 16M0 8L8 0',E:'M16 0H0V24H16M0 0L8 8H0M0 12H12L8 16M0 24L8 16',D:'M0 0V24H8L16 16V8L8 0ZM0 8H8V16H0',N:'M0 24V0L16 24V0M0 16L4 12M12 12L16 8',O:'M8 0L16 8V16L8 24L0 16V8ZM4 8L12 16',R:'M0 24V0H12L16 4V8L0 16M8 12L16 24',C:'M16 0H8L0 8V16L8 24H16M0 12H8',X:'M0 0L16 24M16 0L0 24M4 12H12','^':'M0 12L8 0L16 12','!':'M8 0V16M5 21L8 18L11 21L8 24Z','>':'M0 0L16 12L0 24','&':'M16 24L0 8L8 0L16 8L0 24H16M0 16H16','[':'M16 0H4V24H16M0 8H8','+':'M0 12H16M8 4V20'};let x=0;const paths=[...text.toUpperCase()].map(c=>{if(c===' '){x+=16;return ''}const path='<path d="'+(glyphs[c]||'M0 12L8 0L16 12L8 24Z')+'" transform="translate('+x+' 2)"/>';x+=24;return path}).join('');return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${Math.max(16,x-8)} 30" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter">${paths}</g></svg>`}
 function runeInscription(){return `<div class="rune-ornament" role="img" aria-label="Failed and Find"><span class="rune-rule" aria-hidden="true"></span>${geometricGlyphs('Failed and Find')}<span class="rune-rule" aria-hidden="true"></span></div>`}
@@ -262,7 +280,7 @@ function appendTouchImpact(host,x,y,variant,markup,lifetime=1150){
  fx.style.top=y+'px';
  fx.innerHTML=markup;
  const existing=document.querySelectorAll('.touch-impact');
- if(existing.length>=12)Array.from(existing).find(effect=>!effect.classList.contains('life-touch-held'))?.remove();
+ if(existing.length>=12)Array.from(existing).find(effect=>!effect.classList.contains('touch-impact-persistent'))?.remove();
  host.appendChild(fx);
  if(lifetime)setTimeout(()=>fx.remove(),lifetime);
  return fx;
@@ -304,11 +322,11 @@ function lifeTouchImpact(event){
  return {
   hold(){
    clearTimeout(fadeTimer);
-   mark.classList.add('life-touch-held');
+   mark.classList.add('life-touch-held','touch-impact-persistent');
   },
   release(){
    if(!mark.classList.contains('life-touch-held'))return;
-   mark.classList.remove('life-touch-held');
+   mark.classList.remove('life-touch-held','touch-impact-persistent');
    mark.classList.add('life-touch-released');
    setTimeout(()=>mark.remove(),240);
   }
@@ -336,6 +354,23 @@ function abyssTouchImpact(event){
    bloom();
   },
   release(){clearTimeout(timer)}
+ };
+}
+function lastRadioTouchImpact(event){
+ if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+ const dial='<span class="radio-touch-signal">'+radioWave()+'</span>';
+ const paw='<i class="radio-paw radio-touch-paw"></i>';
+ const origin=touchImpactOrigin(event);
+ spawnRainImpact(...origin,'radio-touch',paw+dial);
+ let signal;
+ return {
+  hold(){signal=appendTouchImpact(...origin,'radio-touch radio-touch-held touch-impact-persistent',dial,0)},
+  release(){
+   if(!signal)return;
+   signal.classList.remove('radio-touch-held','touch-impact-persistent');
+   signal.classList.add('radio-touch-released');
+   setTimeout(()=>signal.remove(),220);
+  }
  };
 }
 const inlineRippleActions=new Set([
