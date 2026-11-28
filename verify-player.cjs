@@ -242,6 +242,7 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  assert.ok(panel().includes('&quot;내 이름은 &#39;미래&#39;! 언니 이름은 '+save.build.name+'!&quot;'));
  assert.ok(panel().includes('&quot;언니는 화나는 거 잘 참아? 나는...&quot;'));
  assert.ok(panel().includes('&quot;... 나는 뭘까?&quot;'));
+ assert.ok(panel().includes('&quot;세계를 오가는 열차는 어떨까?&quot;'));
  for(const [id,negative,neutral,positive,cost] of [
   ['vision','굴절 이상','시각','매의 눈',30],
   ['hearing','음소거','청각','반향정위',30],
@@ -249,7 +250,8 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
   ['empathy','공감 둔화','감정 이해','이입',20],
   ['memory','휘발성 기억','기억력','연결된 기억',40],
   ['reason','광기','이성','평정',50],
-  ['self-image','인격 분열','자아상','확립된 존재',50]
+  ['self-image','인격 분열','자아상','확립된 존재',50],
+  ['imagination','빈곤한 상상','상상력','풍부한 상상',20]
  ]){
   assert.ok(panel().includes('<h3>'+neutral+'</h3>'));
   assert.equal(actions['identity-trait'](id+':negative'),'negative');
@@ -267,8 +269,9 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  actions['identity-trait']('memory:positive');
  actions['identity-trait']('reason:negative');
  actions['identity-trait']('self-image:positive');
+ actions['identity-trait']('imagination:positive');
  const sensoryBuild=decodePlayer(project,encodePlayer(project,save)).build;
- assert.equal(sensoryBuild.thoughtLimit,115);
+ assert.equal(sensoryBuild.thoughtLimit,135);
  assert.equal(sensoryBuild.traitChoices.vision,'positive');
  assert.equal(sensoryBuild.traitChoices.hearing,'negative');
  assert.equal(sensoryBuild.traitChoices.flexibility,'positive');
@@ -276,6 +279,7 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  assert.equal(sensoryBuild.traitChoices.memory,'positive');
  assert.equal(sensoryBuild.traitChoices.reason,'negative');
  assert.equal(sensoryBuild.traitChoices['self-image'],'positive');
+ assert.equal(sensoryBuild.traitChoices.imagination,'positive');
  assert.equal($('#app').htmlWrites,stageWrites);
  save=previous;persist();close();render();
  }
