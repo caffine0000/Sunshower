@@ -1,4 +1,4 @@
-import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,allowsMultipleRaceDivisions,selectedRaceDivisionIds,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift,identityTraits,identityTraitLevels,raceModifierThoughtCost,raceDivisionThoughtCost,identityStatDefinitions,IDENTITY_STAT_MIN,IDENTITY_STAT_MAX,IDENTITY_STAT_STEP_COST} from './engine.mjs';
+import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,allowsMultipleRaceDivisions,selectedRaceDivisionIds,raceDisplay,selectRace,thoughtLimitMaximum,THOUGHT_LIMIT_GIFT_BONUS,grantThoughtGift,identityTraits,identityTraitLevels,raceModifierThoughtCost,raceDivisionThoughtCost,identityStatDefinitions,IDENTITY_STAT_MIN,IDENTITY_STAT_MAX,IDENTITY_STAT_STEP_COST} from './engine.mjs';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),uid=()=>crypto.randomUUID(),clone=x=>JSON.parse(JSON.stringify(x));
 const displayText=value=>esc(formatPlayerText(value,save?.build));
 const APP_VERSION='0.1.0';
@@ -634,7 +634,7 @@ function syncThoughtHelperLayer(){
  thoughtHelperParent=parent;
 }
 function thoughtHelperUI(){return `<button type="button" class="thought-helper-peek" data-action="thought-assist" aria-label="미래에게 사고 한계 도움받기"><img src="${thoughtAssistAssets.sd}" alt="오른쪽에서 고개를 내민 미래" width="768" height="768" decoding="async" draggable="false"></button>`}
-function thoughtGiftInlineUI(){const scene=thoughtGiftPresentation;if(!scene||save.build.completed)return '';const elapsed=Math.min(3.6,(Date.now()-scene.started)/1000);return `<div class="thought-gift-inline" style="--gift-elapsed:-${elapsed.toFixed(3)}s"><div class="thought-spark-burst" aria-hidden="true"><i class="thought-burst-flare"></i><i class="thought-burst-ring"></i>${Array.from({length:14},(_,i)=>{const angle=i*Math.PI*2/14,radius=48+i%4*16;return `<i class="thought-burst-spark" style="--spark-x:${(Math.cos(angle)*radius).toFixed(1)}px;--spark-y:${(Math.sin(angle)*radius).toFixed(1)}px;--spark-delay:${(i%3*.035).toFixed(3)}s;--spark-size:${5+i%4*2}px"></i>`}).join('')}</div><div class="thought-helper-leaving" aria-hidden="true"><img src="${thoughtAssistAssets.sd}" alt="" width="768" height="768" draggable="false"></div><div class="thought-helper-bubble" role="status"><p>${displayText('정말이지... [오빠/언니]는 욕심쟁이구나?')}</p><small>사고 한계 최대치 +50</small></div></div>`}
+function thoughtGiftInlineUI(){const scene=thoughtGiftPresentation;if(!scene||save.build.completed)return '';const elapsed=Math.min(3.6,(Date.now()-scene.started)/1000);return `<div class="thought-gift-inline" style="--gift-elapsed:-${elapsed.toFixed(3)}s"><div class="thought-spark-burst" aria-hidden="true"><i class="thought-burst-flare"></i><i class="thought-burst-ring"></i>${Array.from({length:14},(_,i)=>{const angle=i*Math.PI*2/14,radius=48+i%4*16;return `<i class="thought-burst-spark" style="--spark-x:${(Math.cos(angle)*radius).toFixed(1)}px;--spark-y:${(Math.sin(angle)*radius).toFixed(1)}px;--spark-delay:${(i%3*.035).toFixed(3)}s;--spark-size:${5+i%4*2}px"></i>`}).join('')}</div><div class="thought-helper-leaving" aria-hidden="true"><img src="${thoughtAssistAssets.sd}" alt="" width="768" height="768" draggable="false"></div><div class="thought-helper-bubble" role="status"><p>${displayText('정말이지... [오빠/언니]는 욕심쟁이구나?')}</p><small>사고 한계 최대치 +${THOUGHT_LIMIT_GIFT_BONUS}</small></div></div>`}
 function finishThoughtGiftPresentation(scene){if(thoughtGiftPresentation!==scene)return;clearTimeout(thoughtGiftTimer);thoughtGiftTimer=null;thoughtGiftPresentation=null;syncThoughtHelperLayer()}
 
 function thoughtCollapseUI(){return '<div class="thought-collapse" aria-hidden="true"><div class="collapse-haze"></div><div class="collapse-undertow"></div><div class="collapse-mist mist-one"></div><div class="collapse-mist mist-two"></div><div class="collapse-mist mist-three"></div></div>'}
@@ -959,19 +959,19 @@ function identityStatsUI(){
  </section>`;
 }
 function identityEditorUI(){
- return `${identityStatsUI()}<div class="identity-traits">${identityTraits.map(({id,name,levels,image,imageAlt=''})=>{
+ return `${identityStatsUI()}<div class="identity-traits">${identityTraits.map(({id,levels,image,imageAlt=''})=>{
   const selected=save.build.traitChoices[id]??'neutral';
-  const {description,cost}=levels[selected];
+  const {name,description,cost}=levels[selected];
   return `<article class="identity-trait" data-tone="${selected}">
    <div class="identity-trait-art">${image?`<img src="${esc(image)}" alt="${esc(imageAlt)}" loading="lazy" decoding="async">`:''}</div>
    <div class="identity-trait-heading">
     <h3>${esc(name)}</h3>
     <div class="identity-trait-cost-slot">${choiceThoughtCost(cost)}</div>
    </div>
-   <div class="identity-trait-switch" role="group" aria-label="${esc(name)} 상태">${identityTraitLevels.map(level=>
+   <div class="identity-trait-switch" role="group" aria-label="${esc(levels.neutral.name)} 상태">${identityTraitLevels.map(level=>
     `<button type="button" data-action="identity-trait" data-id="${esc(id)}:${level}" aria-label="${identityLevelNames[level]}" aria-pressed="${selected===level}" aria-describedby="identity-description-${esc(id)}">${identityLevelSymbols[level]}</button>`
    ).join('')}</div>
-   <p id="identity-description-${esc(id)}">${esc(description)}</p>
+   <p id="identity-description-${esc(id)}">${displayText(description)}</p>
   </article>`;
  }).join('')}</div>`;
 }

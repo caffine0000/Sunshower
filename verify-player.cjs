@@ -187,12 +187,18 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  }
  function testIdentityTraits(){
  const previous=save;
- save=normalizePlayer({...save,build:{...save.build,race:{primary:'human'},traitChoices:{},thoughtLimitBase:0}});
+ save=normalizePlayer({...save,build:{...save.build,race:{primary:'human'},gender:'female',traitChoices:{},thoughtLimitBase:0}});
  actions['custom-section']('identity');
  const panel=()=>$('#modalBody').innerHTML;
- const select=level=>actions['identity-trait']('example:'+level);
+ const select=level=>actions['identity-trait']('hair:'+level);
  const stageWrites=$('#app').htmlWrites;
  assert.ok(panel().includes('data-tone="neutral"'));
+ assert.ok(panel().includes('<h3>머릿결</h3>'));
+ assert.ok(panel().includes('&quot;언니! 머리카락 만져봐도 돼?&quot;'));
+ save.build.gender='male';
+ assert.ok(identityEditorUI().includes('&quot;오빠! 머리카락 만져봐도 돼?&quot;'));
+ save.build.gender='female';
+ assert.ok(!panel().includes('특성 예시'));
  assert.ok(panel().includes('<div class="identity-trait-art"></div>'));
  identityTraits[0].image='assets/example.webp';
  identityTraits[0].imageAlt='특성 그림';
@@ -201,21 +207,24 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  delete identityTraits[0].imageAlt;
  assert.ok(panel().includes('<div class="identity-trait-cost-slot"></div>'));
  for(const [level,label,symbol] of [['negative','네거티브','-'],['neutral','뉴트럴','○'],['positive','포지티브','+']]){
-  const button=panel().split('</button>').find(markup=>markup.includes('data-id="example:'+level+'"'));
+  const button=panel().split('</button>').find(markup=>markup.includes('data-id="hair:'+level+'"'));
   assert.ok(button.includes('aria-label="'+label+'"'));
   assert.ok(button.endsWith('>'+symbol));
  }
  assert.equal(select('negative'),'negative');
  assert.ok(panel().includes('data-tone="negative"'));
+ assert.ok(panel().includes('<h3>퍼석한 머릿결</h3>'));
+ assert.ok(panel().includes('머릿결과 두피 등의 상태가 악화되어, 관리에 힘을 써야한다.'));
  assert.ok(panel().includes('<div class="identity-trait-cost-slot"><small class="choice-thought-cost">사고 복원량: 20</small></div>'));
  assert.equal(save.build.thoughtLimit,0);
  assert.equal(select('positive'),'positive');
- assert.ok(panel().includes('이 특성을 포지티브로 선택합니다.'));
+ assert.ok(panel().includes('<h3>부드러운 머릿결</h3>'));
+ assert.ok(panel().includes('머릿결과 두피가 좋아져, 관리를 하지 않아도 충분히 부드럽다.'));
  assert.ok(panel().includes('<div class="identity-trait-cost-slot"><small class="choice-thought-cost">사고 요구량: 20</small></div>'));
  assert.equal(save.build.thoughtLimit,20);
  for(const meter of ['.thought-limit-page','.thought-limit-popup'])assert.ok($(meter).innerHTML.includes('<strong>20/'));
  const restored=decodePlayer(project,encodePlayer(project,save));
- assert.equal(restored.build.traitChoices.example,'positive');
+ assert.equal(restored.build.traitChoices.hair,'positive');
  assert.equal(restored.build.thoughtLimit,20);
  assert.equal(select('positive'),undefined);
  assert.equal(select('invalid'),undefined);
@@ -224,7 +233,7 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  assert.equal(select('negative'),'negative');
  assert.equal(save.build.thoughtLimit,25);
  assert.equal(select('neutral'),'neutral');
- assert.equal(save.build.traitChoices.example,undefined);
+ assert.equal(save.build.traitChoices.hair,undefined);
  assert.equal(save.build.thoughtLimit,45);
  assert.equal($('#app').htmlWrites,stageWrites);
  save=previous;persist();close();render();
@@ -273,7 +282,7 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  slide('stamina',3);
  assert.equal(save.build.thoughtLimit,140);
  assert.equal($('#modalBody').htmlWrites,popupWrites);
- assert.equal(actions['identity-trait']('example:negative'),'negative');
+ assert.equal(actions['identity-trait']('hair:negative'),'negative');
  assert.equal(save.build.thoughtLimit,120);
  const nextPopupWrites=$('#modalBody').htmlWrites;
  slide('strength',3);
@@ -330,9 +339,9 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  save=original;project.raceDetails=definitions;close();render();
  }
  function testThoughtAssistance(){
- const original=save;for(const gender of ['male','female']){save=normalizePlayer({...original,build:{...original.build,gender,race:{primary:'human'},thoughtLimitBase:601,thoughtLimit:601,thoughtGiftReceived:false}});render();actions['custom-section']('race');assert.ok(thoughtHelperLayer.innerHTML.includes('thought-helper-peek'));assert.ok(!buildingPointsUI().includes('thought-helper-peek'));assert.ok(!$('#modalBody').innerHTML.includes('thought-helper-peek'));assert.equal(thoughtHelperLayer.parentNode,$('#modal'));assert.equal(thoughtHelperLayer.popoverOpen,true);const failed=save;imageTest.failStorage=true;actions['thought-assist']();assert.equal(save,failed);assert.equal(save.build.thoughtGiftReceived,false);imageTest.failStorage=false;const opens=$('#modal').openCount,stageWrites=$('#app').htmlWrites;actions['thought-assist']();assert.equal($('#app').htmlWrites,stageWrites);assert.equal(save.build.thoughtLimit,601);assert.equal(thoughtLimitMaximum(save.build),650);assert.equal(save.build.thoughtGiftReceived,true);assert.equal($('#modal').openCount,opens);assert.ok($('#modal').classList.contains('customization-dialog'));assert.ok(!$('#modal').classList.contains('thought-gift-dialog'));assert.ok($('#modalBody').innerHTML.includes('race-primary'));assert.ok(thoughtHelperLayer.innerHTML.includes(gender==='male'?'정말이지... 오빠는 욕심쟁이구나?':'정말이지... 언니는 욕심쟁이구나?'));assert.ok(thoughtHelperLayer.innerHTML.includes('thought-helper-bubble'));assert.ok(thoughtHelperLayer.innerHTML.includes('thought-helper-leaving'));assert.ok(thoughtHelperLayer.innerHTML.includes('thought-spark-burst'));assert.ok(!thoughtHelperLayer.innerHTML.includes('thought-assist-standing-'));assert.ok($('.thought-limit-page').innerHTML.includes('thought-maximum-prism'));assert.ok($('.thought-limit-popup').innerHTML.includes('thought-maximum-prism'));assert.ok(!$('#app').innerHTML.includes('thought-collapse'));assert.ok(!buildingPointsUI().includes('thought-helper-peek'));const granted=save;actions['thought-assist']();assert.equal(save,granted);const activeGift=thoughtGiftPresentation;close();assert.equal($('#modal').open,false);assert.equal(thoughtGiftPresentation,activeGift);assert.equal(thoughtHelperLayer.parentNode,document.body);assert.ok(thoughtHelperLayer.innerHTML.includes('thought-helper-bubble'));giftTimers.at(-1)();assert.equal(thoughtGiftPresentation,null);loadSave();assert.equal(thoughtLimitMaximum(save.build),650);assert.equal(save.build.thoughtGiftReceived,true)}
+ const original=save;for(const gender of ['male','female']){save=normalizePlayer({...original,build:{...original.build,gender,race:{primary:'human'},thoughtLimitBase:601,thoughtLimit:601,thoughtGiftReceived:false}});render();actions['custom-section']('race');assert.ok(thoughtHelperLayer.innerHTML.includes('thought-helper-peek'));assert.ok(!buildingPointsUI().includes('thought-helper-peek'));assert.ok(!$('#modalBody').innerHTML.includes('thought-helper-peek'));assert.equal(thoughtHelperLayer.parentNode,$('#modal'));assert.equal(thoughtHelperLayer.popoverOpen,true);const failed=save;imageTest.failStorage=true;actions['thought-assist']();assert.equal(save,failed);assert.equal(save.build.thoughtGiftReceived,false);imageTest.failStorage=false;const opens=$('#modal').openCount,stageWrites=$('#app').htmlWrites;actions['thought-assist']();assert.equal($('#app').htmlWrites,stageWrites);assert.equal(save.build.thoughtLimit,601);assert.equal(thoughtLimitMaximum(save.build),700);assert.equal(save.build.thoughtGiftReceived,true);assert.equal($('#modal').openCount,opens);assert.ok($('#modal').classList.contains('customization-dialog'));assert.ok(!$('#modal').classList.contains('thought-gift-dialog'));assert.ok($('#modalBody').innerHTML.includes('race-primary'));assert.ok(thoughtHelperLayer.innerHTML.includes(gender==='male'?'정말이지... 오빠는 욕심쟁이구나?':'정말이지... 언니는 욕심쟁이구나?'));assert.ok(thoughtHelperLayer.innerHTML.includes('thought-helper-bubble'));assert.ok(thoughtHelperLayer.innerHTML.includes('사고 한계 최대치 +100'));assert.ok(thoughtHelperLayer.innerHTML.includes('thought-helper-leaving'));assert.ok(thoughtHelperLayer.innerHTML.includes('thought-spark-burst'));assert.ok(!thoughtHelperLayer.innerHTML.includes('thought-assist-standing-'));assert.ok($('.thought-limit-page').innerHTML.includes('thought-maximum-prism'));assert.ok($('.thought-limit-popup').innerHTML.includes('thought-maximum-prism'));assert.ok(!$('#app').innerHTML.includes('thought-collapse'));assert.ok(!buildingPointsUI().includes('thought-helper-peek'));const granted=save;actions['thought-assist']();assert.equal(save,granted);const activeGift=thoughtGiftPresentation;close();assert.equal($('#modal').open,false);assert.equal(thoughtGiftPresentation,activeGift);assert.equal(thoughtHelperLayer.parentNode,document.body);assert.ok(thoughtHelperLayer.innerHTML.includes('thought-helper-bubble'));giftTimers.at(-1)();assert.equal(thoughtGiftPresentation,null);loadSave();assert.equal(thoughtLimitMaximum(save.build),700);assert.equal(save.build.thoughtGiftReceived,true)}
  save=normalizePlayer({...original,build:{...original.build,race:{primary:'human'},thoughtLimitBase:601,thoughtLimit:601,thoughtGiftReceived:false}});render();const opens=$('#modal').openCount,stageWrites=$('#app').htmlWrites;actions['thought-assist']();assert.equal($('#app').htmlWrites,stageWrites);assert.equal($('#modal').open,false);assert.equal($('#modal').openCount,opens);assert.ok(thoughtHelperLayer.innerHTML.includes('thought-helper-bubble'));assert.equal(thoughtHelperLayer.parentNode,document.body);const scene=thoughtGiftPresentation;giftTimers[0]();assert.equal(thoughtGiftPresentation,scene);giftTimers.at(-1)();assert.equal(thoughtGiftPresentation,null);assert.ok(!buildingPointsUI().includes('thought-gift-inline'));assert.equal(save.build.thoughtGiftReceived,true);
- for(const amount of [650,651]){save=normalizePlayer({...save,build:{...save.build,thoughtLimitBase:amount,thoughtLimit:amount}});syncThoughtHelperLayer();assert.equal(thoughtHelperLayer.innerHTML.includes('thought-collapse'),amount>650);assert.ok(!buildingPointsUI().includes('thought-helper-peek'))}save=original;persist();render();
+ for(const amount of [700,701]){save=normalizePlayer({...save,build:{...save.build,thoughtLimitBase:amount,thoughtLimit:amount}});syncThoughtHelperLayer();assert.equal(thoughtHelperLayer.innerHTML.includes('thought-collapse'),amount>700);assert.ok(!buildingPointsUI().includes('thought-helper-peek'))}save=original;persist();render();
  }
  function testThoughtHelperLayer(){
  const original=save;save=normalizePlayer({...original,build:{...original.build,race:{primary:'human'},thoughtLimitBase:601,thoughtLimit:601,thoughtGiftReceived:false}});screen='game';playerTab='building';close();render();const layer=thoughtHelperLayer;assert.ok(layer);assert.equal(layer.parentNode,document.body);assert.equal(layer.popoverOpen,true);assert.equal((layer.innerHTML.match(/class="thought-collapse"/g)||[]).length,1);assert.equal((layer.innerHTML.match(/class="thought-helper-peek"/g)||[]).length,1);const shows=layer.popoverShows;render();assert.equal(layer.popoverShows,shows);actions['custom-section']('race');assert.equal(thoughtHelperLayer,layer);assert.equal(layer.parentNode,$('#modal'));assert.equal(layer.popoverOpen,true);assert.ok(!$('#app').innerHTML.includes('thought-helper-peek'));assert.ok(!$('#modalBody').innerHTML.includes('thought-helper-peek'));actions['custom-section']('profile');assert.equal(thoughtHelperLayer,layer);assert.equal(layer.parentNode,$('#modal'));actions.settings();assert.equal(thoughtHelperLayer,layer);assert.equal(layer.popoverOpen,true);close();assert.equal(layer.parentNode,document.body);assert.equal(layer.popoverOpen,true);

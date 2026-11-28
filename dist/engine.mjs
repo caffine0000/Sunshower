@@ -13,7 +13,7 @@ export const cardThemeIds=['glass','archive','noir'];
 export function normalizeProfile(raw={}){if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('프로필 데이터 형식을 확인해 주세요.');const p={portrait:raw.portrait??'',race:raw.race??'',intro:raw.intro??'',height:raw.height??170,weight:raw.weight??60,themeColor:raw.themeColor??'#8fc8b9',cardTheme:raw.cardTheme??'glass',collectible:raw.collectible??''};if(typeof p.portrait!=='string'||p.portrait.length>400000||(p.portrait!==''&&!/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(p.portrait)))throw Error('프로필 이미지 형식을 확인해 주세요.');if(typeof p.race!=='string'||p.race.length>60||typeof p.intro!=='string'||p.intro.length>400||typeof p.collectible!=='string'||p.collectible.length>300)throw Error('프로필 문구 형식을 확인해 주세요.');if(!Number.isInteger(p.height)||p.height<120||p.height>220||typeof p.weight!=='number'||!Number.isFinite(p.weight)||p.weight<20||p.weight>250)throw Error('키와 몸무게의 설정 범위를 확인해 주세요.');if(typeof p.themeColor!=='string'||!/^#[0-9a-f]{6}$/i.test(p.themeColor)||!cardThemeIds.includes(p.cardTheme))throw Error('명함 테마 형식을 확인해 주세요.');p.themeColor=p.themeColor.toLowerCase();return p}
 
 export const THOUGHT_LIMIT_DEFAULT_MAX=600;
-export const THOUGHT_LIMIT_GIFT_BONUS=50;
+export const THOUGHT_LIMIT_GIFT_BONUS=100;
 export function thoughtLimitMaximum(build){return THOUGHT_LIMIT_DEFAULT_MAX+(build?.thoughtGiftReceived===true?THOUGHT_LIMIT_GIFT_BONUS:0)}
 export const IMMORTAL_THOUGHT_COST=100;
 const LEGACY_IMMORTAL_THOUGHT_COST=251;
@@ -38,12 +38,11 @@ export const identityStatDefinitions=[
 export const identityTraitLevels=['negative','neutral','positive'];
 export const identityTraits=[
  {
-  id:'example',
-  name:'특성 예시',
+  id:'hair',
   levels:{
-   negative:{description:'이 특성을 네거티브로 선택합니다.',cost:-20},
-   neutral:{description:'이 특성은 뉴트럴 상태입니다.',cost:0},
-   positive:{description:'이 특성을 포지티브로 선택합니다.',cost:20}
+   negative:{name:'퍼석한 머릿결',description:'머릿결과 두피 등의 상태가 악화되어, 관리에 힘을 써야한다.',cost:-20},
+   neutral:{name:'머릿결',description:'"[오빠/언니]! 머리카락 만져봐도 돼?"',cost:0},
+   positive:{name:'부드러운 머릿결',description:'머릿결과 두피가 좋아져, 관리를 하지 않아도 충분히 부드럽다.',cost:20}
   }
  }
 ];
@@ -305,7 +304,9 @@ export function normalizePlayer(raw={}) {
  const customizationCost=traitCost+statCost;
  const storedThought=b.thoughtLimit??0,thoughtLimitBase=b.thoughtLimitBase??storedThought;
  const raceCost=raceThoughtCost(race);
- const maxStoredThought=1000000+Math.max(LEGACY_IMMORTAL_THOUGHT_COST,raceCost)+Math.max(0,customizationCost);
+ // Allow an old cached total that includes the retired example trait.
+ const legacyTraitCost=b.traitChoices?.example==='positive'?20:0;
+ const maxStoredThought=1000000+Math.max(LEGACY_IMMORTAL_THOUGHT_COST,raceCost)+Math.max(0,customizationCost+legacyTraitCost);
  if(!Number.isInteger(storedThought)||storedThought<0||storedThought>maxStoredThought||!Number.isInteger(thoughtLimitBase)||thoughtLimitBase<0||thoughtLimitBase>1000000)throw Error('사고 한계 수치를 확인해 주세요.');
  const thoughtGiftReceived=b.thoughtGiftReceived??false;
  if(typeof thoughtGiftReceived!=='boolean')throw Error('사고 한계 확장 기록을 확인해 주세요.');
