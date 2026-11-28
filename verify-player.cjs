@@ -39,10 +39,14 @@ vm.runInNewContext(code+`
  assert.ok($('#modalBody').innerHTML.includes('어떤 엘프들은 돌벽에, 아스팔트에 적응했다.'));
  assert.ok($('#modalBody').innerHTML.includes('어떤 엘프들은 생명 없는 곳에서 살아갔다.'));
  selectElfDivision('modern');
+ assert.equal(save.build.thoughtLimit,30);
+ assert.ok($('#modalBody').innerHTML.includes('사고 요구량: 30'));
  assert.ok(investigatorCard().includes('엘프(모던)'));
  assert.ok(elfTrait('제육감').includes('race-trait-altered'));
  assert.ok(elfTrait('환경 부적응').includes('race-trait-faded'));
  selectElfDivision('snowfield');
+ assert.equal(save.build.thoughtLimit,30);
+ assert.ok($('#modalBody').innerHTML.includes('사고 요구량: 30'));
  assert.ok(investigatorCard().includes('엘프(설원)'));
  assert.ok(elfTrait('생명 감지').includes('race-trait-faded'));
  assert.ok(elfTrait('저온 적응').includes('race-trait-altered'));
@@ -52,6 +56,8 @@ vm.runInNewContext(code+`
  assert.ok($('#modalBody').innerHTML.includes('어떤 드워프들은 대지보다 하늘을 멍하니 쳐다봤다.'));
  assert.ok(!$('#modalBody').innerHTML.includes('<h4>천체 공명</h4>'));
  actions['race-division'](JSON.stringify(['dwarf','sky']));
+ assert.equal(save.build.thoughtLimit,50);
+ assert.ok($('#modalBody').innerHTML.includes('사고 요구량: 50'));
  const skyCards=$('#modalBody').innerHTML.split('</article>');
  for(const title of ['뾰족한 귀','유형성숙','금속 친화','천체 공명']){
   assert.ok(skyCards.some(card=>card.includes('<h4>'+title+'</h4>')));
@@ -68,10 +74,14 @@ vm.runInNewContext(code+`
  assert.ok(beastTraits().includes('어떤 수인들은 조금 이질적이다.'));
  assert.ok(beastTraits().includes('어떤 수인들은 여러 본질을 보유했다.'));
  toggleBeastkin('chimera');
+ assert.equal(save.build.thoughtLimit,50);
+ assert.ok($('#modalBody').innerHTML.includes('사고 요구량: 50'));
  assert.equal(save.build.profile.race,'수인');
  assert.ok(beastTraits().includes('<h4>혼합된 형질</h4>'));
  assert.ok(!beastTraits().includes('<h4>환수</h4>'));
  toggleBeastkin('mythic-beast');
+ assert.equal(save.build.thoughtLimit,120);
+ assert.ok($('#modalBody').innerHTML.includes('사고 요구량: 70'));
  assert.ok(investigatorCard().includes('환수인'));
  assert.ok(beastTraits().includes('<h4>혼합된 형질</h4>')&&beastTraits().includes('<h4>환수</h4>'));
  assert.ok(!beastTraits().includes('<h4>동물적 특징</h4>'));
@@ -99,10 +109,14 @@ vm.runInNewContext(code+`
  assert.ok(celestialTraits().includes('어떤 천족들은 신비한 흔적을 남겼다.'));
  assert.ok(celestialTraits().includes('<h4>광륜과 날개</h4>'));
  actions['race-division'](JSON.stringify(['celestial','akasha']));
+ assert.equal(save.build.thoughtLimit,30);
+ assert.ok($('#modalBody').innerHTML.includes('사고 요구량: 30'));
  assert.ok(investigatorCard().includes('천족(아카샤)'));
  assert.ok(celestialTraits().includes('<h4>광륜과 권익</h4>'));
  assert.ok(!celestialTraits().includes('<h4>광륜과 날개</h4>'));
  actions['race-division'](JSON.stringify(['celestial','nymph']));
+ assert.equal(save.build.thoughtLimit,30);
+ assert.ok($('#modalBody').innerHTML.includes('사고 요구량: 30'));
  assert.ok(investigatorCard().includes('천족(님프)'));
  assert.ok(celestialTraits().includes('<h4>요정의 날개</h4>'));
  assert.ok(!celestialTraits().includes('<h4>광륜과 권익</h4>'));
@@ -124,6 +138,8 @@ vm.runInNewContext(code+`
  for(const [id,name,traits] of demonDivisions){
   actions['race-division'](JSON.stringify(['demon',id]));
   assert.equal(save.build.race.divisions.demon,id);
+  assert.equal(save.build.thoughtLimit,0);
+  assert.ok($('#modalBody').innerHTML.includes('사고 요구량: 0'));
   assert.ok(investigatorCard().includes('마족('+name+')'));
   assert.equal(demonExtraCards().length,traits.length);
   const raceHtml=$('#modalBody').innerHTML;
@@ -147,6 +163,8 @@ vm.runInNewContext(code+`
  assert.ok(spiritHtml().includes('어떤 정령들은 사물에 애착을 가지기 시작했다.'));
  assert.ok(!spiritHtml().includes('<h4>귀속</h4>'));
  actions['race-division'](JSON.stringify(['spirit','modern']));
+ assert.equal(save.build.thoughtLimit,50);
+ assert.ok($('#modalBody').innerHTML.includes('사고 요구량: 50'));
  assert.ok(investigatorCard().includes('정령(모던)'));
  assert.ok(spiritHtml().split('</article>').some(card=>card.includes('race-trait-altered')&&card.includes('<h4>귀속</h4>')&&card.includes('물건또한 신비를 가지게 된다.')));
  assert.equal(decodePlayer(project,encodePlayer(project,save)).build.profile.race,'정령(모던)');
@@ -154,19 +172,18 @@ vm.runInNewContext(code+`
  assert.equal(save.build.profile.race,'정령');
  assert.ok(!spiritHtml().includes('<h4>귀속</h4>'));
  project.raceDetails={human:{traits:[{name:'검증 특성 1',description:'1'},{name:'검증 특성 2',description:'2'},{name:'검증 특성 3',description:'3'}],divisions:[{id:'test-lineage',name:'검증 분화',description:'분화 검증'}]}};actions['race-primary']('human');assert.ok($('#modalBody').innerHTML.includes('검증 특성 3'));actions['race-division'](JSON.stringify(['human','test-lineage']));assert.equal(save.build.race.divisions.human,'test-lineage');actions['race-division'](JSON.stringify(['human','not-owned']));assert.equal(save.build.race.divisions.human,'test-lineage');
- assert.ok(!raceEditorUI().includes('>ON<'));assert.ok(!raceEditorUI().includes('>OFF<'));assert.ok(!raceEditorUI().includes('immortal-details'));actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,251);
+ assert.ok(!raceEditorUI().includes('>ON<'));assert.ok(!raceEditorUI().includes('>OFF<'));assert.ok(!raceEditorUI().includes('immortal-details'));actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,100);
  const raceHtml=$('#modalBody').innerHTML;
- assert.ok(raceHtml.includes('사고 요구량: 251'));
+ assert.ok(raceHtml.includes('사고 요구량: 100'));
  assert.ok(raceHtml.includes('immortal-details immortal-appearing'));
  assert.ok(raceHtml.includes('immortal-symbol'));
  assert.ok(raceHtml.indexOf('race-modifiers')<raceHtml.indexOf('immortal-details'));
  assert.ok(raceHtml.indexOf('immortal-details')<raceHtml.indexOf('race-reveal'));assert.ok(!$('#app').innerHTML.includes('thought-collapse'));assert.ok(!$('#modalBody').innerHTML.includes('thought-collapse'));
- assert.equal((thoughtHelperLayer.innerHTML.match(/class="thought-collapse"/g)||[]).length,1);
- assert.equal(thoughtHelperLayer.parentNode,$('#modal'));
- assert.equal(thoughtHelperLayer.popoverOpen,true);actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);assert.ok(!$('#modalBody').innerHTML.includes('immortal-details'));assert.ok(!thoughtHelperLayer.innerHTML.includes('thought-collapse'));actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,251);actions['race-option']('mixed');assert.ok(!$('#modalBody').innerHTML.includes('두 번째 종족'));assert.equal(($('#modalBody').innerHTML.match(/data-action="race-primary"/g)||[]).length,8);actions['race-primary']('elf');assert.equal(save.build.race.primary,'human');assert.equal(save.build.race.secondary,'elf');assert.ok($('#modalBody').innerHTML.includes('분화: 엘프'));actions['race-primary']('spirit');assert.equal(save.build.race.secondary,'spirit');actions['race-primary']('human');assert.equal(save.build.race.primary,'spirit');assert.equal(save.build.race.secondary,'');actions['race-primary']('human');assert.equal(save.build.race.secondary,'human');actions['race-option']('mixed');assert.equal(save.build.race.primary,'spirit');assert.equal(save.build.race.secondary,'');actions['race-primary']('human');actions['race-division'](JSON.stringify(['human','test-lineage']));actions['race-option']('mixed');actions['race-primary']('elf');assert.equal(save.build.profile.race,'휴먼 · 엘프 / 영생종');assert.ok(!investigatorCard().includes('혼혈'));
+ assert.ok(!thoughtHelperLayer?.innerHTML.includes('thought-collapse'));
+actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);assert.ok(!$('#modalBody').innerHTML.includes('immortal-details'));assert.ok(!thoughtHelperLayer?.innerHTML.includes('thought-collapse'));actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,100);actions['race-option']('mixed');assert.equal(save.build.thoughtLimit,150);assert.ok($('#modalBody').innerHTML.includes('사고 요구량: 50'));assert.ok(!$('#modalBody').innerHTML.includes('두 번째 종족'));assert.equal(($('#modalBody').innerHTML.match(/data-action="race-primary"/g)||[]).length,8);actions['race-primary']('elf');assert.equal(save.build.race.primary,'human');assert.equal(save.build.race.secondary,'elf');assert.ok($('#modalBody').innerHTML.includes('분화: 엘프'));actions['race-primary']('spirit');assert.equal(save.build.race.secondary,'spirit');actions['race-primary']('human');assert.equal(save.build.race.primary,'spirit');assert.equal(save.build.race.secondary,'');actions['race-primary']('human');assert.equal(save.build.race.secondary,'human');actions['race-option']('mixed');assert.equal(save.build.race.primary,'spirit');assert.equal(save.build.race.secondary,'');actions['race-primary']('human');actions['race-division'](JSON.stringify(['human','test-lineage']));actions['race-option']('mixed');actions['race-primary']('elf');assert.equal(save.build.profile.race,'휴먼 · 엘프 / 영생종');assert.ok(!investigatorCard().includes('혼혈'));
 
  assert.equal($('#app').htmlWrites,stageWrites);
- save.build.thoughtLimitBase=42;save=normalizePlayer(save);persist();render();assert.ok($('#app').innerHTML.includes('thought-limit-page'));assert.ok(buildingPointsUI().replace(/<[^>]*>/g,'').includes('293/250'));assert.ok(buildingPointsUI('popup').replace(/<[^>]*>/g,'').includes('293/250'));for(const location of ['page','popup']){assert.ok(buildingPointsUI(location).includes('aria-label="사고 용량"'));assert.ok(buildingPointsUI(location).includes('>사고 용량:'));}const backed=decodePlayer(project,encodePlayer(project,save));assert.equal(backed.build.thoughtLimit,293);assert.equal(backed.build.race.secondary,'elf');assert.equal(backed.build.race.divisions.human,'test-lineage');close();delete project.raceDetails;
+ save.build.thoughtLimitBase=42;save=normalizePlayer(save);persist();render();assert.ok($('#app').innerHTML.includes('thought-limit-page'));assert.ok(buildingPointsUI().replace(/<[^>]*>/g,'').includes('192/250'));assert.ok(buildingPointsUI('popup').replace(/<[^>]*>/g,'').includes('192/250'));for(const location of ['page','popup']){assert.ok(buildingPointsUI(location).includes('aria-label="사고 용량"'));assert.ok(buildingPointsUI(location).includes('>사고 용량:'));}const backed=decodePlayer(project,encodePlayer(project,save));assert.equal(backed.build.thoughtLimit,192);assert.equal(backed.build.race.secondary,'elf');assert.equal(backed.build.race.divisions.human,'test-lineage');close();delete project.raceDetails;
  }
  function testIdentityTraits(){
  const previous=save;
@@ -250,6 +267,7 @@ vm.runInNewContext(code+`
  assert.equal(strength.parentElement.style['--identity-stat-level'],'2');
  assert.equal(slide('strength',6),strength);
  assert.equal($('#identity-stat-rank-strength').textContent,'VI');
+ assert.ok($('#identity-stat-rank-strength').classList.contains('identity-stat-rank-outlier'));
  assert.equal($('#identity-stat-grade-strength').textContent,'규격 외');
  assert.equal(save.build.thoughtLimit,100);
  slide('stamina',3);
@@ -261,6 +279,7 @@ vm.runInNewContext(code+`
  slide('strength',3);
  assert.equal(save.build.thoughtLimit,60);
  assert.equal($('#identity-stat-rank-strength').textContent,'III');
+ assert.ok(!$('#identity-stat-rank-strength').classList.contains('identity-stat-rank-outlier'));
  assert.equal($('#identity-stat-grade-strength').textContent,'양호');
  assert.ok(buildSummary().includes('<span>근력</span><b>III · 양호</b>'));
  assert.ok($('.thought-limit-popup').innerHTML.includes('<strong>60/'));
@@ -287,12 +306,15 @@ vm.runInNewContext(code+`
  actions['custom-section']('race');
  actions['race-option']('mixed');
  const replicaPanel=()=>$('#modalBody').innerHTML;
+ assert.equal(save.build.thoughtLimit,save.build.thoughtLimitBase+30);
+ assert.ok(replicaPanel().includes('사고 요구량: 30'));
  assert.ok(!replicaPanel().includes('<h4>레플리카</h4>'));
  actions['race-primary']('elf');
  assert.ok(investigatorCard().includes('<dt>종족</dt><dd>오토마타-엘프</dd>'));
  assert.equal(decodePlayer(project,encodePlayer(project,save)).build.profile.race,'오토마타-엘프');
  actions['race-division'](JSON.stringify(['elf','modern']));
  assert.ok(investigatorCard().includes('<dt>종족</dt><dd>오토마타-엘프(모던)</dd>'));
+ assert.equal(save.build.thoughtLimit,save.build.thoughtLimitBase+60);
  const replicaCard=replicaPanel().split('</article>').find(card=>card.includes('race-replica-trait'));
  assert.ok(replicaCard.includes('<small>추가 특성</small>'));
  assert.ok(replicaCard.includes('<h4>레플리카</h4>'));
@@ -300,6 +322,7 @@ vm.runInNewContext(code+`
  assert.ok(replicaCard.includes('신체를 가지게 될 뿐이다.'));
  actions['race-primary']('elf');
  assert.ok(investigatorCard().includes('<dt>종족</dt><dd>오토마타</dd>'));
+ assert.equal(save.build.thoughtLimit,save.build.thoughtLimitBase+30);
  assert.ok(!replicaPanel().includes('<h4>레플리카</h4>'));
  project.raceDetails={automaton:{traits:[{name:'기계 특성 1'},{name:'기계 특성 2'},{name:'기계 특성 3'},{name:'숨겨진 기계 특성',description:'4번 특성 설명'}]},human:{traits:[{name:'공개되면 안 되는 휴먼 특성'}],divisions:[{id:'test-human',name:'휴먼 분화'}]},elf:{traits:[{name:'공개되면 안 되는 엘프 특성'}]}};
  save=normalizePlayer({...save,build:{...save.build,race:{primary:'human',mixed:true,secondary:'elf'}}});actions['custom-section']('race');assert.ok($('#modalBody').innerHTML.includes('공개되면 안 되는 휴먼 특성'));actions['race-primary']('automaton');assert.equal(save.build.race.primary,'automaton');assert.equal(save.build.race.secondary,'human');assert.ok($('#modalBody').innerHTML.includes('<strong>레플리카</strong>'));assert.ok(!$('#modalBody').innerHTML.includes('<strong>혼혈</strong>'));assert.ok($('#modalBody').innerHTML.includes('숨겨진 기계 특성'));assert.ok($('#modalBody').innerHTML.includes('4번 특성 설명'));assert.ok(!$('#modalBody').innerHTML.includes('공개되면 안 되는 휴먼 특성'));assert.ok($('#modalBody').innerHTML.includes('분화: 휴먼'));assert.equal(($('#modalBody').innerHTML.match(/class="race-trait-card"/g)||[]).length,3);assert.equal(($('#modalBody').innerHTML.match(/race-replica-trait/g)||[]).length,1);

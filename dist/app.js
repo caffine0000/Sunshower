@@ -1,4 +1,4 @@
-import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,allowsMultipleRaceDivisions,selectedRaceDivisionIds,normalizeRace,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift,identityTraits,identityTraitLevels,IMMORTAL_THOUGHT_COST,identityStatDefinitions,IDENTITY_STAT_MIN,IDENTITY_STAT_MAX,IDENTITY_STAT_STEP_COST} from './engine.mjs';
+import {fresh,validate,replay,encode,decode,normalizePlayer,encodePlayer,decodePlayer,buildingStages,buildingPosition,moveBuilding,completeBuilding,chooseBuildingGender,formatPlayerText,chooseBuildingBranch,normalizeProfile,raceTypes,raceDivisionDetails,allowsMultipleRaceDivisions,selectedRaceDivisionIds,raceDisplay,selectRace,thoughtLimitMaximum,grantThoughtGift,identityTraits,identityTraitLevels,raceModifierThoughtCost,raceDivisionThoughtCost,identityStatDefinitions,IDENTITY_STAT_MIN,IDENTITY_STAT_MAX,IDENTITY_STAT_STEP_COST} from './engine.mjs';
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),uid=()=>crypto.randomUUID(),clone=x=>JSON.parse(JSON.stringify(x));
 const displayText=value=>esc(formatPlayerText(value,save?.build));
 const APP_VERSION='0.1.0';
@@ -557,9 +557,9 @@ function playerUI(state){const tabs=investigatorTabs.map(tab=>[tab.id,tab.label]
 function cutsceneProse(stage){const raw=String(stage.body??''),mark=stage.emphasis;if(!mark||!Number.isInteger(mark.start)||!Number.isInteger(mark.length)||mark.start<0||mark.length<1||mark.start+mark.length>raw.length)return displayText(raw);return displayText(raw.slice(0,mark.start))+'<strong class="narrative-emphasis">'+displayText(raw.slice(mark.start,mark.start+mark.length))+'</strong>'+displayText(raw.slice(mark.start+mark.length))}
 const customCategories=[{id:'profile',name:'프로필',english:'Profile'},{id:'race',name:'종족',english:'Race'},{id:'identity',name:'특성',english:'Identity'},{id:'authorization',name:'권한',english:'Authorization'},{id:'privilege',name:'특수',english:'Privilege'}];
 const thoughtUsageLabel='사고 용량';
-function choiceThoughtCost(cost){
- if(cost===0)return '';
- const label=cost>0?'사고 요구량':'사고 복원량';
+function choiceThoughtCost(cost,showZero=false){
+ if(cost==null||(cost===0&&!showZero))return '';
+ const label=cost<0?'사고 복원량':'사고 요구량';
  return `<small class="choice-thought-cost">${label}: ${Math.abs(cost)}</small>`;
 }
 function buildingPointsContents(exceeded){
@@ -672,7 +672,10 @@ function handleIdentityStatInput(input){
  input.setAttribute('aria-valuetext',level+'단계 · '+label);
  input.parentElement.style.setProperty('--identity-stat-level',String(level));
  const rankOutput=$('#identity-stat-rank-'+id),gradeOutput=$('#identity-stat-grade-'+id);
- if(rankOutput)rankOutput.textContent=rank;
+ if(rankOutput){
+  rankOutput.textContent=rank;
+  rankOutput.classList.toggle('identity-stat-rank-outlier',level===IDENTITY_STAT_MAX);
+ }
  if(gradeOutput)gradeOutput.textContent=label;
  refreshBuildingPoints();
  return true;
@@ -701,7 +704,7 @@ function commitRace(raw){
  const divisionRows='#modal [data-race-division-list]';
  const divisionOffsets=new Map(Array.from(document.querySelectorAll(divisionRows),
   row=>[row.dataset.raceDivisionList,row.scrollLeft]));
- save=normalizePlayer({...save,build:{...save.build,race:normalizeRace(raw)}});
+ save=normalizePlayer({...save,build:{...save.build,race:raw,thoughtLimit:undefined}});
  persist();
  customizationPopup('race',!wasImmortal&&save.build.race.immortal);
  refreshBuildingPoints();
@@ -899,10 +902,10 @@ function raceDivisionTitle(item){
   :'';
  return `<strong>${echo}<span>${esc(item.name)}</span></strong>`;
 }
-function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions,divisionNote}=raceDefinition(id),selectedIds=selectedRaceDivisionIds(save.build.race,id),selectedDivisions=divisions.filter(item=>selectedIds.includes(item.id));return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?raceTraitsUI(id,traits,selectedDivisions):''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>추가 특성</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options" data-race-division-list="${esc(id)}">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${selectedIds.includes(item.id)}">${raceDivisionTitle(item)}${item.description?`<small>${esc(item.description)}</small>`:''}</button>`).join('')}</div>`:`<p>${esc(divisionNote||'세부 분류가 아직 등록되지 않았습니다.')}</p>`}</section></section>`}
+function raceDetailsUI(id,showTraits=true,revealFourth=false){const race=raceTypes.find(r=>r.id===id),{description,traits,divisions,divisionNote}=raceDefinition(id),selectedIds=selectedRaceDivisionIds(save.build.race,id),selectedDivisions=divisions.filter(item=>selectedIds.includes(item.id));return `<section class="race-reveal" aria-label="${race.name} ${showTraits?'고유 특성':'분화'}"><h3>${race.name}</h3>${showTraits&&description?`<div class="race-introduction"><span class="race-introduction-echo" aria-hidden="true">${geometricGlyphs(raceEnglishNames[id]).replace('<svg ','<svg preserveAspectRatio="xMinYMin meet" ')}</span><p class="race-description">${raceDescriptionMarkup(id,description)}</p></div>`:''}${showTraits?raceTraitsUI(id,traits,selectedDivisions):''}${revealFourth?`<article class="race-trait-card race-replica-trait" style="--trait-order:3"><small>추가 특성</small><h4>${esc(traits[3]?.name||'미등록')}</h4><p>${esc(traits[3]?.description||'특성 내용이 아직 등록되지 않았습니다.')}</p></article>`:''}<section class="race-division"><h4>분화: ${race.name}</h4>${divisions.length?`<div class="race-division-options" data-race-division-list="${esc(id)}">${divisions.map(item=>`<button type="button" data-action="race-division" data-id="${esc(JSON.stringify([id,item.id]))}" aria-pressed="${selectedIds.includes(item.id)}">${raceDivisionTitle(item)}${item.description?`<small>${esc(item.description)}</small>`:''}${choiceThoughtCost(raceDivisionThoughtCost(id,item.id),true)}</button>`).join('')}</div>`:`<p>${esc(divisionNote||'세부 분류가 아직 등록되지 않았습니다.')}</p>`}</section></section>`}
 // Original white modifier symbols share the theme's monochrome polarity.
 const raceModifierArtwork={immortal:'assets/race-modifier-immortal.png',mixed:'assets/race-modifier-hybrid.png'};
-function raceModifierButton(id,name,english,selected){const art=raceModifierArtwork[id];return `<button type="button" data-action="race-option" data-id="${id}" aria-pressed="${selected}"><span class="race-modifier-icon" aria-hidden="true">${art?`<img src="${esc(art)}" alt="" width="64" height="64" decoding="async">`:''}</span><span class="race-modifier-label"><span class="race-modifier-echo" aria-hidden="true">${geometricGlyphs(english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><strong>${name}</strong>${id==='immortal'?choiceThoughtCost(IMMORTAL_THOUGHT_COST):''}</span></button>`}
+function raceModifierButton(id,name,english,selected,primary){const art=raceModifierArtwork[id];return `<button type="button" data-action="race-option" data-id="${id}" aria-pressed="${selected}"><span class="race-modifier-icon" aria-hidden="true">${art?`<img src="${esc(art)}" alt="" width="64" height="64" decoding="async">`:''}</span><span class="race-modifier-label"><span class="race-modifier-echo" aria-hidden="true">${geometricGlyphs(english).replace('<svg ','<svg preserveAspectRatio="xMinYMid" ')}</span><strong>${name}</strong>${choiceThoughtCost(raceModifierThoughtCost(id,primary))}</span></button>`}
 const immortalEnglishName='Aeon';
 function immortalDetailsUI(reveal){
  return `<section class="immortal-details ${reveal?'immortal-appearing':''}" aria-labelledby="immortal-title">
@@ -915,7 +918,7 @@ function immortalDetailsUI(reveal){
   </div>
  </section>`;
 }
-function raceEditorUI(revealImmortal=false){const r=save.build.race,automaton=r.primary==='automaton',replica=automaton&&r.mixed&&!!r.secondary;return `<div class="race-editor"><div class="race-primary-grid" role="group" aria-label="기본 종족 선택">${raceTypes.map(race=>raceChoice(race)).join('')}</div><div class="race-modifiers" role="group" aria-label="추가 종족 분류">${raceModifierButton('immortal','영생종',immortalEnglishName,r.immortal)}${raceModifierButton('mixed',automaton?'레플리카':'혼혈',automaton?'Replica':'Hybrid',r.mixed)}</div><div class="race-details" aria-live="polite">${r.immortal?immortalDetailsUI(revealImmortal):''}${r.primary?raceDetailsUI(r.primary,true,replica):''}${r.secondary?raceDetailsUI(r.secondary,!replica):''}</div></div>`}
+function raceEditorUI(revealImmortal=false){const r=save.build.race,automaton=r.primary==='automaton',replica=automaton&&r.mixed&&!!r.secondary;return `<div class="race-editor"><div class="race-primary-grid" role="group" aria-label="기본 종족 선택">${raceTypes.map(race=>raceChoice(race)).join('')}</div><div class="race-modifiers" role="group" aria-label="추가 종족 분류">${raceModifierButton('immortal','영생종',immortalEnglishName,r.immortal,r.primary)}${raceModifierButton('mixed',automaton?'레플리카':'혼혈',automaton?'Replica':'Hybrid',r.mixed,r.primary)}</div><div class="race-details" aria-live="polite">${r.immortal?immortalDetailsUI(revealImmortal):''}${r.primary?raceDetailsUI(r.primary,true,replica):''}${r.secondary?raceDetailsUI(r.secondary,!replica):''}</div></div>`}
 function portraitUI(){const image=save.build.profile.portrait;return `<div class="profile-photo-tools"><div class="character-portrait-actions"><button type="button" data-action="upload-portrait" ${portraitProcessing?'disabled':''}>${portraitProcessing?'처리 중…':image?'증명사진 교체':'수사관 프로필 이미지 업로드'}</button>${image||portraitProcessing?`<button type="button" class="quiet" data-action="clear-portrait">${portraitProcessing?'업로드 취소':'이미지 삭제'}</button>`:''}</div><small>PNG · JPG · WebP / 8MB 이하</small><input type="file" id="characterPortraitFile" accept="image/png,image/jpeg,image/webp" hidden></div>`}
 function storePortrait(portrait){const candidate=normalizePlayer({...save,build:{...save.build,profile:{...save.build.profile,portrait}}});if(!put(playerSaveKey(),candidate))throw Error('이미지를 저장하지 못했어요. 더 작은 이미지로 다시 시도해 주세요.');save=candidate}
 async function compactCharacterImage(file){if(!['image/png','image/jpeg','image/webp'].includes(file.type))throw Error('PNG, JPG, WebP 이미지를 선택해 주세요.');if(file.size>8*1024*1024)throw Error('이미지는 8MB 이하로 올려 주세요.');let bitmap;try{bitmap=await createImageBitmap(file)}catch{throw Error('이미지를 읽지 못했어요. 다른 파일을 선택해 주세요.')}try{if(!bitmap.width||!bitmap.height||bitmap.width*bitmap.height>24000000)throw Error('이미지 해상도가 너무 큽니다. 2400만 화소 이하로 줄여 주세요.');let scale=Math.min(1,1024/Math.max(bitmap.width,bitmap.height));for(let attempt=0;attempt<6;attempt++){const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));const context=canvas.getContext('2d');if(!context)throw Error('이미지를 처리하지 못했어요.');context.drawImage(bitmap,0,0,canvas.width,canvas.height);const data=canvas.toDataURL('image/webp',.82);if(data.length<=400000&&/^data:image\/(png|jpeg|webp);base64,/.test(data))return data;scale*=.72}throw Error('이미지를 더 작게 줄인 뒤 다시 올려 주세요.')}finally{bitmap.close()}}
@@ -950,7 +953,7 @@ function identityStatsUI(){
      <input type="range" id="identity-stat-${id}" data-identity-stat="${id}" min="${IDENTITY_STAT_MIN}" max="${IDENTITY_STAT_MAX}" step="1" value="${current}" aria-valuetext="${current}단계 · ${label}">
      <span class="identity-stat-segments" aria-hidden="true">${segments}</span>
     </div>
-    <output for="identity-stat-${id}"><b id="identity-stat-rank-${id}" class="identity-stat-rank">${rank}</b><span id="identity-stat-grade-${id}">${label}</span></output>
+    <output for="identity-stat-${id}"><b id="identity-stat-rank-${id}" class="identity-stat-rank${current===IDENTITY_STAT_MAX?' identity-stat-rank-outlier':''}">${rank}</b><span id="identity-stat-grade-${id}">${label}</span></output>
    </div>`;
   }).join('')}</div>
  </section>`;

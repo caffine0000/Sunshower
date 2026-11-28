@@ -15,7 +15,15 @@ export function normalizeProfile(raw={}){if(!raw||typeof raw!=='object'||Array.i
 export const THOUGHT_LIMIT_DEFAULT_MAX=250;
 export const THOUGHT_LIMIT_GIFT_BONUS=50;
 export function thoughtLimitMaximum(build){return THOUGHT_LIMIT_DEFAULT_MAX+(build?.thoughtGiftReceived===true?THOUGHT_LIMIT_GIFT_BONUS:0)}
-export const IMMORTAL_THOUGHT_COST=251;
+export const IMMORTAL_THOUGHT_COST=100;
+const LEGACY_IMMORTAL_THOUGHT_COST=251;
+const HYBRID_THOUGHT_COST=50;
+const REPLICA_THOUGHT_COST=30;
+export function raceModifierThoughtCost(option,primary){
+ if(option==='immortal')return IMMORTAL_THOUGHT_COST;
+ if(option==='mixed')return primary==='automaton'?REPLICA_THOUGHT_COST:HYBRID_THOUGHT_COST;
+ return 0;
+}
 export const IDENTITY_STAT_MIN=1;
 export const IDENTITY_STAT_MAX=6;
 export const IDENTITY_STAT_STEP_COST=20;
@@ -45,6 +53,7 @@ const elfDivisions=[
   id:'modern',
   name:'모던',
   englishName:'Modern',
+  thoughtCost:30,
   description:'어떤 엘프들은 돌벽에, 아스팔트에 적응했다.',
   traitOverrides:{
    1:{tone:'altered',name:'제육감',description:"모던 엘프들은 특유의 생명 감지는 약화되었지만 미약하게나마 시선 밖의 모든 것을 감지할 수 있다. 어디까지나 '미약한'이기에 감지 그 이상은 힘들다."},
@@ -55,6 +64,7 @@ const elfDivisions=[
   id:'snowfield',
   name:'설원',
   englishName:'Frost',
+  thoughtCost:30,
   description:'어떤 엘프들은 생명 없는 곳에서 살아갔다.',
   traitOverrides:{
    1:{tone:'faded',description:'생명 없는 곳으로 이민간 엘프들의 후손은 점차 식생을 감지하는 힘이 약해져갔다. 사냥을 하는데 필요한 정도까지 약해진 이 감각은 움직이지 않는 것의 위치는 도저히 알 수 없다.'},
@@ -69,6 +79,7 @@ export const raceDivisionDetails={
    id:'mythic-beast',
    name:'환수인',
    englishName:'Cryptid',
+   thoughtCost:70,
    description:'어떤 수인들은 조금 이질적이다.',
    profileName:'환수인',
    traitOverrides:{
@@ -80,6 +91,7 @@ export const raceDivisionDetails={
    id:'chimera',
    name:'키메라',
    englishName:'Chimera',
+   thoughtCost:50,
    description:'어떤 수인들은 여러 본질을 보유했다.',
    extraTraits:[{
     name:'혼합된 형질',
@@ -92,6 +104,7 @@ export const raceDivisionDetails={
    id:'akasha',
    name:'아카샤',
    englishName:'akasha',
+   thoughtCost:30,
    description:'어떤 이들은 날개 없이 고요하다.',
    traitOverrides:{
     0:{tone:'altered',name:'광륜과 권익',description:"아카샤라는 존재는 몇몇 지역의 이형 천족으로 날개가 아닌 '권익'이라는 또 다른 광륜을 등쪽에 가진 이들이다."}
@@ -101,6 +114,7 @@ export const raceDivisionDetails={
    id:'nymph',
    name:'님프',
    englishName:'Nymphe',
+   thoughtCost:30,
    description:'어떤 천족들은 신비한 흔적을 남겼다.',
    traitOverrides:{
     0:{tone:'altered',name:'요정의 날개',description:'광륜은 없고 곤충계 수인의 날개를 닮은 것을 지닌 이 천족들의 날개에는 위조가 불가능한 수준으로 복잡한 미세 문양을 가지고 있다. 미적으로도 기하학적으로도 흥미롭다.'}
@@ -182,6 +196,7 @@ export const raceDivisionDetails={
   id:'modern',
   name:'모던',
   englishName:'Modern',
+  thoughtCost:50,
   description:'어떤 정령들은 사물에 애착을 가지기 시작했다.',
   extraTraits:[{
    name:'귀속',
@@ -192,6 +207,7 @@ export const raceDivisionDetails={
   id:'sky',
   name:'천공',
   englishName:'Stella',
+  thoughtCost:50,
   description:'어떤 드워프들은 대지보다 하늘을 멍하니 쳐다봤다.',
   extraTraits:[{
    name:'천체 공명',
@@ -199,6 +215,10 @@ export const raceDivisionDetails={
   }]
  }]
 };
+export function raceDivisionThoughtCost(raceId,divisionId){
+ if(raceId==='demon')return 0;
+ return raceDivisionDetails[raceId]?.find(division=>division.id===divisionId)?.thoughtCost;
+}
 export const allowsMultipleRaceDivisions=id=>id==='beastkin';
 export function selectedRaceDivisionIds(race,id){
  const saved=race.divisions[id];
@@ -240,6 +260,14 @@ export function raceDisplay(raw){
  return names.length?names.join(separator)+(r.immortal?' / 영생종':''):'';
 }
 
+function raceThoughtCost(race){
+ const immortal=race.immortal?raceModifierThoughtCost('immortal',race.primary):0;
+ const hybrid=race.mixed?raceModifierThoughtCost('mixed',race.primary):0;
+ const divisions=[race.primary,race.secondary].filter(Boolean).reduce((total,id)=>
+  total+selectedRaceDivisionIds(race,id).reduce((sum,divisionId)=>sum+(raceDivisionThoughtCost(id,divisionId)??0),0),0);
+ return immortal+hybrid+divisions;
+}
+
 function normalizeIdentityTraits(raw={}){
  if(!raw||typeof raw!=='object'||Array.isArray(raw)||Object.keys(raw).length>300||
   Object.values(raw).some(level=>!identityTraitLevels.includes(level)))throw Error('특성 선택 기록을 확인해 주세요.');
@@ -276,11 +304,12 @@ export function normalizePlayer(raw={}) {
  const statCost=Object.values(identityStats).reduce((total,level)=>total+(level-IDENTITY_STAT_MIN)*IDENTITY_STAT_STEP_COST,0);
  const customizationCost=traitCost+statCost;
  const storedThought=b.thoughtLimit??0,thoughtLimitBase=b.thoughtLimitBase??storedThought;
- const maxStoredThought=1000000+IMMORTAL_THOUGHT_COST+Math.max(0,customizationCost);
+ const raceCost=raceThoughtCost(race);
+ const maxStoredThought=1000000+Math.max(LEGACY_IMMORTAL_THOUGHT_COST,raceCost)+Math.max(0,customizationCost);
  if(!Number.isInteger(storedThought)||storedThought<0||storedThought>maxStoredThought||!Number.isInteger(thoughtLimitBase)||thoughtLimitBase<0||thoughtLimitBase>1000000)throw Error('사고 한계 수치를 확인해 주세요.');
  const thoughtGiftReceived=b.thoughtGiftReceived??false;
  if(typeof thoughtGiftReceived!=='boolean')throw Error('사고 한계 확장 기록을 확인해 주세요.');
- const thoughtLimit=Math.max(0,thoughtLimitBase+(race.immortal?IMMORTAL_THOUGHT_COST:0)+customizationCost);
+ const thoughtLimit=Math.max(0,thoughtLimitBase+raceCost+customizationCost);
  if(race.primary)profile.race=raceDisplay(race);
  return {v:2,history:history.map(h=>({choice:h.choice})),build:{name:b.name,gender,profile,race,traitChoices,identityStats,thoughtLimitBase,thoughtLimit,thoughtGiftReceived,stats:{...b.stats},completed:b.completed,cutscene:{scene:cut.scene,choices:{...cutChoices}}},bonds:list('bonds'),lore:list('lore'),events:list('events'),perks:list('perks'),collectibles};
 }
