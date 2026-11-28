@@ -285,9 +285,9 @@ function appendTouchImpact(host,x,y,variant,markup,lifetime=1150){
  if(lifetime)setTimeout(()=>fx.remove(),lifetime);
  return fx;
 }
-function spawnRainImpact(host,x,y,variant,details=''){
+function spawnRainImpact(host,x,y,variant,details='',lifetime){
  const rings='<i class="touch-ring touch-ring-one"></i><i class="touch-ring touch-ring-two"></i><i class="touch-ring touch-ring-three"></i>';
- return appendTouchImpact(host,x,y,variant,rings+details);
+ return appendTouchImpact(host,x,y,variant,rings+details,lifetime);
 }
 function touchImpactOrigin(event){
  const dialog=event.target?.closest?.('dialog[open]'),rect=dialog?.getBoundingClientRect();
@@ -359,14 +359,31 @@ function abyssTouchImpact(event){
 function lastRadioTouchImpact(event){
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
  const dial='<span class="radio-touch-signal">'+radioWave()+'</span>';
- const paw='<i class="radio-paw radio-touch-paw"></i>';
  const origin=touchImpactOrigin(event);
- spawnRainImpact(...origin,'radio-touch',paw+dial);
- let signal;
+ const signal=spawnRainImpact(...origin,'radio-touch',dial,0);
+ const fadeTimer=setTimeout(()=>signal.remove(),1150);
+ const scatterPaws=()=>{
+  const startAngle=Math.random()*Math.PI*2;
+  const paws=Array.from({length:5},(_,i)=>{
+   const angle=startAngle+i*2.4+Math.random()*.4;
+   const distance=20+i*7+Math.random()*12;
+   const dx=Math.round(Math.cos(angle)*distance),dy=Math.round(Math.sin(angle)*distance);
+   const turn=Math.round(angle*180/Math.PI+90);
+   return `<i class="radio-paw radio-touch-paw" style="--paw-x:${dx}px;--paw-y:${dy}px;--paw-turn:${turn}deg;--paw-size:${10+i%3*2}px;--paw-delay:${i*72}ms"></i>`;
+  }).join('');
+  appendTouchImpact(...origin,'radio-touch-sprinkle',paws,1000);
+ };
+ scatterPaws();
+ let pawTimer;
  return {
-  hold(){signal=appendTouchImpact(...origin,'radio-touch radio-touch-held touch-impact-persistent',dial,0)},
+  hold(){
+   clearTimeout(fadeTimer);
+   signal.classList.add('radio-touch-held','touch-impact-persistent');
+   pawTimer=setInterval(scatterPaws,460);
+  },
   release(){
-   if(!signal)return;
+   if(!signal.classList.contains('radio-touch-held'))return;
+   clearInterval(pawTimer);
    signal.classList.remove('radio-touch-held','touch-impact-persistent');
    signal.classList.add('radio-touch-released');
    setTimeout(()=>signal.remove(),220);

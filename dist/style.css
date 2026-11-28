@@ -1764,12 +1764,12 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .radio-touch .touch-ring-two{--ring-ink:#ffe3b1}
 .radio-touch .touch-ring-three{--ring-ink:#d6c8ff}
 .radio-touch-paw{
- left:-16px;
- top:-17px;
- width:32px;
- color:#ffe1b0;
- filter:drop-shadow(0 0 6px #ffe2b9);
- animation:radio-paw-stamp .75s cubic-bezier(.16,.62,.3,1) both;
+ left:0;
+ top:0;
+ width:var(--paw-size);
+ color:#ffd173;
+ filter:drop-shadow(0 0 4px #ffbd54);
+ animation:radio-paw-stamp .65s var(--paw-delay) cubic-bezier(.16,.62,.3,1) both;
 }
 .radio-touch-signal{
  width:min(148px,33vw);
@@ -1780,14 +1780,13 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  animation:radio-tap-signal .8s .04s ease-out both;
 }
 .radio-touch-signal .radio-wave{position:relative}
-.radio-touch:not(.radio-touch-held):not(.radio-touch-released) .radio-touch-signal{top:19px}
 .radio-touch-held .radio-touch-signal,.radio-touch-released .radio-touch-signal{animation:none}
-.radio-touch-held .radio-wave-trace{animation:radio-signal .96s linear infinite}
+.radio-touch:is(.radio-touch-held,.radio-touch-released) .radio-wave-trace{animation:radio-signal .96s linear infinite}
 .radio-touch-released .radio-touch-signal{animation:radio-release .22s ease-out both}
 @keyframes radio-paw-stamp{
- 0%{opacity:0;transform:scale(.45) rotate(-21deg)}
- 20%{opacity:1;transform:scale(1) rotate(-13deg)}
- 100%{opacity:0;transform:translateY(-11px) scale(1.16) rotate(-9deg)}
+ 0%{opacity:0;transform:translate(-50%,-50%) translate(calc(var(--paw-x)*.3),calc(var(--paw-y)*.3)) rotate(var(--paw-turn)) scale(.4)}
+ 28%{opacity:.92}
+ 100%{opacity:0;transform:translate(-50%,-50%) translate(var(--paw-x),var(--paw-y)) rotate(var(--paw-turn)) scale(1)}
 }
 @keyframes radio-tap-signal{
  0%{opacity:0;clip-path:inset(0 100% 0 0)}
