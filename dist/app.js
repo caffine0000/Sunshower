@@ -317,18 +317,26 @@ function lifeTouchImpact(event){
 function abyssTouchImpact(event){
  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
  const origin=touchImpactOrigin(event);
- if(event.held){
-  const petals=Array.from({length:6},(_,index)=>`<b style="--petal-turn:${index*60}deg;--petal-delay:${index*22}ms"></b>`).join('');
-  const flower=appendTouchImpact(...origin,'abyss-touch',`<i class="abyss-flower">${petals}<em></em></i>`);
-  flower.style.setProperty('--bloom-drift',Math.round(Math.random()*42-21)+'px');
-  flower.style.setProperty('--bloom-turn',Math.round(Math.random()*100-50)+'deg');
-  return;
- }
  const stars=Array.from({length:5},(_,i)=>{
   const angle=i*2*Math.PI/5+Math.random()*.35,travel=24+Math.random()*26;
   return `<i class="abyss-touch-star" style="--dx:${Math.round(Math.cos(angle)*travel)}px;--dy:${Math.round(Math.sin(angle)*travel)}px;--delay:${i*23}ms"></i>`;
  }).join('');
  spawnRainImpact(...origin,'abyss-touch',stars);
+ let timer;
+ return {
+  hold(){
+   const petals=(layer,offset,delay)=>Array.from({length:5},(_,index)=>
+    `<b class="abyss-petal ${layer}" style="--petal-turn:${offset+index*72}deg;--petal-delay:${delay+index*16}ms"></b>`
+   ).join('');
+   const flower=`<i class="abyss-flower">${petals('outer',0,0)+petals('inner',36,88)}<em></em></i>`;
+   const bloom=()=>{
+    appendTouchImpact(...origin,'abyss-touch',flower);
+    timer=setTimeout(bloom,900);
+   };
+   bloom();
+  },
+  release(){clearTimeout(timer)}
+ };
 }
 const inlineRippleActions=new Set([
  'race-primary','race-option','race-division','identity-trait','card-theme','display-collectible','set-theme'

@@ -1520,40 +1520,70 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.38)}
 }
 .abyss-flower{
- left:-33px;
- top:-33px;
- width:66px;
- height:66px;
- filter:drop-shadow(0 0 8px #e4c8ff91);
- animation:abyss-flower-rise 1.06s cubic-bezier(.21,.62,.28,1) both;
+ left:-47px;
+ top:-47px;
+ width:94px;
+ height:94px;
+ filter:drop-shadow(0 0 8px #dcc7ff8c);
+ animation:abyss-flower-bloom 1.08s ease-out both;
 }
-.abyss-flower b{
+.abyss-flower::before{
+ content:"";
+ position:absolute;
+ inset:-6px;
+ border-radius:50%;
+ background:radial-gradient(circle,#fff5d63b,#cbd2ff38 34%,#dba6ff29 52%,transparent 71%);
+}
+.abyss-petal{
  top:50%;
  left:50%;
- width:13px;
- height:24px;
- margin:-24px 0 0 -6.5px;
+ width:32px;
+ height:41px;
+ margin:-41px 0 0 -16px;
  transform-origin:50% 100%;
- border:1px solid #f4e7ffc7;
- border-radius:65% 65% 42% 42% / 84% 84% 19% 19%;
- background:linear-gradient(0deg,#82b9f04d,#d0a7e3aa 54%,#ffe0f5e6);
- animation:abyss-petal-open .61s var(--petal-delay) ease-out both;
+ border:1px solid #f6e9ffac;
+ border-radius:52% 48% 46% 54% / 56% 52% 48% 44%;
+ background:radial-gradient(ellipse at 50% 22%,#fff4ffdc,transparent 58%),
+  linear-gradient(0deg,#7a6eb8 2%,#b299e3e8 42%,#e9c7f9ef 81%,#f9e7ffe7);
+ box-shadow:inset 0 -5px 10px #6453984d;
+ animation:abyss-petal-open .48s var(--petal-delay) cubic-bezier(.18,.65,.3,1) both;
 }
-.abyss-flower b:nth-child(even){background:linear-gradient(0deg,#a7a6f24d,#b4d6f7ac 58%,#f3e7ffe8)}
-.abyss-flower em{
- inset:calc(50% - 5px);
+.abyss-petal::after{
+ content:"";
+ position:absolute;
+ inset:9px 47% 6px;
  border-radius:50%;
- background:#fff1d9;
- box-shadow:0 0 11px #ffd8f5;
+ background:linear-gradient(0deg,#e8d6fa88,transparent);
+}
+.abyss-petal.outer:nth-child(even){
+ background:radial-gradient(ellipse at 50% 22%,#f8f7ffde,transparent 58%),
+  linear-gradient(0deg,#696eaf 2%,#a7a6ecee 44%,#c5d4fbf2 83%,#f2edfff0);
+}
+.abyss-petal.inner{
+ width:20px;
+ height:26px;
+ margin:-26px 0 0 -10px;
+ background:linear-gradient(0deg,#a66bbdbf,#e0b1e8f6 48%,#fff0fff8);
+}
+.abyss-flower em{
+ inset:calc(50% - 7px);
+ border-radius:50%;
+ background:
+  radial-gradient(circle at 35% 34%,#fffdf2 0 10%,transparent 12%),
+  radial-gradient(circle at 63% 33%,#fff9da 0 8%,transparent 10%),
+  radial-gradient(circle at 49% 63%,#fff6d3 0 11%,transparent 13%),
+  radial-gradient(circle,#ffe9a4 0 32%,#edac9c 70%,#b671a8 100%);
+ box-shadow:0 0 10px #ffe5bde0;
 }
 @keyframes abyss-petal-open{
- 0%{opacity:0;transform:rotate(var(--petal-turn)) rotate(-26deg) scale(.15)}
- 46%{opacity:.9}
+ 0%{opacity:0;transform:rotate(var(--petal-turn)) scale(.13)}
+ 47%{opacity:1}
  100%{opacity:1;transform:rotate(var(--petal-turn)) scale(1)}
 }
-@keyframes abyss-flower-rise{
- 0%{opacity:0;transform:rotate(var(--bloom-turn)) scale(.26)}
- 25%{opacity:.94}
- 65%{opacity:.77}
- 100%{opacity:0;transform:translate(var(--bloom-drift),-68px) rotate(calc(var(--bloom-turn) + 25deg)) scale(1.14)}
+@keyframes abyss-flower-bloom{
+ 0%{opacity:0;transform:scale(.16)}
+ 22%{opacity:1}
+ 53%{opacity:.96;transform:scale(1)}
+ 71%{opacity:.65}
+ 100%{opacity:0;transform:scale(1.09)}
 }
