@@ -445,7 +445,6 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .theme-card-city{position:absolute;inset:0;background:linear-gradient(90deg,#081d2fe8 0%,#102e3bc9 36%,#244c5640 76%),url('assets/curtain-city.svg') 70% 53%/cover;opacity:.95}
 .theme-card-glass{position:absolute;inset:0;background:linear-gradient(112deg,transparent 0 47%,#d4e5dc14 47.2% 49%,transparent 49.2% 76%,#d4e5dc12 76.2% 76.6%,transparent 76.8%),linear-gradient(0deg,#0b202b99,transparent 70%);box-shadow:inset 0 1px 0 #e7f5ea1f,inset 0 -1px 0 #9fbdba1a}
 .theme-card-frame{position:absolute;inset:-15px 19% -15px auto;width:6px;background:linear-gradient(90deg,#061a26cc,#75968c88,#0b2331dd);box-shadow:8px 0 18px #051c2866;transform:rotate(7deg)}
-.theme-card-ornament{position:absolute;right:24px;top:15px;font:64px/1 'Cormorant Garamond',serif;color:#d9e6d926;transform:rotate(-8deg)}
 .theme-card-copy{position:relative;display:block;text-shadow:0 2px 7px #031721cc}.theme-card-copy strong{display:block;font-size:19px;font-weight:400;letter-spacing:-.7px;line-height:1.6;word-break:keep-all}.theme-card-copy .theme-card-kicker{display:block;font:7px/1.5 'Noto Sans KR',sans-serif;letter-spacing:1.8px;color:#c4d7d2a6;margin-bottom:9px}.theme-card-copy .theme-card-note{display:block;font:10px/1.7 'Noto Sans KR',sans-serif;color:#d0e0d5b3;margin-top:5px}
 .theme-card-status{position:absolute;right:12px;bottom:12px;padding:4px 7px;border:1px solid #c0dbce30;background:#0a24316b;border-radius:3px;font:9px/1.4 'Noto Sans KR',sans-serif;color:#dde9df}.theme-card-status>span{margin-right:2px}
 .theme-namecard:disabled{opacity:.45;filter:grayscale(.75)}.theme-namecard,.theme-namecard *,.theme-namecard::before,.theme-namecard::after,.theme-namecard *::before,.theme-namecard *::after{animation:none!important;transition:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
@@ -619,8 +618,7 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 }
 .theme-namecard[data-preview="acrylic-sky"] .theme-card-art{background:var(--acrylic-butter)}
 .theme-namecard[data-preview="acrylic-sky"] .theme-card-glass,
-.theme-namecard[data-preview="acrylic-sky"] .theme-card-frame,
-.theme-namecard[data-preview="acrylic-sky"] .theme-card-ornament{display:none}
+.theme-namecard[data-preview="acrylic-sky"] .theme-card-frame{display:none}
 .theme-namecard[data-preview="acrylic-sky"]{color:#432a36;border-color:#d2a095}
 .theme-namecard[data-preview="acrylic-sky"]:disabled{opacity:.82;filter:none}
 .theme-namecard[data-preview="acrylic-sky"] .theme-card-copy{text-shadow:none}
@@ -1095,9 +1093,9 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .choice-impact-negative{--choice-ripple:var(--choice-negative);--choice-ripple-edge:var(--choice-negative-edge)}
 .choice-impact .touch-ring{--ring-ink:color-mix(in srgb,currentColor 61%,var(--choice-ripple-edge))}
 .rain-touch{--impact-ring-size:126px}
-:is(.choice-impact,.rain-touch) .touch-ring-one{--ring-size:var(--impact-ring-size,230px);--ring-delay:0s}
-:is(.choice-impact,.rain-touch) .touch-ring-two{--ring-size:calc(var(--impact-ring-size,230px) * .89);--ring-delay:.09s}
-:is(.choice-impact,.rain-touch) .touch-ring-three{--ring-size:calc(var(--impact-ring-size,230px) * .78);--ring-delay:.18s}
+:is(.choice-impact,.rain-touch,.abyss-touch) .touch-ring-one{--ring-size:var(--impact-ring-size,230px);--ring-delay:0s}
+:is(.choice-impact,.rain-touch,.abyss-touch) .touch-ring-two{--ring-size:calc(var(--impact-ring-size,230px) * .89);--ring-delay:.09s}
+:is(.choice-impact,.rain-touch,.abyss-touch) .touch-ring-three{--ring-size:calc(var(--impact-ring-size,230px) * .78);--ring-delay:.18s}
 
 .immortal-details{
  position:relative;
@@ -1255,7 +1253,6 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 }
 .theme-namecard[data-preview="life-continues"] .theme-card-glass,
 .theme-namecard[data-preview="life-continues"] .theme-card-frame{display:none}
-.theme-namecard[data-preview="life-continues"] .theme-card-ornament{color:#fac1b3}
 .theme-namecard[data-preview="life-continues"] :is(.theme-card-kicker,.theme-card-condition,.theme-card-note){color:#c2e3ce}
 .theme-namecard[data-preview="life-continues"] .theme-card-status{background:#182d23db;border-color:#91c4a470;color:#d9f5e1}
 [data-theme="life-continues"] :is(.player-panel,.player-panel.cutscene-panel,dialog,.game-header,.customization-dialog .custom-popup-heading){
@@ -1325,3 +1322,238 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
  to{opacity:1;filter:drop-shadow(0 0 8px #9bffc2) drop-shadow(0 0 3px #b3ffd0)}
 }
 @keyframes life-cut-release{from{opacity:.85}to{opacity:0}}
+
+/* The Abyss of Childhood */
+:root{
+ --abyss-art:url('assets/childhood-abyss.webp');
+ --abyss-four-point:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);
+ --abyss-prism:linear-gradient(117deg,#9fdcff 8%,#d7c5ff 33%,#fad1f0 57%,#ffedba 77%,#b6e9f5 96%);
+}
+:root[data-theme="childhood-abyss"]{
+ --paper:#131831;
+ --ink:#f1edff;
+ --muted:#c1c4eb;
+ --green:#c7c6ff;
+ --mint:#34325d;
+ --line:#aaa6ed55;
+ --amber:#f7dbe8;
+ --theme-accent:#b3a7f6;
+ --settings-bg:#242449;
+ --menu-symbol-shadow:#0c0a2fbf;
+ --menu-symbol-active-shadow:#b0cfff70;
+ --choice-cost-bg:#35365b;
+ --choice-cost-ink:#eee9ff;
+ --choice-cost-edge:#b6aaf282;
+ --identity-stat-rank:#d6c7ff;
+ --selection-ripple:#c4b9ff;
+ --selection-ripple-edge:#6a60af;
+ --race-trait-surface:#252b50f2;
+ --race-trait-edge:#9c9cde63;
+ --race-trait-caption:#d0cbf5;
+ --race-trait-special-surface:linear-gradient(125deg,#324270,#473868);
+ --race-trait-special-edge:#c1acf9b0;
+ --race-trait-special-label:#e7daff;
+ --abyss-panel:radial-gradient(ellipse at 83% -12%,#9d78d346,transparent 43%),linear-gradient(143deg,#282c51f5,#191c36f7 74%,#262951f5);
+}
+.childhood-abyss-world{
+ background:linear-gradient(105deg,#101b3548 6%,#1d284b45 43%,#121637b5 73%,#101632dc),var(--abyss-art) 47% center/cover no-repeat,#202b50;
+}
+.childhood-abyss-world::after{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:linear-gradient(0deg,#10152dca,transparent 42%,#1219371f 87%,#10153099);
+ pointer-events:none;
+}
+.abyss-ambient-particles{position:absolute;inset:0;z-index:1}
+.abyss-ambient-particles i{
+ position:absolute;
+ display:block;
+ left:var(--x);
+ top:var(--y);
+ width:var(--size);
+ aspect-ratio:1;
+ pointer-events:none;
+}
+.abyss-ambient-star{
+ clip-path:var(--abyss-four-point);
+ background:var(--abyss-prism);
+ animation:abyss-star-glow var(--cycle) var(--delay) ease-in-out infinite alternate;
+}
+.abyss-ambient-ring{
+ border:1px solid #d3cdff99;
+ border-radius:50%;
+ box-shadow:0 0 8px #a9dcff38,inset 0 0 5px #ddc8ff3b;
+ animation:abyss-ambient-wave var(--cycle) var(--delay) cubic-bezier(.18,.55,.34,1) infinite;
+}
+@keyframes abyss-star-glow{
+ from{opacity:.08;transform:scale(.55)}
+ to{opacity:.72;transform:scale(1.2)}
+}
+@keyframes abyss-ambient-wave{
+ 0%{opacity:0;transform:translate(-50%,-50%) scale(.15)}
+ 18%{opacity:.35}
+ 67%,100%{opacity:0;transform:translate(-50%,-50%) scale(1)}
+}
+[data-theme="childhood-abyss"] .start-card{margin-left:auto;padding-left:clamp(20px,10vw,138px)}
+[data-theme="childhood-abyss"] .title-rule{
+ width:76px;
+ height:2px;
+ background:var(--abyss-prism);
+ box-shadow:0 0 12px #c8c8ff80;
+}
+[data-theme="childhood-abyss"] :is(.start-description,.start-import,.continue-note,.start-kicker){color:var(--ink)}
+.theme-namecard[data-preview="childhood-abyss"]{color:#f4edff;border-color:#d8c4ff78}
+.theme-namecard[data-preview="childhood-abyss"] .theme-card-art{background:#252949}
+.theme-namecard[data-preview="childhood-abyss"] .theme-card-city{
+ opacity:1;
+ background:linear-gradient(97deg,#1b1e39fa,#28264be3 42%,#2927485a 82%),var(--abyss-art) 52% 55%/cover no-repeat;
+}
+.theme-namecard[data-preview="childhood-abyss"] :is(.theme-card-glass,.theme-card-frame){display:none}
+.theme-namecard[data-preview="childhood-abyss"] :is(.theme-card-kicker,.theme-card-condition,.theme-card-note){color:#e0d9ff}
+.theme-namecard[data-preview="childhood-abyss"] .theme-card-status{background:#28244ee0;border-color:#ad9de78c;color:#f2e7ff}
+.theme-condition-glitch{
+ display:inline-grid;
+ grid-template:1.2em / 4.2em;
+ margin-left:.22em;
+ vertical-align:middle;
+ overflow:hidden;
+ isolation:isolate;
+ font-weight:700;
+ white-space:nowrap;
+}
+.theme-condition-glitch span{grid-area:1/1}
+.theme-condition-glitch span:first-child{
+ color:#b9e8ff;
+ filter:blur(.65px);
+ letter-spacing:.27em;
+ clip-path:polygon(0 10%,100% 10%,100% 32%,0 32%,0 68%,100% 68%,100% 80%,0 80%);
+ animation:abyss-name-offset 2.8s steps(1,end) infinite;
+}
+.theme-condition-glitch span:nth-child(2){
+ color:#f4bdff;
+ filter:blur(.6px);
+ transform:translateX(-3px);
+ clip-path:polygon(0 21%,100% 21%,100% 47%,0 47%,0 57%,100% 57%,100% 74%,0 74%);
+ animation:abyss-name-offset 3.6s -.8s steps(1,end) infinite reverse;
+}
+.theme-condition-noise{
+ background:repeating-linear-gradient(0deg,transparent 0 2px,#2f294fa0 2px 3px,#ece3ff4f 3px 4px,transparent 4px 6px);
+ mask-image:repeating-linear-gradient(101deg,#000 0 3px,transparent 3px 7px,#000 7px 9px);
+}
+@keyframes abyss-name-offset{
+ 0%,72%,100%{transform:translateX(1px)}
+ 17%,84%{transform:translateX(-5px) skewX(14deg)}
+ 26%,91%{transform:translateX(5px) skewX(-12deg)}
+}
+
+[data-theme="childhood-abyss"] :is(.player-panel,.player-panel.cutscene-panel,dialog,.game-header,.customization-dialog .custom-popup-heading){
+ background:var(--abyss-panel);
+ color:var(--ink);
+ border-color:var(--line);
+}
+[data-theme="childhood-abyss"] dialog::backdrop{background:#10122bba}
+[data-theme="childhood-abyss"] :is(.race-choice,.race-modifiers button,.race-division-options button,.custom-category,.identity-stat,.player .choice){
+ background-color:#2b3156ba;
+ background-image:linear-gradient(120deg,#b3aaff17,transparent 53%,#a1dafa0d);
+ border-color:var(--line);
+}
+[data-theme="childhood-abyss"] :is(.player .primary,dialog .primary,.start-button){
+ background:linear-gradient(112deg,#344978ee,#554274f2 70%,#686197ed);
+ color:#f8efff;
+ border-color:#c6baff8c;
+}
+[data-theme="childhood-abyss"] :is(.start-button span:last-child,.custom-category-mark,.nav-arrow){color:var(--amber)}
+[data-theme="childhood-abyss"] :is(.tab-heading,.identity-trait,.race-reveal){position:relative}
+[data-theme="childhood-abyss"] :is(.start-card,.tab-heading,.custom-popup-heading,.identity-trait,.race-reveal)::after,
+.theme-namecard[data-preview="childhood-abyss"] .theme-card-art::after{
+ content:"";
+ position:absolute;
+ top:8px;
+ right:7px;
+ width:12px;
+ aspect-ratio:1;
+ clip-path:var(--abyss-four-point);
+ background:var(--abyss-prism);
+ opacity:.42;
+ pointer-events:none;
+}
+.theme-namecard[data-preview="childhood-abyss"] .theme-card-art::after{top:auto;bottom:17px;right:7%;width:24px;opacity:.66}
+.bgm-player[data-bgm-theme="childhood-abyss"]{
+ --bgm-scene:var(--abyss-art);
+ --bgm-surface:#222948;
+ --bgm-shade:linear-gradient(106deg,#141b37ef,#35305070);
+ --bgm-control:#ede0ff;
+ --bgm-control-text:#252145;
+ --bgm-progress:#dccaff;
+}
+@media(max-width:600px) and (orientation:portrait){
+ .childhood-abyss-world{
+  background-image:linear-gradient(0deg,#101530e3,transparent 57%,#171c434f),var(--abyss-art);
+  background-position:center,42% center,center;
+ }
+ [data-theme="childhood-abyss"] .start-card{padding-left:3vw}
+}
+@media(prefers-reduced-motion:reduce){
+ .abyss-ambient-star,.abyss-ambient-ring,.theme-condition-glitch span{animation:none}
+ .abyss-ambient-star{opacity:.35}
+ .abyss-ambient-ring{opacity:.13;transform:translate(-50%,-50%)}
+}
+
+.abyss-touch{--impact-ring-size:117px}
+.abyss-touch .touch-ring{--ring-ink:#dcd0ff}
+.abyss-touch .touch-ring-two{--ring-ink:#9edcff}
+.abyss-touch .touch-ring-three{--ring-ink:#ffd0ed}
+.abyss-touch-star{
+ left:-8px;
+ top:-8px;
+ width:16px;
+ height:16px;
+ clip-path:var(--abyss-four-point);
+ background:var(--abyss-prism);
+ animation:abyss-touch-star-flight .68s var(--delay) cubic-bezier(.18,.61,.25,1) both;
+}
+@keyframes abyss-touch-star-flight{
+ 0%{opacity:0;transform:scale(.28)}
+ 25%{opacity:1}
+ 60%{transform:translate(var(--dx),var(--dy)) scale(1)}
+ 100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.38)}
+}
+.abyss-flower{
+ left:-33px;
+ top:-33px;
+ width:66px;
+ height:66px;
+ filter:drop-shadow(0 0 8px #e4c8ff91);
+ animation:abyss-flower-rise 1.06s cubic-bezier(.21,.62,.28,1) both;
+}
+.abyss-flower b{
+ top:50%;
+ left:50%;
+ width:13px;
+ height:24px;
+ margin:-24px 0 0 -6.5px;
+ transform-origin:50% 100%;
+ border:1px solid #f4e7ffc7;
+ border-radius:65% 65% 42% 42% / 84% 84% 19% 19%;
+ background:linear-gradient(0deg,#82b9f04d,#d0a7e3aa 54%,#ffe0f5e6);
+ animation:abyss-petal-open .61s var(--petal-delay) ease-out both;
+}
+.abyss-flower b:nth-child(even){background:linear-gradient(0deg,#a7a6f24d,#b4d6f7ac 58%,#f3e7ffe8)}
+.abyss-flower em{
+ inset:calc(50% - 5px);
+ border-radius:50%;
+ background:#fff1d9;
+ box-shadow:0 0 11px #ffd8f5;
+}
+@keyframes abyss-petal-open{
+ 0%{opacity:0;transform:rotate(var(--petal-turn)) rotate(-26deg) scale(.15)}
+ 46%{opacity:.9}
+ 100%{opacity:1;transform:rotate(var(--petal-turn)) scale(1)}
+}
+@keyframes abyss-flower-rise{
+ 0%{opacity:0;transform:rotate(var(--bloom-turn)) scale(.26)}
+ 25%{opacity:.94}
+ 65%{opacity:.77}
+ 100%{opacity:0;transform:translate(var(--bloom-drift),-68px) rotate(calc(var(--bloom-turn) + 25deg)) scale(1.14)}
+}

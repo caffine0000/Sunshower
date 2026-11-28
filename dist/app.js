@@ -48,12 +48,22 @@ const themeChoices=[{id:'rain',name:'수사관 사무실의 유리창',englishNa
  unlockLabel:'인연 컴플리트: 팔디아',
  note:'생명을 끊어내어 삶을 접목한다.',
  preview:'life-continues',
- unlock:paldiaBondComplete,
+ unlock:(player,work)=>characterBondComplete(player,work,'paldia','팔디아'),
  presentation:{symbolTone:'white',background:lifeContinuesWeather,touch:lifeTouchImpact,transition:prismTransition}
+},{
+ id:'childhood-abyss',
+ name:'유년기의 깊은 웅덩이',
+ englishName:'The Abyss of Childhood',
+ unlockLabel:'인연 컴플리트:',
+ unlockGlitch:['미래','루티아나'],
+ note:'겪는 법을 배워나가는 과정이다.',
+ preview:'childhood-abyss',
+ unlock:(player,work)=>characterBondComplete(player,work,'mirae','미래'),
+ presentation:{symbolTone:'white',background:childhoodAbyssWeather,touch:abyssTouchImpact,transition:prismTransition}
 }];
-function paldiaBondComplete(player,work){
+function characterBondComplete(player,work,id,name){
  const bonds=Array.isArray(work.bonds)?work.bonds:[];
- const bond=bonds.find(bond=>bond?.id==='paldia'||bond?.name==='팔디아');
+ const bond=bonds.find(bond=>bond?.id===id||bond?.name===name);
  return !!(bond&&player.bonds.includes(bond.id)&&Array.isArray(bond.events)&&bond.events.length&&
   bond.events.every(event=>typeof event?.id==='string'&&player.events.includes(event.id)));
 }
@@ -147,8 +157,14 @@ function applyPreferences(){const theme=activeTheme();if(preferences.theme!==the
 function savePreferences(){put(settingsKey,preferences);applyPreferences()}
 function setBgmVolume(value){if(String(value).trim()===''||!Number.isFinite(Number(value)))return;preferences.volume=Math.max(0,Math.min(100,Math.round(Number(value))));savePreferences();const output=$('#bgmVolumeValue');if(output)output.textContent=preferences.volume+'%';$('#bgmVolume')?.style.setProperty('--bgm-fill',preferences.volume+'%')}
 function settingsButton(extra=''){return `<button class="settings-toggle ${extra}" data-action="settings" aria-label="설정 열기" aria-haspopup="dialog"><span aria-hidden="true">⚙</span><span>설정</span></button>`}
+function themeUnlockLabel(theme){
+ const label=esc(theme.unlockLabel||'해금 조건 미정');
+ if(!theme.unlockGlitch)return label;
+ const [first,second]=theme.unlockGlitch;
+ return `${label} <span class="theme-condition-glitch" role="img" aria-label="이름 판독 불가"><span aria-hidden="true">${esc(first)}</span><span aria-hidden="true">${esc(second)}</span><span class="theme-condition-noise" aria-hidden="true"></span></span>`;
+}
 // Static preview only: never call live background/effect renderers inside a namecard.
-function themeNamecard(theme){const selected=preferences.theme===theme.id,unlocked=themeUnlocked(theme);return `<button data-action="set-theme" data-id="${esc(theme.id)}" data-preview="${esc(theme.preview||'default')}" class="theme-option theme-namecard ${selected?'selected':''}" ${unlocked?'':'disabled aria-disabled="true"'} aria-pressed="${selected}"><span class="theme-card-art" aria-hidden="true"><span class="theme-card-city"></span><span class="theme-card-glass"></span><span class="theme-card-frame"></span><span class="theme-card-ornament">◇</span></span><span class="theme-card-copy"><small class="theme-card-kicker">${esc(theme.englishName||theme.name)}</small><strong>${esc(theme.name)}</strong><small class="theme-card-condition">${esc(theme.unlockLabel||'해금 조건 미정')}</small><small class="theme-card-note">${esc(theme.note)}</small></span><span class="theme-card-status">${selected?'<span aria-hidden="true">✓</span> 적용 중':unlocked?'선택':'잠김'}</span></button>`}
+function themeNamecard(theme){const selected=preferences.theme===theme.id,unlocked=themeUnlocked(theme);return `<button data-action="set-theme" data-id="${esc(theme.id)}" data-preview="${esc(theme.preview||'default')}" class="theme-option theme-namecard ${selected?'selected':''}" ${unlocked?'':'disabled aria-disabled="true"'} aria-pressed="${selected}"><span class="theme-card-art" aria-hidden="true"><span class="theme-card-city"></span><span class="theme-card-glass"></span><span class="theme-card-frame"></span></span><span class="theme-card-copy"><small class="theme-card-kicker">${esc(theme.englishName||theme.name)}</small><strong>${esc(theme.name)}</strong><small class="theme-card-condition">${themeUnlockLabel(theme)}</small><small class="theme-card-note">${esc(theme.note)}</small></span><span class="theme-card-status">${selected?'<span aria-hidden="true">✓</span> 적용 중':unlocked?'선택':'잠김'}</span></button>`}
 function bgmSettingsUI(){
  if(!bgmAudio)return '';
  const track=themeBgm(),duration=bgmDuration(),elapsed=Math.min(bgmAudio.currentTime,duration);
@@ -192,6 +208,15 @@ function acrylicSkyWeather(){
 function lifeContinuesWeather(){
  return '<div class="weather-world life-continues-world" aria-hidden="true"><i></i><i></i></div>';
 }
+function childhoodAbyssWeather(){
+ const stars=Array.from({length:19},(_,i)=>
+  `<i class="abyss-ambient-star" style="--x:${4+i*37%93}%;--y:${5+i*19%90}%;--size:${5+i*7%15}px;--cycle:${4+i%5}s;--delay:${-i*1.17}s"></i>`
+ ).join('');
+ const rings=Array.from({length:7},(_,i)=>
+  `<i class="abyss-ambient-ring" style="--x:${7+i*29%86}%;--y:${18+i*23%77}%;--size:${104+i*19%125}px;--cycle:${7+i%4}s;--delay:${-i*1.53}s"></i>`
+ ).join('');
+ return `<div class="weather-world childhood-abyss-world" aria-hidden="true"><div class="abyss-ambient-particles">${stars+rings}</div></div>`;
+}
 function rainWeather(){return `<div class="weather-world" aria-hidden="true"><div class="city-view"></div><div class="window-frame frame-one"></div><div class="window-frame frame-two"></div><div class="rain-layer">${Array.from({length:58},(_,i)=>`<i style="--x:${(i*37+3)%100}%;--delay:${-(i%13)*.43}s;--speed:${.9+(i%7)*.17}s;--length:${45+i%6*15}px;--opacity:${.12+i%5*.06}"></i>`).join('')}</div><div class="window-mist"></div><div class="glass-drops">${Array.from({length:25},(_,i)=>`<i style="left:${(i*31+9)%100}%;top:${(i*47+2)%100}%;--drop-size:${3+i%5*2}px;--drift:${14+i%7}s;animation-delay:${-i*1.2}s"></i>`).join('')}</div><div class="weather-shade"></div></div>`}
 function geometricGlyphs(text){const glyphs={K:'M0 0V24M16 0L0 16M6 10L16 24M4 12H12',B:'M0 0V24H12L16 20V16L8 12L16 8V4L12 0ZM0 12H8',M:'M0 24V0L8 12L16 0V24M4 8L8 16L12 8',W:'M0 0L4 24L8 12L12 24L16 0M4 16L8 4L12 16',S:'M16 0H4L0 4V8L16 16V20L12 24H0M4 0L12 8M4 16L12 24',H:'M0 0V24M16 0V24M0 12H16M8 8V16',P:'M0 24V0H12L16 4V8L12 12H0M4 4H12',T:'M0 0H16M8 0V24M4 8L8 12L12 8',Y:'M0 0L8 12L16 0M8 12V24M4 20H12',U:'M0 0V16L8 24L16 16V0M4 16L8 20L12 16',Z:'M0 0H16L0 24H16M4 12H12',V:'M0 0L8 24L16 0M4 4L8 12L12 4',G:'M16 4L12 0H4L0 4V20L4 24H16V12H8M8 16H16',F:'M0 24V0H16L8 8H0M0 12H12L8 16',A:'M0 24L8 0L16 24M4 16H12M8 0V8',I:'M8 0V24M4 4L8 0L12 4M4 20L8 24L12 20M4 12H12',L:'M0 0V24H16L8 16M0 8L8 0',E:'M16 0H0V24H16M0 0L8 8H0M0 12H12L8 16M0 24L8 16',D:'M0 0V24H8L16 16V8L8 0ZM0 8H8V16H0',N:'M0 24V0L16 24V0M0 16L4 12M12 12L16 8',O:'M8 0L16 8V16L8 24L0 16V8ZM4 8L12 16',R:'M0 24V0H12L16 4V8L0 16M8 12L16 24',C:'M16 0H8L0 8V16L8 24H16M0 12H8',X:'M0 0L16 24M16 0L0 24M4 12H12','^':'M0 12L8 0L16 12','!':'M8 0V16M5 21L8 18L11 21L8 24Z','>':'M0 0L16 12L0 24','&':'M16 24L0 8L8 0L16 8L0 24H16M0 16H16','[':'M16 0H4V24H16M0 8H8','+':'M0 12H16M8 4V20'};let x=0;const paths=[...text.toUpperCase()].map(c=>{if(c===' '){x+=16;return ''}const path='<path d="'+(glyphs[c]||'M0 12L8 0L16 12L8 24Z')+'" transform="translate('+x+' 2)"/>';x+=24;return path}).join('');return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${Math.max(16,x-8)} 30" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter">${paths}</g></svg>`}
 function runeInscription(){return `<div class="rune-ornament" role="img" aria-label="Failed and Find"><span class="rune-rule" aria-hidden="true"></span>${geometricGlyphs('Failed and Find')}<span class="rune-rule" aria-hidden="true"></span></div>`}
@@ -220,7 +245,7 @@ async function choose(id){if(busy)return;const r=replay(project,save),c=r.scene.
 function prismTransition(commit){if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){commit();return Promise.resolve()}busy=true;endAllRippleHolds();return (async()=>{let overlay,release=()=>{},committed=false,cancelled=false,wake=null;const subscriptions=[];const stop=()=>{cancelled=true;wake?.()};const wait=ms=>cancelled?Promise.resolve():new Promise(resolve=>{const done=()=>{clearTimeout(timer);wake=null;resolve()},timer=setTimeout(done,ms);wake=done});const listen=(target,type,callback)=>{if(!target?.addEventListener)return;target.addEventListener(type,callback,{passive:true});subscriptions.push(()=>target.removeEventListener(type,callback))};try{const viewport=effectViewport(),snapshot=sceneSnapshot(viewport),pieces=screenFragments(viewport.width,viewport.height);release=lockTransitionScroll(viewport);overlay=document.createElement('div');overlay.className='prism-transition character-intervention fast-intervention';overlay.setAttribute('aria-hidden','true');Object.assign(overlay.style,{left:viewport.left+'px',top:viewport.top+'px',width:viewport.width+'px',height:viewport.height+'px',right:'auto',bottom:'auto'});overlay.style.setProperty('--observer-height',viewport.height*(viewport.width<640?1.32:1.38)+'px');overlay.style.setProperty('--seal-size',Math.min(viewport.width*(viewport.width<640?1.08:.84),viewport.height*.9,710)+'px');overlay.innerHTML='<div class="observer-veil"></div>'+observerPresence()+'<div class="prism-shards">'+fragmentMarkup(viewport,snapshot,pieces)+'</div>'+fractureMesh(viewport,pieces)+'<div class="prism-refraction"></div><div class="prism-scanlines"></div>'+prismMagicLayer();overlay.addEventListener('pointerdown',event=>event.stopPropagation());document.body.appendChild(overlay);document.body.classList.add('is-prism-break');listen(window,'resize',()=>{const now=effectViewport();if(Math.abs(now.width-viewport.width)>40||Math.abs(now.height-viewport.height)>120)stop()});listen(window.visualViewport,'resize',()=>{const now=effectViewport();if(Math.abs(now.width-viewport.width)>40||Math.abs(now.height-viewport.height)>120)stop()});listen(document,'visibilitychange',()=>{if(document.hidden)stop()});await wait(1640);commit();committed=true;release(true);document.querySelectorAll('#app .build-cutscene,#app .player-panel').forEach(node=>{node.style.animation='none'});if(!cancelled){const incoming=fragmentSceneMarkup(sceneSnapshot(viewport));overlay.querySelectorAll('.shard-surface').forEach(face=>{face.innerHTML=incoming});await wait(1560)}}finally{wake?.();subscriptions.forEach(remove=>remove());release(committed);overlay?.remove();document.body.classList.remove('is-prism-break');busy=false}})()}
 function effectViewport(){const visual=window.visualViewport,zoomed=visual&&Math.abs((visual.scale||1)-1)>.01;return {width:Math.max(1,Math.round(zoomed?visual.width:window.innerWidth)),height:Math.max(1,Math.round(visual?.height||window.innerHeight)),left:zoomed?visual.offsetLeft||0:0,top:visual?.offsetTop||0,layoutWidth:document.documentElement.clientWidth}}
 function lockTransitionScroll(viewport){const body=document.body,root=document.documentElement,props=['position','top','left','width','overflow'],saved=Object.fromEntries(props.map(key=>[key,body.style[key]])),behavior=root.style.scrollBehavior,x=window.scrollX||0,y=window.scrollY||0;let released=false;root.style.scrollBehavior='auto';Object.assign(body.style,{position:'fixed',top:-y+'px',left:-x+'px',width:viewport.layoutWidth+'px',overflow:'hidden'});return success=>{if(released)return;released=true;for(const key of props)body.style[key]=saved[key];window.scrollTo(success?0:x,success?0:y);root.style.scrollBehavior=behavior}}
-function sceneSnapshot(viewport){const source=$('#app'),rect=source.getBoundingClientRect(),clone=source.cloneNode(true);clone.removeAttribute('id');clone.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));clone.querySelectorAll('.rain-layer,.glass-drops,.touch-impact,script,iframe,video,audio').forEach(node=>node.remove());const weather=clone.querySelector('.weather-world');if(weather)Object.assign(weather.style,{position:'absolute',left:viewport.left-rect.left+'px',top:viewport.top-rect.top+'px',width:viewport.width+'px',height:viewport.height+'px'});return {markup:clone.outerHTML,left:rect.left-viewport.left,top:rect.top-viewport.top,width:rect.width}}
+function sceneSnapshot(viewport){const source=$('#app'),rect=source.getBoundingClientRect(),clone=source.cloneNode(true);clone.removeAttribute('id');clone.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));clone.querySelectorAll('.rain-layer,.glass-drops,.abyss-ambient-particles,.touch-impact,script,iframe,video,audio').forEach(node=>node.remove());const weather=clone.querySelector('.weather-world');if(weather)Object.assign(weather.style,{position:'absolute',left:viewport.left-rect.left+'px',top:viewport.top-rect.top+'px',width:viewport.width+'px',height:viewport.height+'px'});return {markup:clone.outerHTML,left:rect.left-viewport.left,top:rect.top-viewport.top,width:rect.width}}
 function screenFragments(width,height){const columns=width<640?4:6,rows=width<640?3:4,points=Array.from({length:rows+1},(_,row)=>Array.from({length:columns+1},(_,column)=>[column*width/columns+(column>0&&column<columns?Math.sin(row*19+column*7)*width/columns*.16:0),row*height/rows+(row>0&&row<rows?Math.sin(row*11+column*17)*height/rows*.16:0)])),pieces=[];for(let row=0;row<rows;row++)for(let column=0;column<columns;column++){const a=points[row][column],b=points[row][column+1],c=points[row+1][column+1],d=points[row+1][column];const triangles=(row+column)%2?[[a,b,d],[b,c,d]]:[[a,b,c],[a,c,d]];for(const triangle of triangles){const x=Math.min(...triangle.map(p=>p[0])),y=Math.min(...triangle.map(p=>p[1])),w=Math.max(...triangle.map(p=>p[0]))-x,h=Math.max(...triangle.map(p=>p[1]))-y,cx=triangle.reduce((n,p)=>n+p[0],0)/3,cy=triangle.reduce((n,p)=>n+p[1],0)/3,index=pieces.length;pieces.push({x,y,width:w,height:h,points:triangle,clip:'polygon('+triangle.map(p=>((p[0]-x)/w*100).toFixed(4)+'% '+((p[1]-y)/h*100).toFixed(4)+'%').join(',')+')',dx:(cx/width-.5)*width*.8+Math.sin(index*2.7)*width*.08,dy:(cy/height-.5)*height*.6,turn:(index%2?1:-1)*(9+index%5*4)})}}return pieces}
 function fragmentSceneMarkup(snapshot){return '<div class="shatter-copy" inert style="left:'+snapshot.left+'px;top:'+snapshot.top+'px;width:'+snapshot.width+'px">'+snapshot.markup+'</div>'}
 function fragmentMarkup(viewport,snapshot,pieces){const markup=fragmentSceneMarkup(snapshot);return pieces.map(piece=>'<div class="prism-shard screen-piece" style="left:'+piece.x+'px;top:'+piece.y+'px;width:'+(piece.width+.15)+'px;height:'+(piece.height+.15)+'px;clip-path:'+piece.clip+';--shift-x:'+piece.dx+'px;--shift-y:'+piece.dy+'px;--piece-turn:'+piece.turn+'deg"><div class="shard-surface" style="left:'+-piece.x+'px;top:'+-piece.y+'px;width:'+viewport.width+'px;height:'+viewport.height+'px">'+markup+'</div></div>').join('')}
@@ -288,6 +313,22 @@ function lifeTouchImpact(event){
    setTimeout(()=>mark.remove(),240);
   }
  };
+}
+function abyssTouchImpact(event){
+ if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+ const origin=touchImpactOrigin(event);
+ if(event.held){
+  const petals=Array.from({length:6},(_,index)=>`<b style="--petal-turn:${index*60}deg;--petal-delay:${index*22}ms"></b>`).join('');
+  const flower=appendTouchImpact(...origin,'abyss-touch',`<i class="abyss-flower">${petals}<em></em></i>`);
+  flower.style.setProperty('--bloom-drift',Math.round(Math.random()*42-21)+'px');
+  flower.style.setProperty('--bloom-turn',Math.round(Math.random()*100-50)+'deg');
+  return;
+ }
+ const stars=Array.from({length:5},(_,i)=>{
+  const angle=i*2*Math.PI/5+Math.random()*.35,travel=24+Math.random()*26;
+  return `<i class="abyss-touch-star" style="--dx:${Math.round(Math.cos(angle)*travel)}px;--dy:${Math.round(Math.sin(angle)*travel)}px;--delay:${i*23}ms"></i>`;
+ }).join('');
+ spawnRainImpact(...origin,'abyss-touch',stars);
 }
 const inlineRippleActions=new Set([
  'race-primary','race-option','race-division','identity-trait','card-theme','display-collectible','set-theme'
