@@ -1191,3 +1191,137 @@ dialog::backdrop{background:#020e1a70;backdrop-filter:blur(3px);-webkit-backdrop
 .race-trait-card:is(.race-trait-altered,.race-replica-trait)>small{
  color:var(--race-trait-special-label,#d4e0f5);
 }
+
+/* Life is unsevered */
+:root{
+ --life-art:url('assets/life-continues.webp');
+ --life-guide-dashes:repeating-linear-gradient(90deg,currentColor 0 5px,transparent 5px 10px);
+ --life-guide-ticks:repeating-linear-gradient(90deg,transparent 0 31px,currentColor 31px 32px,transparent 32px 35px,currentColor 35px 36px,transparent 36px 56px);
+}
+:root[data-theme="life-continues"]{
+ --paper:#091811;
+ --ink:#e4f1e8;
+ --muted:#abc5b6;
+ --green:#a1e4b9;
+ --mint:#183b2c;
+ --line:#89be9f4d;
+ --amber:#f4a79f;
+ --theme-accent:#85daa7;
+ --settings-bg:#11271d;
+ --menu-symbol-shadow:#01180f8c;
+ --menu-symbol-active-shadow:#abffbf5c;
+ --choice-cost-bg:#203f33;
+ --choice-cost-ink:#d4f0dc;
+ --choice-cost-edge:#90cbad79;
+ --identity-stat-rank:#c4f7cd;
+ --selection-ripple:#8bf3a3;
+ --selection-ripple-edge:#397356;
+ --race-trait-surface:#10291ee6;
+ --race-trait-edge:#86bd9e4d;
+ --race-trait-caption:#b3d2bc;
+ --race-trait-special-surface:linear-gradient(138deg,#3d282b,#21352b);
+ --race-trait-special-edge:#aa6266aa;
+ --race-trait-special-label:#f4b2ac;
+ --life-crystal:linear-gradient(126deg,#a8f2bf14 0 14%,transparent 14% 68%,#bf5a5326 68% 69%,#752e3826 69% 87%,transparent 87%),linear-gradient(154deg,#193729ed 0%,#0b2017f2 38%,#0c1713f5 100%);
+}
+.life-continues-world{
+ background:linear-gradient(101deg,#050f0cee 0%,#091a14c9 25%,#0b221977 52%,#08191424 78%,#091b164d),var(--life-art) 55% center/cover no-repeat,#0d241a;
+}
+.life-continues-world::before{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:linear-gradient(152deg,transparent 64%,#143b3038 64.1% 79%,#9c545a3d 79.2% 79.6%,transparent 79.8%),
+  linear-gradient(0deg,#07130fdc,transparent 50%);
+}
+.life-continues-world i{
+ position:absolute;
+ width:40%;
+ height:8px;
+ color:#c5ffe457;
+ background:var(--life-guide-dashes) center/100% 1px no-repeat,var(--life-guide-ticks) center/100% 7px no-repeat;
+ transform:rotate(-17deg);
+}
+.life-continues-world i:first-child{left:-8%;top:64%}
+.life-continues-world i:last-child{right:-18%;top:32%;color:#ffb4b16b}
+@media(max-width:600px) and (orientation:portrait){
+ .life-continues-world{background-position:center,52% center,center}
+}
+.theme-namecard[data-preview="life-continues"]{color:#e7f6eb;border-color:#8dc5a378}
+.theme-namecard[data-preview="life-continues"] .theme-card-art{background:#113025}
+.theme-namecard[data-preview="life-continues"] .theme-card-city{
+ opacity:1;
+ background:linear-gradient(97deg,#0b2019f5,#142d22df 49%,#142d2247 76%,#47232a45),var(--life-art) 60% 40%/cover no-repeat;
+}
+.theme-namecard[data-preview="life-continues"] .theme-card-glass,
+.theme-namecard[data-preview="life-continues"] .theme-card-frame{display:none}
+.theme-namecard[data-preview="life-continues"] .theme-card-ornament{color:#fac1b3}
+.theme-namecard[data-preview="life-continues"] :is(.theme-card-kicker,.theme-card-condition,.theme-card-note){color:#c2e3ce}
+.theme-namecard[data-preview="life-continues"] .theme-card-status{background:#182d23db;border-color:#91c4a470;color:#d9f5e1}
+[data-theme="life-continues"] :is(.player-panel,.player-panel.cutscene-panel,dialog,.game-header,.customization-dialog .custom-popup-heading){
+ background:var(--life-crystal);
+ color:var(--ink);
+ border-color:var(--line);
+}
+[data-theme="life-continues"] dialog::backdrop{background:#040d09ad}
+[data-theme="life-continues"] :is(.race-choice,.race-modifiers button,.race-division-options button,.custom-category,.identity-stat,.player .choice){
+ background-image:linear-gradient(128deg,#b5f9cb12 0 21%,transparent 21% 73%,#a852561e 73% 100%);
+ border-color:var(--line);
+}
+[data-theme="life-continues"] :is(.player .primary,dialog .primary,.start-button){
+ background:linear-gradient(120deg,#235a42 0 74%,#694047 74% 76%,#483239 76%);
+ color:#effbf1;
+ border-color:#91c6a683;
+}
+[data-theme="life-continues"] :is(.start-button span:last-child,.nav-arrow,.custom-category-mark){color:var(--amber)}
+[data-theme="life-continues"] :is(.start-description,.start-import,.continue-note){color:var(--ink)}
+[data-theme="life-continues"] :is(.tab-heading,.custom-popup-heading,.customization-heading){position:relative}
+[data-theme="life-continues"] :is(.tab-heading,.custom-popup-heading,.customization-heading)::after{
+ content:"";
+ position:absolute;
+ left:0;
+ bottom:-3px;
+ width:min(120px,38%);
+ height:7px;
+ color:#a4dbbc91;
+ pointer-events:none;
+ background:var(--life-guide-dashes) center/100% 1px no-repeat,var(--life-guide-ticks) center/100% 7px no-repeat;
+}
+[data-theme="life-continues"] .customization-dialog .custom-popup-heading{position:sticky}
+[data-theme="life-continues"] .title-rule{
+ width:110px;
+ height:7px;
+ color:#b9f4cb;
+ background:var(--life-guide-dashes) center/100% 1px no-repeat,var(--life-guide-ticks) center/100% 7px no-repeat;
+}
+.bgm-player[data-bgm-theme="life-continues"]{
+ --bgm-scene:var(--life-art);
+ --bgm-surface:#10291f;
+ --bgm-shade:linear-gradient(100deg,#0b2117ef,#143f2d74);
+ --bgm-progress:#9ee3b3;
+}
+
+.life-touch{color:#a2ffc0}
+.life-cut-trace{
+ left:-66px;
+ top:-9px;
+ width:132px;
+ height:18px;
+ transform:rotate(var(--life-cut-angle));
+ filter:drop-shadow(0 0 4px #8effae);
+ animation:life-cut-fade .9s ease-out both;
+}
+.life-cut-trace b{
+ inset:0;
+ background:var(--life-guide-dashes) center/100% 1px no-repeat,var(--life-guide-ticks) center/100% 8px no-repeat;
+ animation:life-cut-draw .24s ease-out both;
+}
+.life-touch-held .life-cut-trace{animation:life-cut-hold .72s ease-in-out infinite alternate}
+.life-touch-released .life-cut-trace{animation:life-cut-release .24s ease-out both}
+@keyframes life-cut-draw{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes life-cut-fade{0%,55%{opacity:1}100%{opacity:0}}
+@keyframes life-cut-hold{
+ from{opacity:.72;filter:drop-shadow(0 0 3px #82eba8)}
+ to{opacity:1;filter:drop-shadow(0 0 8px #9bffc2) drop-shadow(0 0 3px #b3ffd0)}
+}
+@keyframes life-cut-release{from{opacity:.85}to{opacity:0}}

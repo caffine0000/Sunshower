@@ -330,12 +330,21 @@ vm.runInNewContext(code+`
  actions['player-tab']('transfer');assert.equal(playerTab,'transfer');render();assert.equal(playerTab,'transfer');assert.ok($('#app').innerHTML.includes('id="perkInput"'));actions['player-tab']('building');
  actions['open-transfer']();assert.equal(playerTab,'building');assert.ok($('#modalBody').innerHTML.includes('id="playerInput"'));close();
  actions.settings();assert.ok($('#modalBody').innerHTML.includes('크레딧'));assert.ok($('#modalBody').innerHTML.includes('아크릴새우(AcrylicShrimp)'));assert.ok($('#modalBody').innerHTML.includes('배경음악 중단'));assert.equal(audio.volume,.6);
- assert.equal(themeChoices.length,2);assert.ok($('#modalBody').innerHTML.includes('아크릴 하늘'));assert.ok($('#modalBody').innerHTML.includes('이걸 가지고 있단 건 네가 쵸작자.'));actions['set-theme']('acrylic-sky');assert.equal(preferences.theme,'rain');save.perks.push('acrylic-sky');actions['set-theme']('acrylic-sky');assert.equal(preferences.theme,'acrylic-sky');assert.ok($('#app').innerHTML.includes('acrylic-sky-world'));save.perks=save.perks.filter(id=>id!=='acrylic-sky');render();assert.equal(preferences.theme,'rain');assert.ok($('#modalBody').innerHTML.includes('수사관 사무실의 유리창'));assert.ok(!$('#modalBody').innerHTML.includes('한밤의 창'));assert.ok(!$('#modalBody').innerHTML.includes('자수정의 잔광'));assert.equal(normalizePreferences({theme:'amethyst'}).theme,'rain');assert.equal(normalizePreferences({theme:'midnight'}).theme,'rain');actions['set-theme']('amethyst');assert.equal(preferences.theme,'rain');
+ assert.equal(themeChoices.length,3);
+ const lifeTheme=themeChoices.find(theme=>theme.id==='life-continues');
+ for(const text of ['삶은 끝나지 않는다','Life is unsevered','인연 컴플리트: 팔디아','생명을 끊어내어 삶을 접목한다.'])assert.ok($('#modalBody').innerHTML.includes(text));
+ assert.equal(themeUnlocked(lifeTheme),false);
+ actions['set-theme']('life-continues');assert.equal(preferences.theme,'rain');
+ assert.ok($('#modalBody').innerHTML.includes('아크릴 하늘'));assert.ok($('#modalBody').innerHTML.includes('이걸 가지고 있단 건 네가 쵸작자.'));actions['set-theme']('acrylic-sky');assert.equal(preferences.theme,'rain');save.perks.push('acrylic-sky');actions['set-theme']('acrylic-sky');assert.equal(preferences.theme,'acrylic-sky');assert.ok($('#app').innerHTML.includes('acrylic-sky-world'));save.perks=save.perks.filter(id=>id!=='acrylic-sky');render();assert.equal(preferences.theme,'rain');assert.ok($('#modalBody').innerHTML.includes('수사관 사무실의 유리창'));assert.ok(!$('#modalBody').innerHTML.includes('한밤의 창'));assert.ok(!$('#modalBody').innerHTML.includes('자수정의 잔광'));assert.equal(normalizePreferences({theme:'amethyst'}).theme,'rain');assert.equal(normalizePreferences({theme:'midnight'}).theme,'rain');actions['set-theme']('amethyst');assert.equal(preferences.theme,'rain');
  // Verify both release channels and persisted fallback after a perk is removed.
  const archive=cardThemes.find(theme=>theme.id==='archive');
  archive.unlock=player=>player.perks.includes('test-card-perk');
  rootAttributes.set('data-release-channel','test');
  assert.ok(themeChoices.every(themeUnlocked));assert.ok(cardThemes.every(themeUnlocked));
+ actions['set-theme']('life-continues');
+ assert.equal(preferences.theme,'life-continues');
+ assert.ok($('#app').innerHTML.includes('life-continues-world'));
+ assert.equal(themeBgm().title,'Sunshower');
  actions['set-theme']('acrylic-sky');assert.equal(preferences.theme,'acrylic-sky');
  save.build.profile.cardTheme='archive';render();assert.equal(save.build.profile.cardTheme,'archive');
  rootAttributes.set('data-release-channel','live');
@@ -344,6 +353,15 @@ vm.runInNewContext(code+`
  assert.equal(JSON.parse(storage.get(playerSaveKey())).build.profile.cardTheme,'glass');
  save.perks.push('acrylic-sky','test-card-perk');render();assert.equal(preferences.theme,'rain');assert.equal(save.build.profile.cardTheme,'glass');
  save.perks=save.perks.filter(id=>!['acrylic-sky','test-card-perk'].includes(id));delete archive.unlock;
+ const originalBonds=project.bonds,originalSave=save;
+ const paldia={id:'paldia',name:'팔디아',events:[]};
+ project.bonds=[paldia];save={...save,bonds:['paldia'],events:[]};
+ assert.equal(themeUnlocked(lifeTheme),false);
+ paldia.events=[{id:'paldia-first'},{id:'paldia-last'}];
+ actions['event-complete']('paldia-first');assert.equal(themeUnlocked(lifeTheme),false);
+ actions['event-complete']('paldia-last');assert.equal(themeUnlocked(lifeTheme),true);
+ actions['set-theme']('life-continues');assert.equal(rootAttributes.get('data-theme'),'life-continues');
+ project.bonds=originalBonds;save=originalSave;persist();render();assert.equal(preferences.theme,'rain');
  const testTheme={id:'test-theme',name:'test',note:'test',unlock:player=>player.perks.includes('test-theme-code'),presentation:{symbolTone:'black',background:()=>'<div>test background</div>',touch:()=>{window.themeTouchTest=true},transition:commit=>{window.themeTransitionTest=true;commit();return Promise.resolve()}}};themeChoices.push(testTheme);actions['set-theme']('test-theme');assert.equal(preferences.theme,'rain');save.perks.push('test-theme-code');actions['set-theme']('test-theme');assert.equal(rootAttributes.get('data-theme'),'test-theme');assert.equal(rootAttributes.get('data-symbol-tone'),'black');assert.ok($('#app').innerHTML.includes('test background'));themeTouchImpact({});assert.equal(window.themeTouchTest,true);let themeCommitted=false;themeTransition(()=>{themeCommitted=true});assert.equal(themeCommitted,true);assert.equal(window.themeTransitionTest,true);assert.equal(readPreferences().theme,'test-theme');save.perks=[];render();assert.equal(preferences.theme,'rain');assert.equal(rootAttributes.get('data-theme'),'rain');
  assert.ok(startUI().includes('<h1 class="start-title"><img src="assets/sunshower-umbrella-vine.webp" alt="여우비와 커튼월"'));
  assert.equal(rootAttributes.get('data-symbol-tone'),'white');assert.ok($('#app').innerHTML.includes('rain-layer'));themeChoices.pop();actions['set-theme']('invalid');assert.equal(preferences.theme,'rain');

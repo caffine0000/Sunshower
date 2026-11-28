@@ -41,7 +41,22 @@ const themeChoices=[{id:'rain',name:'수사관 사무실의 유리창',englishNa
  preview:'acrylic-sky',
  unlock:player=>player.perks.includes('acrylic-sky'),
  presentation:{symbolTone:'black',background:acrylicSkyWeather,touch:acrylicTouchImpact,transition:prismTransition}
+},{
+ id:'life-continues',
+ name:'삶은 끝나지 않는다',
+ englishName:'Life is unsevered',
+ unlockLabel:'인연 컴플리트: 팔디아',
+ note:'생명을 끊어내어 삶을 접목한다.',
+ preview:'life-continues',
+ unlock:paldiaBondComplete,
+ presentation:{symbolTone:'white',background:lifeContinuesWeather,touch:lifeTouchImpact,transition:prismTransition}
 }];
+function paldiaBondComplete(player,work){
+ const bonds=Array.isArray(work.bonds)?work.bonds:[];
+ const bond=bonds.find(bond=>bond?.id==='paldia'||bond?.name==='팔디아');
+ return !!(bond&&player.bonds.includes(bond.id)&&Array.isArray(bond.events)&&bond.events.length&&
+  bond.events.every(event=>typeof event?.id==='string'&&player.events.includes(event.id)));
+}
 function themeUnlocked(theme){
  return !!theme&&(testThemesEnabled()||!theme.unlock||theme.unlock(save,project)===true);
 }
@@ -174,6 +189,9 @@ function weather(){return activeTheme().presentation.background()}
 function acrylicSkyWeather(){
  return '<div class="weather-world acrylic-sky-world" aria-hidden="true"></div>';
 }
+function lifeContinuesWeather(){
+ return '<div class="weather-world life-continues-world" aria-hidden="true"><i></i><i></i></div>';
+}
 function rainWeather(){return `<div class="weather-world" aria-hidden="true"><div class="city-view"></div><div class="window-frame frame-one"></div><div class="window-frame frame-two"></div><div class="rain-layer">${Array.from({length:58},(_,i)=>`<i style="--x:${(i*37+3)%100}%;--delay:${-(i%13)*.43}s;--speed:${.9+(i%7)*.17}s;--length:${45+i%6*15}px;--opacity:${.12+i%5*.06}"></i>`).join('')}</div><div class="window-mist"></div><div class="glass-drops">${Array.from({length:25},(_,i)=>`<i style="left:${(i*31+9)%100}%;top:${(i*47+2)%100}%;--drop-size:${3+i%5*2}px;--drift:${14+i%7}s;animation-delay:${-i*1.2}s"></i>`).join('')}</div><div class="weather-shade"></div></div>`}
 function geometricGlyphs(text){const glyphs={K:'M0 0V24M16 0L0 16M6 10L16 24M4 12H12',B:'M0 0V24H12L16 20V16L8 12L16 8V4L12 0ZM0 12H8',M:'M0 24V0L8 12L16 0V24M4 8L8 16L12 8',W:'M0 0L4 24L8 12L12 24L16 0M4 16L8 4L12 16',S:'M16 0H4L0 4V8L16 16V20L12 24H0M4 0L12 8M4 16L12 24',H:'M0 0V24M16 0V24M0 12H16M8 8V16',P:'M0 24V0H12L16 4V8L12 12H0M4 4H12',T:'M0 0H16M8 0V24M4 8L8 12L12 8',Y:'M0 0L8 12L16 0M8 12V24M4 20H12',U:'M0 0V16L8 24L16 16V0M4 16L8 20L12 16',Z:'M0 0H16L0 24H16M4 12H12',V:'M0 0L8 24L16 0M4 4L8 12L12 4',G:'M16 4L12 0H4L0 4V20L4 24H16V12H8M8 16H16',F:'M0 24V0H16L8 8H0M0 12H12L8 16',A:'M0 24L8 0L16 24M4 16H12M8 0V8',I:'M8 0V24M4 4L8 0L12 4M4 20L8 24L12 20M4 12H12',L:'M0 0V24H16L8 16M0 8L8 0',E:'M16 0H0V24H16M0 0L8 8H0M0 12H12L8 16M0 24L8 16',D:'M0 0V24H8L16 16V8L8 0ZM0 8H8V16H0',N:'M0 24V0L16 24V0M0 16L4 12M12 12L16 8',O:'M8 0L16 8V16L8 24L0 16V8ZM4 8L12 16',R:'M0 24V0H12L16 4V8L0 16M8 12L16 24',C:'M16 0H8L0 8V16L8 24H16M0 12H8',X:'M0 0L16 24M16 0L0 24M4 12H12','^':'M0 12L8 0L16 12','!':'M8 0V16M5 21L8 18L11 21L8 24Z','>':'M0 0L16 12L0 24','&':'M16 24L0 8L8 0L16 8L0 24H16M0 16H16','[':'M16 0H4V24H16M0 8H8','+':'M0 12H16M8 4V20'};let x=0;const paths=[...text.toUpperCase()].map(c=>{if(c===' '){x+=16;return ''}const path='<path d="'+(glyphs[c]||'M0 12L8 0L16 12L8 24Z')+'" transform="translate('+x+' 2)"/>';x+=24;return path}).join('');return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${Math.max(16,x-8)} 30" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter">${paths}</g></svg>`}
 function runeInscription(){return `<div class="rune-ornament" role="img" aria-label="Failed and Find"><span class="rune-rule" aria-hidden="true"></span>${geometricGlyphs('Failed and Find')}<span class="rune-rule" aria-hidden="true"></span></div>`}
@@ -211,7 +229,7 @@ function observerPresence(){return '<div class="observer-presence"><img class="o
 function prismMagicLayer(){return crystalFlowerMarkup().replaceAll('<path ','<path pathLength="1" ').replaceAll('<circle ','<circle pathLength="1" ')}
 function crystalFlowerMarkup(){const petals=Array.from({length:8},(_,i)=>'<g class="crystal-petal" transform="rotate('+(i*45)+' 150 150)"><path d="M150 146L129 107L150 40L171 107Z" fill="url(#crystal-petal-light)" stroke="#dec7ff" stroke-width=".85"/><path d="M150 40V146M129 107L150 117L171 107M150 117L138 91M150 117L162 91" fill="none" stroke="#f1e2ff" stroke-opacity=".65" stroke-width=".55"/><path d="M150 40L129 107L150 117Z" fill="#7846b8" fill-opacity=".16"/></g>').join('');const inner=Array.from({length:8},(_,i)=>'<g transform="rotate('+(i*45+22.5)+' 150 150)"><path d="M150 149L140 123L150 83L160 123Z" fill="url(#crystal-petal-inner)" stroke="#d6b4f9" stroke-width=".55"/><path d="M150 83V149M140 123L150 130L160 123" fill="none" stroke="#ead2ff" stroke-opacity=".65" stroke-width=".45"/></g>').join('');const orbit=Array.from({length:12},(_,i)=>'<g transform="rotate('+(i*30)+' 150 150)"><path d="M150 13L154 23L150 33L146 23Z" fill="#b589e9" fill-opacity=".24" stroke="#dcc3ff" stroke-width=".55"/><path d="M150 13V33" stroke="#ead8ff" stroke-width=".4"/></g>').join('');return '<svg class="prism-sigil crystal-flower" viewBox="0 0 300 300" aria-hidden="true"><defs><linearGradient id="crystal-petal-light" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#efd8ff" stop-opacity=".5"/><stop offset=".46" stop-color="#b184e4" stop-opacity=".18"/><stop offset="1" stop-color="#60359c" stop-opacity=".38"/></linearGradient><linearGradient id="crystal-petal-inner" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dfc5ff" stop-opacity=".42"/><stop offset="1" stop-color="#8f5ccc" stop-opacity=".22"/></linearGradient><radialGradient id="crystal-flower-heart"><stop stop-color="#f3deff" stop-opacity=".75"/><stop offset="1" stop-color="#8450bf" stop-opacity=".38"/></radialGradient></defs><g fill="none" stroke="currentColor"><circle cx="150" cy="150" r="138" stroke-width=".45" opacity=".65"/><circle cx="150" cy="150" r="122" stroke-width=".5" stroke-dasharray="1 10" opacity=".7"/><circle cx="150" cy="150" r="116" stroke-width=".35" opacity=".3"/></g>'+orbit+petals+inner+'<g class="crystal-heart"><path d="M150 129L168 140V160L150 171L132 160V140Z" fill="url(#crystal-flower-heart)" stroke="#f1ddff" stroke-width="1"/><path d="M150 129V171M132 140L150 150L168 140M132 160L150 150L168 160" fill="none" stroke="#ead3ff" stroke-width=".6"/><path d="M150 141L156 150L150 159L144 150Z" fill="#f8e9ff" fill-opacity=".7"/></g></svg><div class="prism-magic">'+Array.from({length:18},(_,i)=>'<i class="prism-mote" style="--mote-x:'+((i*37+8)%100)+'%;--mote-y:'+((i*23+12)%100)+'%;--mote-dx:'+((i%2?1:-1)*(18+i%5*12))+'px;--mote-dy:'+(-20-i%7*9)+'px;--mote-delay:'+((i%6)*.017).toFixed(3)+'s"></i>').join('')+'</div>'}
 function microRipples(random=Math.random){const count=2+Math.floor(random()*5);return Array.from({length:count},()=>{const angle=random()*Math.PI*2,radius=8+random()*16,size=10+random()*14,delay=.12+random()*.22,duration=.45+random()*.24;return `<i class="touch-ring touch-micro" style="left:${(Math.cos(angle)*radius).toFixed(1)}px;top:${(Math.sin(angle)*radius).toFixed(1)}px;--ring-size:${size.toFixed(1)}px;--ring-delay:${delay.toFixed(3)}s;--ring-duration:${duration.toFixed(3)}s"></i>`}).join('')}
-function appendTouchImpact(host,x,y,variant,markup){
+function appendTouchImpact(host,x,y,variant,markup,lifetime=1150){
  const fx=document.createElement('span');
  fx.className=`touch-impact ${variant}${host.closest?.('dialog')===host?' in-dialog':''}`;
  fx.setAttribute('aria-hidden','true');
@@ -219,9 +237,9 @@ function appendTouchImpact(host,x,y,variant,markup){
  fx.style.top=y+'px';
  fx.innerHTML=markup;
  const existing=document.querySelectorAll('.touch-impact');
- if(existing.length>=12)existing[0].remove();
+ if(existing.length>=12)Array.from(existing).find(effect=>!effect.classList.contains('life-touch-held'))?.remove();
  host.appendChild(fx);
- setTimeout(()=>fx.remove(),1150);
+ if(lifetime)setTimeout(()=>fx.remove(),lifetime);
  return fx;
 }
 function spawnRainImpact(host,x,y,variant,details=''){
@@ -253,6 +271,24 @@ function acrylicTouchImpact(event){
  const effect=appendTouchImpact(...touchImpactOrigin(event),'acrylic-touch'+(event.held?' acrylic-touch-held':''),shrimp+sparkles);
  effect.style.setProperty('--shrimp-turn',Math.round(Math.random()*32-16)+'deg');
 }
+function lifeTouchImpact(event){
+ if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+ const mark=appendTouchImpact(...touchImpactOrigin(event),'life-touch','<i class="life-cut-trace"><b></b></i>',0);
+ mark.style.setProperty('--life-cut-angle',(Math.random()*38-19).toFixed(1)+'deg');
+ const fadeTimer=setTimeout(()=>mark.remove(),900);
+ return {
+  hold(){
+   clearTimeout(fadeTimer);
+   mark.classList.add('life-touch-held');
+  },
+  release(){
+   if(!mark.classList.contains('life-touch-held'))return;
+   mark.classList.remove('life-touch-held');
+   mark.classList.add('life-touch-released');
+   setTimeout(()=>mark.remove(),240);
+  }
+ };
+}
 const inlineRippleActions=new Set([
  'race-primary','race-option','race-division','identity-trait','card-theme','display-collectible','set-theme'
 ]);
@@ -277,7 +313,7 @@ function choiceRipple(button,tone){
  effect.style.setProperty('--impact-ring-size',Math.max(230,Math.hypot(bounds.width,bounds.height)+108)+'px');
 }
 const rippleHolds=new Map();
-function endRippleHold(id){const hold=rippleHolds.get(id);if(!hold)return;clearTimeout(hold.timer);rippleHolds.delete(id)}
+function endRippleHold(id){const hold=rippleHolds.get(id);if(!hold)return;clearTimeout(hold.timer);rippleHolds.delete(id);hold.lifecycle?.release?.()}
 function endAllRippleHolds(){for(const id of rippleHolds.keys())endRippleHold(id)}
 function resetDialogTouchEffects(){
  endAllRippleHolds();
@@ -291,10 +327,14 @@ function beginRippleHold(e){
   const rect=e.target.getBoundingClientRect();
   if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)return;
  }
- themeTouchImpact(e);
+ const lifecycle=themeTouchImpact(e);
  if(rippleHolds.size>=4)return;
- const hold={target:e.target,clientX:e.clientX,clientY:e.clientY,timer:null};
+ const hold={target:e.target,clientX:e.clientX,clientY:e.clientY,timer:null,lifecycle};
  rippleHolds.set(e.pointerId,hold);
+ if(lifecycle?.hold){
+  hold.timer=setTimeout(()=>lifecycle.hold(),300);
+  return;
+ }
  const repeat=()=>{
   if(rippleHolds.get(e.pointerId)!==hold)return;
   hold.held=true;
