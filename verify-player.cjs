@@ -240,12 +240,16 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  assert.ok(panel().includes('&quot;언니! 나 이것도 할 수 있다? 짠!&quot;'));
  assert.ok(panel().includes('&quot;웃는 건 좋은 거래. 그리고 억지로 할 필요는 없대!&quot;'));
  assert.ok(panel().includes('&quot;내 이름은 &#39;미래&#39;! 언니 이름은 '+save.build.name+'!&quot;'));
+ assert.ok(panel().includes('&quot;언니는 화나는 거 잘 참아? 나는...&quot;'));
+ assert.ok(panel().includes('&quot;... 나는 뭘까?&quot;'));
  for(const [id,negative,neutral,positive,cost] of [
   ['vision','굴절 이상','시각','매의 눈',30],
   ['hearing','음소거','청각','반향정위',30],
   ['flexibility','제한된 기동','유연성','자유 기동',50],
   ['empathy','공감 둔화','감정 이해','이입',20],
-  ['memory','휘발성 기억','기억력','연결된 기억',40]
+  ['memory','휘발성 기억','기억력','연결된 기억',40],
+  ['reason','광기','이성','평정',50],
+  ['self-image','인격 분열','자아상','확립된 존재',50]
  ]){
   assert.ok(panel().includes('<h3>'+neutral+'</h3>'));
   assert.equal(actions['identity-trait'](id+':negative'),'negative');
@@ -261,6 +265,8 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  actions['identity-trait']('flexibility:positive');
  actions['identity-trait']('empathy:negative');
  actions['identity-trait']('memory:positive');
+ actions['identity-trait']('reason:negative');
+ actions['identity-trait']('self-image:positive');
  const sensoryBuild=decodePlayer(project,encodePlayer(project,save)).build;
  assert.equal(sensoryBuild.thoughtLimit,115);
  assert.equal(sensoryBuild.traitChoices.vision,'positive');
@@ -268,6 +274,8 @@ actions['race-option']('immortal');assert.equal(save.build.thoughtLimit,0);asser
  assert.equal(sensoryBuild.traitChoices.flexibility,'positive');
  assert.equal(sensoryBuild.traitChoices.empathy,'negative');
  assert.equal(sensoryBuild.traitChoices.memory,'positive');
+ assert.equal(sensoryBuild.traitChoices.reason,'negative');
+ assert.equal(sensoryBuild.traitChoices['self-image'],'positive');
  assert.equal($('#app').htmlWrites,stageWrites);
  save=previous;persist();close();render();
  }

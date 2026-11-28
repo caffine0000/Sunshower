@@ -84,6 +84,22 @@ export const identityTraits=[
    neutral:{name:'기억력',description:'"내 이름은 \'미래\'! [오빠/언니] 이름은 [플레이어 이름]!"',cost:0},
    positive:{name:'연결된 기억',description:'기억의 이전과 연결, 그리고 재생 과정이 최적화되어 결과적으로 기억의 정확도가 상승했다.',cost:40}
   }
+ },
+ {
+  id:'reason',
+  levels:{
+   negative:{name:'광기',description:'충동과 생각을 제어하는 전두엽의 기능이 저하되어 점점 비이성적인 행동이 표출된다.',cost:-50},
+   neutral:{name:'이성',description:'"[오빠/언니]는 화나는 거 잘 참아? 나는..."',cost:0},
+   positive:{name:'평정',description:'전두업이 관장하는 충동과 생각에 대한 제어가 강화되어 행동에 대한 통제가 수월하다.',cost:50}
+  }
+ },
+ {
+  id:'self-image',
+  levels:{
+   negative:{name:'인격 분열',description:'자아의 확립이 악화되어 점차 당신의 일면들이 하나의 인격으로 승화된다.',cost:-50},
+   neutral:{name:'자아상',description:'"... 나는 뭘까?"',cost:0},
+   positive:{name:'확립된 존재',description:'자아가 확립되어 감정의 요동과 정신의 불안정성이 완화된다.',cost:50}
+  }
  }
 ];
 export const raceTypes=[{id:'human',name:'휴먼'},{id:'elf',name:'엘프'},{id:'dwarf',name:'드워프'},{id:'beastkin',name:'수인'},{id:'celestial',name:'천족'},{id:'demon',name:'마족'},{id:'spirit',name:'정령'},{id:'automaton',name:'오토마타'}];
